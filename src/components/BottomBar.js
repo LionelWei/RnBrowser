@@ -14,9 +14,10 @@ import TouchableButton from './TouchableButton'
 
 const style = StyleSheet.create({
   bottombar: {
-    flexDirection: 'row',
     height: 56,
-    alignItems: 'center'
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   }
 })
 
@@ -31,11 +32,30 @@ export default class extends Component {
   render() {
     return (
       <Image style={style.bottombar} source={{uri: bg}}>
-        <Text>BottomBar</Text>
         <TouchableButton
-          pressFn = {()=>alert('haha')}
-          normalBg = 'ico_setting_titlebar_normal'
-          pressBg = 'ico_setting_titlebar_pressed' />
+          pressFn = {() => alert('后退')}
+          normalBg = 'icon_back_normal'
+          pressBg = 'icon_back_pressed' />
+
+        <TouchableButton
+          pressFn = {() => alert('前进')}
+          normalBg = 'icon_forward_normal'
+          pressBg = 'icon_forward_pressed' />
+
+        <TouchableButton
+          pressFn = {() => alert('菜单')}
+          normalBg = 'icon_menu_normal'
+          pressBg = 'icon_menu_pressed' />
+
+        <TouchableButton
+          pressFn = {() => alert('新增')}
+          normalBg = 'icon_new_add_normal'
+          pressBg = 'icon_new_add_pressed' />
+
+        <TouchableButton
+          pressFn = {()=>alert('主页')}
+          normalBg = 'icon_home_normal'
+          pressBg = 'icon_home_pressed' />
       </Image>
     )
   }

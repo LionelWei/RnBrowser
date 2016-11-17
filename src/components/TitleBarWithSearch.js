@@ -3,16 +3,20 @@
 import React, { Component } from 'react'
 
 import {
+  Image,
   View,
   Text,
   StyleSheet
 } from 'react-native'
 
-import {STATUS_BAR_HEIGHT, NAV_BAR_HEIGHT} from '../App'
+import TouchableButton from './TouchableButton'
 
 const style = StyleSheet.create({
   titlebar: {
-    height: 60
+    flexDirection: 'row',
+    height: 48,
+    backgroundColor: '#fff',
+    alignItems: 'center'
   }
 })
 
@@ -20,7 +24,24 @@ export default class extends Component {
   render() {
     return (
       <View style={style.titlebar}>
-        <Text>TitleBar</Text>
+        <View style={{paddingLeft: 12}}>
+          <Image style={{
+              paddingLeft: 12,
+              width: 28,
+              height: 28
+            }}
+            source={{uri: 'icon_uc_logo'}}/>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'transparent'}}/>
+        <View style={{paddingRight: 12}}>
+          <TouchableButton
+            pressFn = {()=>alert('search')}
+            normalBg = 'icon_search_normal'
+            pressBg = 'icon_search_pressed' />
+        </View>
       </View>
     )
   }

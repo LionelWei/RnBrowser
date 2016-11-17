@@ -33,7 +33,7 @@ export default class TouchableButton extends Component {
     return (
       <TouchableWithoutFeedback
         style={{
-          width: 44,
+          width: 48,
           height: 48,
           backgroundColor: 'transparent'
         }}
@@ -42,8 +42,8 @@ export default class TouchableButton extends Component {
         onPressOut = {() => this.onTouchUp()}>
         <Image
           style={{
-            width: 44,
-            height: 48
+            width: 20,
+            height: 20
           }}
           source={{uri: settingBg}}/>
       </TouchableWithoutFeedback>
