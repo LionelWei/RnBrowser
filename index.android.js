@@ -1,12 +1,4 @@
-import React, { Component } from 'react';
-import { AppRegistry, Text } from 'react-native';
+import { AppRegistry } from 'react-native'
+import Browser from './src/App'
 
-class HelloWorldApp extends Component {
-	render() {
-		return (
-				<Text>Hello world!</Text>
-			   );
-	}
-}
-
-AppRegistry.registerComponent('RnBrowser', () => HelloWorldApp);
+AppRegistry.registerComponent('RnBrowser', () => Browser)
