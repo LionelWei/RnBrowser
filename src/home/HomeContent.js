@@ -1,12 +1,14 @@
 /* @flow */
 
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 
 import {
   View,
   Text,
   StyleSheet
 } from 'react-native'
+
+import Web from '../components/Web'
 
 const style = StyleSheet.create({
   content: {
@@ -15,11 +17,13 @@ const style = StyleSheet.create({
 })
 
 export default class extends Component {
+  static propTypes = {
+    url: PropTypes.string.isRequired
+  };
+
   render() {
     return (
-      <View style={style.content}>
-        <Text>Content</Text>
-      </View>
+      <Web url={this.props.url}/>
     )
   }
 }
