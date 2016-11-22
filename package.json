@@ -1,0 +1,33 @@
+{
+  "name": "rnbrowser",
+  "version": "0.0.1",
+  "description": "Web browser based on RN",
+  "main": "index.js",
+  "dependencies": {
+    "react": "^15.3.2",
+    "react-native-navbar": "^1.5.4",
+    "react-native-navigationbar": "^0.4.5",
+    "react-native": "^0.37.0"
+  },
+  "devDependencies": {
+    "flow-bin": "^0.35.0"
+  },
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LionelWei/RnBrowser.git"
+  },
+  "keywords": [
+    "rn",
+    "android",
+    "ios"
+  ],
+  "author": "Lionel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LionelWei/RnBrowser/issues"
+  },
+  "homepage": "https://github.com/LionelWei/RnBrowser#readme"
+}
