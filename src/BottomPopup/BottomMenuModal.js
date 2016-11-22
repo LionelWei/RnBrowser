@@ -1,24 +1,31 @@
 /* @flow */
 
 import React, { Component, PropTypes} from 'react';
-import { Modal, Text, TouchableHighlight, View } from 'react-native';
+import {
+  Modal,
+  Text,
+  TouchableHighlight,
+  View,
+  StyleSheet,
+  TouchableWithoutFeedback
+} from 'react-native';
+
+import EventEmitter from 'EventEmitter'
+
+import BottomPopupMenu from '../BottomPopup/BottomPopupMenu'
+import {Emitter} from '../events/Emitter'
 
 export default class BottomMenuModal extends Component {
-  static propTypes = {
-    visible: PropTypes.bool
-  };
-
   state = {
     modalVisible: false,
   }
 
   constructor() {
     super()
-  }
-
-  componentWillReceiveProps(props) {
-    console.log('visible: ' + props.visible);
-    this.setModalVisible(this.props.visible)
+    Emitter.addListener('show_bottom_bar', (...args) => {
+      var isVisible: bool = args[0];
+      this.setModalVisible(isVisible)
+    });
   }
 
   setModalVisible(visible: bool) {
@@ -31,21 +38,45 @@ export default class BottomMenuModal extends Component {
         animationType={"slide"}
         transparent={true}
         visible={this.state.modalVisible}
-        onRequestClose={() => {alert("Modal has been closed.")}}
+        onRequestClose={() => {this.props.pressFn()}}
         >
-       <View style={{marginTop: 22}}>
-        <View>
-          <Text>Hello World!</Text>
-
-          <TouchableHighlight onPress={() => {
-            this.setModalVisible(!this.state.modalVisible)
-          }}>
-            <Text>Hide Modal</Text>
-          </TouchableHighlight>
-
-        </View>
-       </View>
+        <TouchableWithoutFeedback
+          onPress={() => {this.setModalVisible(false)}}>
+          <View style={styles.container}>
+            <View style={{
+              height: 200,
+              backgroundColor: 'white',
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'space-around'
+            }}>
+              <BottomPopupMenu dismiss={() => {this.setModalVisible(false)}}/>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
       </Modal>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'transparent',
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-end'
+  },
+  flexCenter: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  modal: {
+    backgroundColor: 'rgba(0,0,0,.8)',
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0
+  }
+})

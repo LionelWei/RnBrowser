@@ -13,18 +13,23 @@ import {
   TouchableHighlight
 } from 'react-native'
 
+import EventEmitter from 'EventEmitter'
+
 import TouchableButton from './TouchableButton'
 import BottomMenuScene from '../BottomPopup/BottomMenuScene'
 import BottomMenuModal from '../BottomPopup/BottomMenuModal'
+import {BOTTOM_BAR_HEIGHT} from '../utils/Consts'
+import {Emitter} from '../events/Emitter'
 
 const style = StyleSheet.create({
   bottombar: {
-    height: 56,
+    height: BOTTOM_BAR_HEIGHT,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-around',
   }
 })
+
 
 const bg='bottombar_bg_with_shadow'
 
@@ -43,7 +48,7 @@ export default class extends Component {
 
   setModalVisible(visible: bool) {
     console.log('Bottombar setModalVisible: ' + (visible ? 'true' : 'fase'));
-    this.setState({modalVisible: visible});
+    Emitter.emit('show_bottom_bar', true);
   }
 
   render() {
@@ -77,7 +82,7 @@ export default class extends Component {
             normalBg = 'icon_home_normal'
             pressBg = 'icon_home_pressed' />
         </Image>
-        <BottomMenuModal visible={this.state.modalVisible}/>
+        <BottomMenuModal />
       </View>
     )
   }

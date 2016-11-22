@@ -37,6 +37,10 @@ export default class extends Component {
   }
 
   search(url: string) {
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      alert('网址有误, 请以http或者https开头')
+      return
+    }
     this.setState({
       currentUrl: url
     })

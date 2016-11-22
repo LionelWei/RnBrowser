@@ -16,7 +16,10 @@ export default class TouchableButton extends Component {
   static propTypes = {
     pressFn: PropTypes.func,
     normalBg: PropTypes.string.isRequired,
-    pressBg: PropTypes.string
+    pressBg: PropTypes.string,
+    width: PropTypes.number,
+    height: PropTypes.number,
+    description: PropTypes.string
   };
 
   state = {
@@ -31,22 +34,25 @@ export default class TouchableButton extends Component {
   render() {
     let isPressing = this.state.isButtonPressing
     let settingBg = isPressing ? this.props.pressBg : this.props.normalBg
+    let imgWidth = this.props.width ? this.props.width : 20;
+    let imgHeight = this.props.height ? this.props.height : 20;
+    let desc = this.props.description;
     return (
       <TouchableWithoutFeedback
-        style={{
-          width: 48,
-          height: 48,
-          backgroundColor: 'transparent'
-        }}
         onPress={this.props.pressFn}
         onPressIn = {() => this.onTouchDown()}
         onPressOut = {() => this.onTouchUp()}>
-        <Image
-          style={{
-            width: 20,
-            height: 20
-          }}
-          source={{uri: settingBg}}/>
+        <View style={styles.container}>
+          <Image
+            style={{
+              width: imgWidth,
+              height: imgHeight
+            }}
+            source={{uri: settingBg}}/>
+          {desc
+            ? <Text style={styles.descText}>{desc}</Text>
+            : null}
+        </View>
       </TouchableWithoutFeedback>
     )
   }
@@ -64,3 +70,15 @@ export default class TouchableButton extends Component {
     })
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'column'
+  },
+  descText: {
+    paddingTop: 4,
+    fontSize: 12,
+    color: 'black',
+    textAlign: 'center'
+  }
+})
