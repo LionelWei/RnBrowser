@@ -24,7 +24,9 @@ const style = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#ddd',
   },
   menu_bottom: {
     height: BOTTOM_BAR_HEIGHT,
@@ -32,8 +34,6 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     backgroundColor: 'transparent',
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
   }
 })
 

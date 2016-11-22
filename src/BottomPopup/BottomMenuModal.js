@@ -22,7 +22,7 @@ export default class BottomMenuModal extends Component {
 
   constructor() {
     super()
-    Emitter.addListener('show_bottom_bar', (...args) => {
+    Emitter.addListener('show_bottom_menu', (...args) => {
       var isVisible: bool = args[0];
       this.setModalVisible(isVisible)
     });
@@ -35,22 +35,24 @@ export default class BottomMenuModal extends Component {
   render() {
     return (
       <Modal
-        animationType={"slide"}
+        animationType={"fade"}
         transparent={true}
         visible={this.state.modalVisible}
-        onRequestClose={() => {this.props.pressFn()}}
-        >
+        onRequestClose={() => {this.setModalVisible(false)}}>
         <TouchableWithoutFeedback
           onPress={() => {this.setModalVisible(false)}}>
-          <View style={styles.container}>
-            <View style={{
-              height: 200,
-              backgroundColor: 'white',
-              flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'space-around'
+          <View style={{
+              flex: 1
             }}>
-              <BottomPopupMenu dismiss={() => {this.setModalVisible(false)}}/>
+            <View style={{
+              flex: 1,
+              backgroundColor: 'black',
+              opacity: 0.2
+            }}/>
+            <View style={styles.container}>
+              <View style={styles.menu_content}>
+                <BottomPopupMenu dismiss={() => {this.setModalVisible(false)}}/>
+              </View>
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -62,21 +64,14 @@ export default class BottomMenuModal extends Component {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'transparent',
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'flex-end'
   },
-  flexCenter: {
+  menu_content: {
+    height: 200,
+    backgroundColor: 'white',
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    flexDirection: 'row',
+    justifyContent: 'space-around'
   },
-  modal: {
-    backgroundColor: 'rgba(0,0,0,.8)',
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0
-  }
 })

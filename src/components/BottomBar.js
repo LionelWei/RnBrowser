@@ -38,21 +38,11 @@ export default class extends Component {
     navigator: PropTypes.object
   };
 
-  state = {
-    modalVisible: false
-  }
-
   constructor() {
     super()
   }
 
-  setModalVisible(visible: bool) {
-    console.log('Bottombar setModalVisible: ' + (visible ? 'true' : 'fase'));
-    Emitter.emit('show_bottom_bar', true);
-  }
-
   render() {
-    console.log('render modalVisible: ' + (this.state.modalVisible ? 'true' : 'fase'));
     const {navigator} = this.props
     return (
       <View>
@@ -68,7 +58,9 @@ export default class extends Component {
             pressBg = 'icon_forward_pressed' />
 
           <TouchableButton
-            pressFn={() => this.setModalVisible(true)}
+            pressFn={() => {
+              Emitter.emit('show_bottom_menu', true);
+            }}
             normalBg = 'icon_menu_normal'
             pressBg = 'icon_menu_pressed' />
 
