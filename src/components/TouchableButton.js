@@ -19,11 +19,12 @@ export default class TouchableButton extends Component {
     pressBg: PropTypes.string
   };
 
+  state = {
+    isButtonPressing: false
+  }
+
   constructor() {
     super()
-    this.state = {
-      isButtonPressing: false
-    }
   }
 
 

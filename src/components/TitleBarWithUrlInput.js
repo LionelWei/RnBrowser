@@ -27,9 +27,12 @@ export default class extends Component {
     search: PropTypes.func.isRequired
   };
 
+  state = {
+    url: ''
+  };
+
   constructor(props) {
     super(props);
-    this.state = {url: ''};
   }
 
   render() {

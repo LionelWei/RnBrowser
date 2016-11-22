@@ -7,7 +7,8 @@ import {
   StatusBar,
   BackAndroid,
   View,
-  Navigator
+  Navigator,
+  Text
 } from 'react-native'
 
 import Home from './home/HomeScene'
@@ -35,8 +36,13 @@ export default class extends Component {
 
   render() {
     return (
-      <View style={{flex: 1}}>
+      <View style={{
+        flex: 1,
+        backgroundColor: 'transparent'}}>
         <Navigator
+          style={{
+            flex: 1,
+            backgroundColor: 'transparent'}}
           ref='navigator'
           initialRoute={{
             component: Home
@@ -44,7 +50,8 @@ export default class extends Component {
           configureScene={this.configureScene}
           renderScene={(route, navigator) => {
             return <route.component navigator={navigator} {...route} {...route.passProps}/>
-          }}/>
+          }}
+        />
       </View>
     )
   }
