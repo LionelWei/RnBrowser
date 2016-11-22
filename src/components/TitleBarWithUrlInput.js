@@ -44,15 +44,16 @@ export default class extends Component {
               width: 28,
               height: 28
             }}
-            source={{uri: 'icon_uc_logo'}}/>
+            source={{uri: 'react_logo'}}/>
         </View>
         <TextInput
           style={{
             flex: 1,
+            paddingLeft: 8,
             backgroundColor: 'transparent'}}
           autoCorrect={false}
           keyboardType='web-search'
-          placeholder="Type here to translate!"
+          placeholder="请输入网址"
           underlineColorAndroid='transparent'
           onChangeText={(url) => this.setState({url})}
         />

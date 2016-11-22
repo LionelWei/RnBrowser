@@ -73,7 +73,8 @@ export default class TouchableButton extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'column'
+    flexDirection: 'column',
+    alignItems: 'center'
   },
   descText: {
     paddingTop: 4,

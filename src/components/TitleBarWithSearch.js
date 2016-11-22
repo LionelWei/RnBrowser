@@ -30,7 +30,7 @@ export default class extends Component {
               width: 28,
               height: 28
             }}
-            source={{uri: 'icon_uc_logo'}}/>
+            source={{uri: 'react_logo'}}/>
         </View>
         <View
           style={{

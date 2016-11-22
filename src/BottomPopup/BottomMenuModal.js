@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end'
   },
   menu_content: {
-    height: 200,
+    height: 220,
     backgroundColor: 'white',
     flex: 1,
     flexDirection: 'row',
