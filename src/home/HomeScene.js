@@ -15,8 +15,9 @@ import {
 
 
 import BottomBar from '../components/BottomBar'
-import TitleBar from '../components/TitleBarWithUrlInput'
+import TitleBar from './HomeTitleBar'
 import HomeContent from './HomeContent'
+import {Emitter} from '../events/Emitter'
 
 export default class extends Component {
   static propTypes = {
@@ -24,27 +25,17 @@ export default class extends Component {
   };
 
   state = {
-    currentUrl: 'https://www.baidu.com',
-    modalVisible: false,
+    currentUrl: 'https://www.baidu.com'
   }
 
   constructor() {
     super()
-  }
-
-  setModalVisible(visible: bool) {
-    this.setState({modalVisible: visible});
-  }
-
-  search(url: string) {
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      alert('网址有误, 请以http或者https开头')
-      return
-    }
-    this.setState({
-      currentUrl: url
-    })
-    this.setModalVisible(true)
+    Emitter.addListener('url_changed', (...args) => {
+      var url: string = args[0];
+      this.setState({
+        currentUrl: url
+      })
+    });
   }
 
   render() {
@@ -53,7 +44,7 @@ export default class extends Component {
 
     return (
       <View style={{flex: 1}}>
-        <TitleBar search={(url) => this.search(url)}/>
+        <TitleBar {...this.props}/>
         <HomeContent url={this.state.currentUrl}/>
         <BottomBar navigator={this.props.navigator}/>
       </View>
