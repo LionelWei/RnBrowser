@@ -27,18 +27,19 @@ export default class extends Component {
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
   }
 
-  // <StatusBar
-  //   barStyle='light-content'
-  //   backgroundColor='transparent'
-  //   style={{height: STATUS_BAR_HEIGHT}}
-  //   translucent={ABOVE_LOLIPOP}
-  // />
-
   render() {
     return (
       <View style={{
         flex: 1,
+        flexDirection: 'column',
         backgroundColor: 'transparent'}}>
+        <StatusBar
+          barStyle='default'
+          hidden={true}
+          backgroundColor='blue'
+          style={{height: STATUS_BAR_HEIGHT, backgroundColor: 'red'}}
+          translucent={ABOVE_LOLIPOP}
+        />
         <Navigator
           style={{
             flex: 1,

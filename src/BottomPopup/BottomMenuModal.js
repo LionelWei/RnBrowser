@@ -12,7 +12,7 @@ import {
 
 import EventEmitter from 'EventEmitter'
 
-import BottomPopupMenu from '../BottomPopup/BottomPopupMenu-copy'
+import BottomPopupMenu from '../BottomPopup/BottomPopupMenu'
 import {Emitter} from '../events/Emitter'
 
 export default class BottomMenuModal extends Component {
