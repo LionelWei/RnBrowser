@@ -12,7 +12,7 @@ import {
 
 import EventEmitter from 'EventEmitter'
 
-import BottomPopupMenu from '../BottomPopup/BottomPopupMenu'
+import BottomPopupMenu from '../BottomPopup/BottomPopupMenu-copy'
 import {Emitter} from '../events/Emitter'
 
 export default class BottomMenuModal extends Component {
@@ -40,7 +40,8 @@ export default class BottomMenuModal extends Component {
         visible={this.state.modalVisible}
         onRequestClose={() => {this.setModalVisible(false)}}>
         <TouchableWithoutFeedback
-          onPress={() => {this.setModalVisible(false)}}>
+          onPress={() => {this.setModalVisible(false)}}
+          >
           <View style={{
               flex: 1
             }}>

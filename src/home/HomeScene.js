@@ -24,7 +24,7 @@ export default class extends Component {
   };
 
   state = {
-    currentUrl: 'https://www.baidu.com/',
+    currentUrl: 'https://www.baidu.com',
     modalVisible: false,
   }
 
