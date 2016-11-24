@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "react": "^15.3.2",
-    "react-native": "^0.37.0",
+    "react-native": "^0.38.0",
     "react-native-navbar": "^1.5.4",
     "react-native-navigationbar": "^0.4.5",
     "react-native-viewpager": "^0.2.13"
