@@ -26,17 +26,6 @@ const style = StyleSheet.create({
   }
 })
 
-// <View>
-// <View>
-// <TouchableButton
-//   style={{
-//     flex: 1,
-//     paddingLeft: 8,
-//     backgroundColor: 'transparent'}}
-//   pressFn = {() => this._search()}>
-//     <Text>请输入网址</Text>
-// </TouchableButton>
-
 export default class extends Component {
   state = {
     url: ''

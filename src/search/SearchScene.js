@@ -14,6 +14,7 @@ import {
 } from 'react-native'
 
 import TitleBar from './SearchTitleBar'
+import HistoryList from './SearchHistoryList'
 import {Emitter} from '../events/Emitter'
 
 export default class extends Component {
@@ -31,6 +32,7 @@ export default class extends Component {
     return (
       <View style={{flex: 1}}>
         <TitleBar />
+        <HistoryList />
       </View>
     )
   }

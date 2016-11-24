@@ -50,7 +50,7 @@ export default class extends Component {
             flex: 1,
             paddingLeft: 8,
             backgroundColor: 'transparent',
-            color: '#ddd',
+            color: 'black',
             fontSize: 16}}
           autoFocus={true}
           autoCorrect={false}
