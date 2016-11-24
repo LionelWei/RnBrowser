@@ -52,6 +52,7 @@ export default class extends Component {
             backgroundColor: 'transparent',
             color: '#ddd',
             fontSize: 16}}
+          autoFocus={true}
           autoCorrect={false}
           keyboardType='web-search'
           placeholder="请输入网址"

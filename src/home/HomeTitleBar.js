@@ -63,7 +63,7 @@ export default class extends Component {
           <TouchableOpacity onPress={() => this._search()}>
             <Text style={{
               paddingLeft: 8,
-              color: '#ddd',
+              color: '#333',
               fontSize: 16}}>
               请输入网址
             </Text>
