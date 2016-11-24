@@ -9,7 +9,8 @@ import {
   StyleSheet,
   TextInput,
   Navigator,
-  TouchableOpacity
+  TouchableOpacity,
+  AsyncStorage
 } from 'react-native'
 
 import TouchableButton from '../components/TouchableButton'
@@ -79,6 +80,11 @@ export default class extends Component {
           && !url.startsWith("http://")) {
       alert('网址需以http://或者https://开头')
       return;
+    }
+    try {
+      await AsyncStorage.setItem('@MySuperStore:key', 'I like to save it.');
+    } catch (error) {
+      // Error saving data
     }
     Emitter.emit('url_changed', this.state.url)
   }
