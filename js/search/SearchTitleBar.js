@@ -12,6 +12,9 @@ import {
   TouchableOpacity,
 } from 'react-native'
 
+import {connect} from 'react-redux'
+import {append} from '../reducers/SearchHistory'
+
 import TouchableButton from '../components/TouchableButton'
 import {Emitter} from '../events/Emitter'
 import Transition from '../animation/NoTransition'
@@ -25,7 +28,12 @@ const style = StyleSheet.create({
   }
 })
 
-export default class extends Component {
+class SearchTitleBar extends Component {
+
+  static propTypes = {
+    append: PropTypes.func
+  }
+
   state = {
     url: ''
   }
@@ -74,12 +82,25 @@ export default class extends Component {
   }
 
   _search() {
+
     var url: string = this.state.url;
     if (!url.startsWith("https://")
           && !url.startsWith("http://")) {
       alert('网址需以http://或者https://开头')
       return;
     }
-    Emitter.emit('url_changed', this.state.url)
+
+    this.props.append(this.state.url)
+    // Emitter.emit('url_changed', this.state.url)
   }
 }
+
+function mapDispatchToProps(dispatch) {
+  return {
+    append: (url) => dispatch(append(url)),
+  }
+}
+
+module.exports = connect(
+  null,
+  mapDispatchToProps)(SearchTitleBar)
