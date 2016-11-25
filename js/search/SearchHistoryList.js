@@ -7,49 +7,64 @@ import {
   View,
   Text,
   StyleSheet,
-  ListView
+  ListView,
+  TouchableOpacity
 } from 'react-native'
+import {connect} from 'react-redux'
 
+import {append, remove} from '../reducers/SearchHistory'
 import {Emitter} from '../events/Emitter'
 
-export default class extends Component {
-  _ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-  _data = ['row1', 'row2'];
-  state = {
-    dataSource: this._ds.cloneWithRows(this._data),
-  };
+const dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+
+class SearchHistoryList extends Component {
+
+  static propTypes = {
+    append: PropTypes.func,
+    remove: PropTypes.func,
+    listData: PropTypes.object
+  }
 
   constructor() {
     super();
-    this._initData();
-    this._initEvent();
   }
+
+  _ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
   render() {
     return (
       <ListView
-        dataSource={this.state.dataSource}
-        renderRow={(rowData) => <Text>{rowData}</Text>}
+        dataSource={this.props.listData}
+        renderRow={(rowData) =>
+          <TouchableOpacity
+            style={{flex: 1}}
+            onPress={() => this.props.append()}>
+            <Text>{rowData}</Text>
+          </TouchableOpacity>
+        }
       />
     );
   }
+}
 
-  _initData() {
-    this._ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2
-    });
-  }
-
-  _initEvent() {
-    Emitter.addListener('url_changed', (...args) => {
-      this._onDataArrived(args[0])
-    })
-  }
-
-  _onDataArrived(url: string) {
-    this._data = this._data.concat(url);
-    this.setState({
-      dataSource: this._ds.cloneWithRows(this._data)
-    })
+function mapStateToProps(state) {
+  return {
+    listData: getListData(state.SearchHistory.list)
   }
 }
+
+function mapDispatchToProps(dispatch) {
+  return {
+    append: () => dispatch(append()),
+    remove: () => dispatch(remove())
+  }
+}
+
+function getListData(data: Array<number>) {
+  console.log('getListData:' + data.toString());
+  return dataSource.cloneWithRows(data);
+}
+
+module.exports = connect(
+  mapStateToProps,
+  mapDispatchToProps)(SearchHistoryList)
