@@ -1,6 +1,17 @@
 /* @flow */
 
 import React, { Component } from 'react'
+import reducers from './reducers'
+import thunk from 'redux-thunk'
+import {Provider} from 'react-redux'
+import {persistStore, autoRehydrate} from 'redux-persist'
+import {createStore, applyMiddleware} from 'redux'
+import {AsyncStorage} from 'react-native'
+
+const createStoreWithMiddleware = applyMiddleware(thunk)(createStore)
+const store = autoRehydrate()(createStoreWithMiddleware)(reducers)
+persistStore(store, {storage: AsyncStorage})
+
 import {
   Platform,
   StatusBar,
@@ -9,18 +20,11 @@ import {
   Navigator,
   Text
 } from 'react-native'
-
-import {Provider} from 'react-redux'
-import {createStore} from 'redux'
-
-import reducers from './reducers'
 import Home from './home/HomeScene'
 
 export const STATUS_BAR_HEIGHT = (Platform.OS === 'ios' ? 20 : 25)
 export const NAV_BAR_HEIGHT = (Platform.OS === 'ios' ? 44 : 56)
 export const ABOVE_LOLIPOP = Platform.Version && Platform.Version > 19
-
-let store = createStore(reducers)
 
 export default class extends Component {
 

@@ -8,14 +8,28 @@ const initialState = {
 export default function reducer (state = initialState, action) {
   switch (action.type) {
     case APPEND:
-      return {
-        ...state,
-        value: state.list.push(action.id)
+      if (state.list && state.list.includes(action.id)) {
+        var newState = {
+          ...state
+        }
+        var i = newState.list.indexOf(action.id);
+        newState.list.splice(i, 1)
+        newState.list.splice(0, 0, action.id)
+        return newState
+      } else {
+        return {
+          ...state,
+          list: [
+            ...state.list,
+            action.id
+          ]
+
+        }
       }
-    case APPEND:
+    case REMOVE:
       return {
         ...state,
-        value: state.list.remove(action.id)
+        // value: state.list.remove(action.id)
       }
     default:
       return state
