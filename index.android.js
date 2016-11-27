@@ -1,6 +1,6 @@
  /* @flow */
 
 import { AppRegistry } from 'react-native'
-import Browser from './src/App'
+import Browser from './js/App'
 
 AppRegistry.registerComponent('RnBrowser', () => Browser)

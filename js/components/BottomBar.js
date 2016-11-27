@@ -16,8 +16,7 @@ import {
 import EventEmitter from 'EventEmitter'
 
 import TouchableButton from './TouchableButton'
-import BottomMenuScene from '../BottomPopup/BottomMenuScene'
-import BottomMenuModal from '../BottomPopup/BottomMenuModal'
+import BottomMenuModal from '../bottompopup/BottomMenuModal'
 import {BOTTOM_BAR_HEIGHT} from '../utils/Consts'
 import {Emitter} from '../events/Emitter'
 
