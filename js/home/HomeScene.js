@@ -24,28 +24,12 @@ export default class extends Component {
     navigator: PropTypes.object
   };
 
-  state = {
-    currentUrl: 'https://www.baidu.com'
-  }
-
-  constructor() {
-    super()
-    Emitter.addListener('url_changed', (...args) => {
-      var url: string = args[0];
-      this.setState({
-        currentUrl: url
-      })
-    });
-  }
-
   render() {
     const {navigator} = this.props
-    console.log('currentUrl: ' + this.state.currentUrl);
-
     return (
       <View style={{flex: 1}}>
         <TitleBar {...this.props}/>
-        <HomeContent url={this.state.currentUrl}/>
+        <HomeContent/>
         <BottomBar navigator={this.props.navigator}/>
       </View>
     )

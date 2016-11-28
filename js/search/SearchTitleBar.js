@@ -13,7 +13,7 @@ import {
 } from 'react-native'
 
 import {connect} from 'react-redux'
-import {append} from '../reducers/SearchHistory'
+import {append} from '../reducers/searchhistory'
 
 import TouchableButton from '../components/TouchableButton'
 import {Emitter} from '../events/Emitter'

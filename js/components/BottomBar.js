@@ -13,12 +13,14 @@ import {
   TouchableHighlight
 } from 'react-native'
 
+import {connect} from 'react-redux'
 import EventEmitter from 'EventEmitter'
 
 import TouchableButton from './TouchableButton'
 import BottomMenuModal from '../bottompopup/BottomMenuModal'
 import {BOTTOM_BAR_HEIGHT} from '../utils/Consts'
 import {Emitter} from '../events/Emitter'
+import {back, forward} from '../reducers/webnavigator'
 
 const style = StyleSheet.create({
   bottombar: {
@@ -32,9 +34,11 @@ const style = StyleSheet.create({
 
 const bg='bottombar_bg_with_shadow'
 
-export default class extends Component {
+class BottomBar extends Component {
   static propTypes = {
-    navigator: PropTypes.object
+    navigator: PropTypes.object,
+    canBack: PropTypes.bool,
+    canForward: PropTypes.bool
   };
 
   constructor() {
@@ -47,12 +51,14 @@ export default class extends Component {
       <View>
         <Image style={style.bottombar} source={{uri: bg}}>
           <TouchableButton
-            pressFn = {() => alert('后退')}
+            enabled = {this.props.canBack}
+            pressFn = {this.props.back}
             normalBg = 'icon_back_normal'
             pressBg = 'icon_back_pressed' />
 
           <TouchableButton
-            pressFn = {() => alert('前进')}
+            enabled = {this.props.canForward}
+            pressFn = {this.props.forward}
             normalBg = 'icon_forward_normal'
             pressBg = 'icon_forward_pressed' />
 
@@ -78,3 +84,22 @@ export default class extends Component {
     )
   }
 }
+
+function mapStateToProps(state) {
+  return {
+    canBack: state.webnavigator.canBack ? state.webnavigator.canBack : false,
+    canForward: state.webnavigator.canForward ? state.webnavigator.canForward : false
+  }
+}
+
+
+function mapDispatchToProps(dispatch) {
+  return {
+    back: () => dispatch(back()),        // 测试
+    forward: () => dispatch(forward())   // 测试
+  }
+}
+
+module.exports = connect(
+  mapStateToProps,
+  mapDispatchToProps)(BottomBar)

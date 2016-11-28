@@ -14,9 +14,11 @@ import {
 export default class TouchableButton extends Component {
 
   static propTypes = {
+    enabled: PropTypes.bool,
     pressFn: PropTypes.func,
     normalBg: PropTypes.string.isRequired,
     pressBg: PropTypes.string,
+    disabledBg: PropTypes.string,
     width: PropTypes.number,
     height: PropTypes.number,
     description: PropTypes.string
@@ -32,13 +34,20 @@ export default class TouchableButton extends Component {
 
 
   render() {
-    let isPressing = this.state.isButtonPressing
-    let settingBg = isPressing ? this.props.pressBg : this.props.normalBg
+    let enabled = this.props.enabled;
+    let isPressing = this.state.isButtonPressing;
+    let disabledBg = this.props.disabledBg
+                    ? this.props.disabledBg
+                    : this.props.pressBg;
+    let settingBg = !enabled
+                    ? this.props.pressBg
+                    : (isPressing ? this.props.pressBg : this.props.normalBg)
     let imgWidth = this.props.width ? this.props.width : 20;
     let imgHeight = this.props.height ? this.props.height : 20;
     let desc = this.props.description;
     return (
       <TouchableWithoutFeedback
+        disabled = {!this.props.enabled}
         onPress={this.props.pressFn}
         onPressIn = {() => this.onTouchDown()}
         onPressOut = {() => this.onTouchUp()}>
@@ -83,3 +92,7 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   }
 })
+
+TouchableButton.defaultProps = {
+  enabled: true
+}

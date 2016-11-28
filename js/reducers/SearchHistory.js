@@ -1,3 +1,5 @@
+/* @flow */
+
 const APPEND = 'APPEND'
 const REMOVE = 'REMOVE'
 
@@ -5,7 +7,7 @@ const initialState = {
   list: [1, 2]
 }
 
-export default function reducer (state = initialState, action) {
+export default function reducer (state: any = initialState, action: any) {
   switch (action.type) {
     case APPEND:
       if (state.list && state.list.includes(action.id)) {
@@ -23,7 +25,6 @@ export default function reducer (state = initialState, action) {
             ...state.list,
             action.id
           ]
-
         }
       }
     case REMOVE:
@@ -36,14 +37,14 @@ export default function reducer (state = initialState, action) {
   }
 }
 
-export function append (id) {
+export function append (id: number) {
   return {
     type: APPEND,
     id
   }
 }
 
-export function remove (id) {
+export function remove (id: number) {
   return {
     type: REMOVE,
     id

@@ -17,13 +17,9 @@ const style = StyleSheet.create({
 })
 
 export default class extends Component {
-  static propTypes = {
-    url: PropTypes.string.isRequired
-  };
-
   render() {
     return (
-      <Web url={this.props.url}/>
+      <Web />
     )
   }
 }
