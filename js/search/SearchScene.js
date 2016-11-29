@@ -16,7 +16,6 @@ import {
 import TitleBar from './SearchTitleBar'
 import HistoryList from './SearchHistoryList'
 import {Emitter} from '../events/Emitter'
-import Counter from './Counter'
 
 export default class extends Component {
   constructor() {
@@ -34,10 +33,6 @@ export default class extends Component {
       <View style={{flex: 1}}>
         <TitleBar />
         <HistoryList />
-        {/*
-        //   <Counter
-        //   value={123}
-        // />*/}
       </View>
     )
   }

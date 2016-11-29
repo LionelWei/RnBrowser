@@ -2,8 +2,7 @@
 
 const GO_BACK = 'GO_BACK'
 const GO_FORWARD = 'GO_FORWARD'
-const CAN_BACK = 'CAN_BACK'
-const CAN_FORWARD = 'CAN_FORWARD'
+const CAN_NAVIGATE = 'CAN_NAVIGATE'
 
 const initialState = {
   back: false,
@@ -12,7 +11,8 @@ const initialState = {
   canForward: false
 }
 
-export default function reducer (state: any = initialState, action: any) {
+export default function reducer (state: Object = initialState, action: Object) {
+  console.log(state)
   switch (action.type) {
     case GO_BACK:
       return {
@@ -24,41 +24,33 @@ export default function reducer (state: any = initialState, action: any) {
         initialState,
         forward: true
       }
-    case CAN_BACK:
+    case CAN_NAVIGATE:
       return {
         initialState,
-        canBack: true
-      }
-    case CAN_FORWARD:
-      return {
-        initialState,
-        canForward: true
+        canBack: action.canBack,
+        canForward: action.canForward
       }
     default:
       return state
   }
 }
 
-export function back () {
+export function back() {
   return {
     type: GO_BACK
   }
 }
 
-export function forward () {
+export function forward() {
   return {
     type: GO_FORWARD
   }
 }
 
-export function canBack () {
+export function canNavigate(canBack: bool, canForward: bool) {
   return {
-    type: CAN_BACK
-  }
-}
-
-export function canForward () {
-  return {
-    type: CAN_FORWARD
+    type: CAN_NAVIGATE,
+    canBack: canBack,
+    canForward: canForward
   }
 }

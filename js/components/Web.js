@@ -6,12 +6,12 @@ import React, {PropTypes, Component } from 'react';
 import { WebView } from 'react-native';
 import {connect} from 'react-redux'
 import {Emitter} from '../events/Emitter'
-import {canBack, canForward} from '../reducers/webnavigator'
+import {canNavigate} from '../reducers/webnavigator'
 
 
 var TEXT_INPUT_REF = 'urlInput';
 var WEBVIEW_REF = 'webview';
-var DEFAULT_URL = 'https://www.baidu.com';
+var DEFAULT_URL = 'https://m.baidu.com/?from=1013843a&pu=sz%401321_480&wpo=btmfast';
 
 class Web extends Component {
   state = {
@@ -75,12 +75,7 @@ class Web extends Component {
       loading: navState.loading,
       scalesPageToFit: true
     });
-    if (navState.canGoBack) {
-      this.props.canBack();
-    }
-    if (navState.canGoForward) {
-      this.props.canForward()
-    }
+    this.props.canNavigate(navState.canGoBack, navState.canGoForward)
   };
 
   onShouldStartLoadWithRequest = (ev: any) => {
@@ -97,8 +92,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    canBack: () => dispatch(canBack()),  // 测试
-    canForward: () => dispatch(canForward())   // 测试
+    canNavigate: (canBack: bool, canForward: bool) => {
+      dispatch(canNavigate(canBack, canForward));
+    }
   }
 }
 
