@@ -4,7 +4,7 @@ const APPEND = 'APPEND'
 const REMOVE = 'REMOVE'
 
 const initialState = {
-  list: [1, 2]
+  list: []
 }
 
 export default function reducer (state: any = initialState, action: any) {

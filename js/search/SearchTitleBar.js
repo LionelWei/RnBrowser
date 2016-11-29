@@ -70,7 +70,9 @@ class SearchTitleBar extends Component {
           onSubmitEditing={this._search}
           onChangeText={this._handleTextInputChange}
         />
-        <View style={{paddingRight: 12}}>
+        <View style={{
+          paddingLeft: 12,
+          paddingRight: 12}}>
           <TouchableButton
             pressFn = {this._search}
             normalBg = 'icon_search_normal'
