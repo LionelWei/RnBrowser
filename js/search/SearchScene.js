@@ -31,7 +31,7 @@ export default class extends Component {
   render() {
     return (
       <View style={{flex: 1}}>
-        <TitleBar />
+        <TitleBar defaultUrl={this.props.defaultUrl}/>
         <HistoryList />
       </View>
     )

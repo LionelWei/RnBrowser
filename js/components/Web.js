@@ -6,7 +6,8 @@ import React, {PropTypes, Component } from 'react';
 import { WebView } from 'react-native';
 import {connect} from 'react-redux'
 import {Emitter} from '../events/Emitter'
-import {canNavigate} from '../reducers/webnavigator'
+import {progWebState} from '../reducers/webnavigator'
+import {printObj} from '../utils/Common'
 
 
 var TEXT_INPUT_REF = 'urlInput';
@@ -16,10 +17,12 @@ var DEFAULT_URL = 'https://m.baidu.com/?from=1013843a&pu=sz%401321_480&wpo=btmfa
 class Web extends Component {
   state = {
     url: DEFAULT_URL,
-    status: 'No Page Loaded',
+    title: 'No Page Loaded',
     loading: true,
     scalesPageToFit: true,
   };
+
+  _preNavState = null;
 
   constructor(props: any) {
     super(props)
@@ -29,17 +32,18 @@ class Web extends Component {
         url: url
       })
     });
-  }
 
-  componentWillReceiveProps(nextProps: any) {
-    if (nextProps.back) {
+    Emitter.addListener('web_back', () => {
       this._back()
-    } else if (nextProps.forward) {
+    })
+
+    Emitter.addListener('web_forward', () => {
       this._forward()
-    }
+    })
   }
 
   render() {
+    console.log('url: ' + this.state.url);
     return (
       <WebView
         source={{uri: this.state.url}}
@@ -71,16 +75,20 @@ class Web extends Component {
   onNavigationStateChange = (navState: any) => {
     this.setState({
       url: navState.url,
-      status: navState.title,
+      title: navState.title,
       loading: navState.loading,
       scalesPageToFit: true
     });
-    this.props.canNavigate(navState.canGoBack, navState.canGoForward)
+    this._dispatchNavState(navState);
   };
 
   onShouldStartLoadWithRequest = (ev: any) => {
     return true;
   };
+
+  _dispatchNavState(navState: any) {
+    this.props.propWebState(navState)
+  }
 }
 
 function mapStateToProps(state) {
@@ -92,9 +100,12 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    canNavigate: (canBack: bool, canForward: bool) => {
-      dispatch(canNavigate(canBack, canForward));
-    }
+    propWebState: (navState: any) => {
+      dispatch(progWebState(navState.canGoBack,
+                            navState.canGoForward,
+                            navState.url,
+                            navState.title));
+      }
   }
 }
 

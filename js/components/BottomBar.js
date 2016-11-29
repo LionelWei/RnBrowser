@@ -20,7 +20,6 @@ import TouchableButton from './TouchableButton'
 import BottomMenuModal from '../bottompopup/BottomMenuModal'
 import {BOTTOM_BAR_HEIGHT} from '../utils/Consts'
 import {Emitter} from '../events/Emitter'
-import {back, forward} from '../reducers/webnavigator'
 
 const style = StyleSheet.create({
   bottombar: {
@@ -52,13 +51,13 @@ class BottomBar extends Component {
         <Image style={style.bottombar} source={{uri: bg}}>
           <TouchableButton
             enabled = {this.props.canBack}
-            pressFn = {this.props.back}
+            pressFn = {this._back}
             normalBg = 'icon_back_normal'
             pressBg = 'icon_back_pressed' />
 
           <TouchableButton
             enabled = {this.props.canForward}
-            pressFn = {this.props.forward}
+            pressFn = {this._forward}
             normalBg = 'icon_forward_normal'
             pressBg = 'icon_forward_pressed' />
 
@@ -83,6 +82,14 @@ class BottomBar extends Component {
       </View>
     )
   }
+
+  _back = () => {
+    Emitter.emit('web_back', true);
+  }
+
+  _forward = () => {
+    Emitter.emit('web_forward', true);
+  }
 }
 
 function mapStateToProps(state) {
@@ -92,14 +99,4 @@ function mapStateToProps(state) {
   }
 }
 
-
-function mapDispatchToProps(dispatch) {
-  return {
-    back: () => dispatch(back()),        // 测试
-    forward: () => dispatch(forward())   // 测试
-  }
-}
-
-module.exports = connect(
-  mapStateToProps,
-  mapDispatchToProps)(BottomBar)
+module.exports = connect(mapStateToProps, null)(BottomBar)

@@ -68,7 +68,7 @@ export default class extends Component {
     )
   }
 
-  configureScene (route) {
+  configureScene (route: Object) {
     return route.scene || Navigator.SceneConfigs.FloatFromBottom
   }
 

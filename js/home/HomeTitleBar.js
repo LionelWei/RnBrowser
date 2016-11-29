@@ -12,6 +12,9 @@ import {
   TouchableOpacity
 } from 'react-native'
 
+import {connect} from 'react-redux'
+import EventEmitter from 'EventEmitter'
+
 import TouchableButton from '../components/TouchableButton'
 import Search from '../search/SearchScene'
 import {Emitter} from '../events/Emitter'
@@ -26,12 +29,8 @@ const style = StyleSheet.create({
   }
 })
 
-export default class extends Component {
-  state = {
-    url: ''
-  }
-
-  constructor(props) {
+class HomeTitleBar extends Component {
+  constructor(props: any) {
     super(props);
   }
 
@@ -54,7 +53,7 @@ export default class extends Component {
               paddingLeft: 8,
               color: '#333',
               fontSize: 16}}>
-              请输入网址
+              {this.props.title ? this.props.title : '请输入网址'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -72,16 +71,25 @@ export default class extends Component {
     if (this.props.navigator) {
       this.props.navigator.push({
         component: Search,
-        scene: Transition.NONE
+        scene: Transition.NONE,
+        defaultUrl: this.props.url
       })
     } else {
-      var url: string = this.state.url;
-      if (!url.startsWith("https://")
-            && !url.startsWith("http://")) {
-        alert('网址需以http://或者https://开头')
-        return;
-      }
-      Emitter.emit('url_changed', this.state.url)
+      alert('no navigator')
     }
   }
 }
+
+HomeTitleBar.defaultProps = {
+  url: '',
+  title: '请输入网址'
+}
+
+function mapStateToProps(state) {
+  return {
+    url: state.webnavigator.url,
+    title: state.webnavigator.title
+  }
+}
+
+module.exports = connect(mapStateToProps, null)(HomeTitleBar)

@@ -1,32 +1,30 @@
 /* @flow */
 
-const GO_BACK = 'GO_BACK'
-const GO_FORWARD = 'GO_FORWARD'
 const CAN_NAVIGATE = 'CAN_NAVIGATE'
+const PROG_WEBSITE_INFO = 'PROG_WEBSITE_INFO'
 
 const initialState = {
-  back: false,
-  forward: false,
+  url: '',
+  title: '',
+  loading: false,
   canBack: false,
   canForward: false
 }
 
-export default function reducer (state: Object = initialState, action: Object) {
+export default function reducer (state: any = initialState, action: any) {
   console.log(state)
   switch (action.type) {
-    case GO_BACK:
-      return {
-        initialState,
-        back: true
-      }
-    case GO_FORWARD:
-      return {
-        initialState,
-        forward: true
-      }
     case CAN_NAVIGATE:
       return {
-        initialState,
+        ...state,
+        canBack: action.canBack,
+        canForward: action.canForward
+      }
+    case PROG_WEBSITE_INFO:
+      return {
+        ...state,
+        url: action.url,
+        title: action.title,
         canBack: action.canBack,
         canForward: action.canForward
       }
@@ -35,15 +33,16 @@ export default function reducer (state: Object = initialState, action: Object) {
   }
 }
 
-export function back() {
+export function progWebState(canBack: bool,
+                            canForward: bool,
+                            url: string,
+                            title: string) {
   return {
-    type: GO_BACK
-  }
-}
-
-export function forward() {
-  return {
-    type: GO_FORWARD
+    type: PROG_WEBSITE_INFO,
+    url: url,
+    title: title,
+    canBack: canBack,
+    canForward: canForward
   }
 }
 
