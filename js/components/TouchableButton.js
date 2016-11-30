@@ -24,6 +24,10 @@ export default class TouchableButton extends Component {
     description: PropTypes.string
   };
 
+  static defaultProps = {
+    enabled: true
+  }
+
   state = {
     isButtonPressing: false
   }
@@ -31,7 +35,6 @@ export default class TouchableButton extends Component {
   constructor() {
     super()
   }
-
 
   render() {
     let enabled = this.props.enabled;
@@ -92,7 +95,3 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   }
 })
-
-TouchableButton.defaultProps = {
-  enabled: true
-}

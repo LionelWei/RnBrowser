@@ -18,6 +18,7 @@ import EventEmitter from 'EventEmitter'
 
 import TouchableButton from './TouchableButton'
 import BottomMenuModal from '../bottompopup/BottomMenuModal'
+import TabIndicatorModal from '../tabindicator/TabIndicatorModal'
 import {BOTTOM_BAR_HEIGHT} from '../utils/Consts'
 import {Emitter} from '../events/Emitter'
 
@@ -69,7 +70,9 @@ class BottomBar extends Component {
             pressBg = 'icon_menu_pressed' />
 
           <TouchableButton
-            pressFn = {() => alert('新增')}
+            pressFn = {() => {
+              Emitter.emit('show_tab_indicator', true);
+            }}
             normalBg = 'icon_new_add_normal'
             pressBg = 'icon_new_add_pressed' />
 
@@ -79,21 +82,23 @@ class BottomBar extends Component {
             pressBg = 'icon_home_pressed' />
         </Image>
         <BottomMenuModal />
+        <TabIndicatorModal />
       </View>
     )
   }
 
   _back = () => {
-    Emitter.emit('web_back', true);
+    Emitter.emit('web_back', this.props.tabId);
   }
 
   _forward = () => {
-    Emitter.emit('web_forward', true);
+    Emitter.emit('web_forward', this.props.tabId);
   }
 }
 
 function mapStateToProps(state) {
   return {
+    tabId: state.webnavigator.tabId,
     canBack: state.webnavigator.canBack ? state.webnavigator.canBack : false,
     canForward: state.webnavigator.canForward ? state.webnavigator.canForward : false
   }

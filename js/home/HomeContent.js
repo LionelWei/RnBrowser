@@ -8,7 +8,7 @@ import {
   StyleSheet
 } from 'react-native'
 
-import Web from '../components/Web'
+import WebController from '../webview/WebController'
 
 const style = StyleSheet.create({
   content: {
@@ -18,8 +18,8 @@ const style = StyleSheet.create({
 
 export default class extends Component {
   render() {
-    return (
-      <Web />
+  return (
+      <WebController />
     )
   }
 }

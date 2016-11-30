@@ -30,6 +30,11 @@ const style = StyleSheet.create({
 })
 
 class HomeTitleBar extends Component {
+  static defaultProps = {
+    url: '',
+    title: '请输入网址'
+  }
+
   constructor(props: any) {
     super(props);
   }
@@ -80,11 +85,6 @@ class HomeTitleBar extends Component {
       alert('no navigator')
     }
   }
-}
-
-HomeTitleBar.defaultProps = {
-  url: '',
-  title: '请输入网址'
 }
 
 function mapStateToProps(state) {

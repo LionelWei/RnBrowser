@@ -2,11 +2,12 @@
  * refer to https://facebook.github.io/react-native/docs/webview.html
  * @flow */
 
-import React, {PropTypes, Component } from 'react';
-import { WebView } from 'react-native';
+import React, {PropTypes, Component } from 'react'
+import { WebView } from 'react-native'
 import {connect} from 'react-redux'
 import {Emitter} from '../events/Emitter'
 import {progWebState} from '../reducers/webnavigator'
+import {createTab, updateTab} from '../reducers/webtabs'
 import {printObj} from '../utils/Common'
 
 
@@ -15,14 +16,16 @@ var WEBVIEW_REF = 'webview';
 var DEFAULT_URL = 'https://m.baidu.com/?from=1013843a&pu=sz%401321_480&wpo=btmfast';
 
 class Web extends Component {
+  static PropTypes = {
+    id: PropTypes.number.isRequired
+  }
+
   state = {
     url: DEFAULT_URL,
     title: 'No Page Loaded',
     loading: true,
     scalesPageToFit: true,
   };
-
-  _preNavState = null;
 
   constructor(props: any) {
     super(props)
@@ -33,17 +36,24 @@ class Web extends Component {
       })
     });
 
-    Emitter.addListener('web_back', () => {
-      this._back()
+    Emitter.addListener('web_back', (...args) => {
+      var tabId = args[0];
+      if (tabId === this.props.id) {
+        this._back()
+      }
     })
 
-    Emitter.addListener('web_forward', () => {
-      this._forward()
+    Emitter.addListener('web_forward', (...args) => {
+      var tabId = args[0];
+      if (tabId === this.props.tabId) {
+        this._forward()
+      }
     })
+
+    this.props.createTab(this.props.id);
   }
 
   render() {
-    console.log('url: ' + this.state.url);
     return (
       <WebView
         source={{uri: this.state.url}}
@@ -79,16 +89,14 @@ class Web extends Component {
       loading: navState.loading,
       scalesPageToFit: true
     });
-    this._dispatchNavState(navState);
+
+    this.props.propWebState(this.props.id, navState);
+    this.props.updateTab(this.props.id, navState);
   };
 
   onShouldStartLoadWithRequest = (ev: any) => {
     return true;
   };
-
-  _dispatchNavState(navState: any) {
-    this.props.propWebState(navState)
-  }
 }
 
 function mapStateToProps(state) {
@@ -100,12 +108,40 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    propWebState: (navState: any) => {
-      dispatch(progWebState(navState.canGoBack,
+    propWebState: (id: number, navState: any) => {
+      dispatch(progWebState(id,
+                            navState.canGoBack,
                             navState.canGoForward,
                             navState.url,
-                            navState.title));
-      }
+                            _simplyTitle(navState.title)));
+    },
+    createTab: (id: number) => {
+      dispatch(createTab(id))
+    },
+    updateTab: (id: number, navState: any) => {
+      dispatch(updateTab(id,
+                         navState.url,
+                         _simplyTitle(navState.title)))
+    }
+  }
+}
+
+function _simplyTitle(oldTitle: string) {
+  var title = oldTitle;
+  return (title.length > 10
+        && (subWithToken('_')
+        || subWithToken(',')
+        || subWithToken(' ')
+        || subWithToken('|')
+        || subWithToken('-')))
+        || title
+
+  function subWithToken(token: string) {
+    var index = -1;
+    if ((index = title.indexOf(token)) != -1) {
+      return title.substr(0, index);
+    }
+    return null
   }
 }
 

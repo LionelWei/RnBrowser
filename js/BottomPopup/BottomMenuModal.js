@@ -35,13 +35,12 @@ export default class BottomMenuModal extends Component {
   render() {
     return (
       <Modal
-        animationType={"fade"}
+        animationType={"none"}
         transparent={true}
         visible={this.state.modalVisible}
         onRequestClose={() => {this.setModalVisible(false)}}>
         <TouchableWithoutFeedback
-          onPress={() => {this.setModalVisible(false)}}
-          >
+          onPress={() => {this.setModalVisible(false)}}>
           <View style={{
               flex: 1
             }}>
