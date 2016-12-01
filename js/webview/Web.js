@@ -81,7 +81,7 @@ class Web extends Component {
 
     Emitter.addListener('web_forward', (...args) => {
       var tabId = args[0];
-      if (tabId === this.props.tabId) {
+      if (tabId === this.props.id) {
         this._forward()
       }
     })

@@ -21,10 +21,13 @@ class TabIndicatorItem extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <TouchableOpacity
+        <TouchableOpacity style={{
+          flex: 1,
+          backgroundColor: '#ddd',
+          alignItems: 'center'}}
           key={this.props.id}
           onPress={() => this.props.switchTab(this.props.id)}>
-          <Text>
+          <Text style={styles.tabDesc}>
             {this.props.tabText}
           </Text>
         </TouchableOpacity>
@@ -43,8 +46,13 @@ class TabIndicatorItem extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    alignItems: 'center',
   },
+  tabDesc: {
+    fontSize: 16,
+  },
+
 
 })
 module.exports = TabIndicatorItem

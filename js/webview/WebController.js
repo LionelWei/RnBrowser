@@ -114,6 +114,10 @@ class WebController extends Component {
   }
 
   _closeWeb(id: number) {
+    if (this.state.tabList.length == 1) {
+      return;
+    }
+
     var tempList = this.state.tabList.slice();
     console.log('id: ' + id + ', tempList: ' + tempList.length);
 
