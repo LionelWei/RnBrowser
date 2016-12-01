@@ -14,6 +14,7 @@ const initialState = {
 
 export default function reducer (state: any = initialState, action: any) {
   console.log('webnavigator type: ' + action.type);
+  console.log(state)
   switch (action.type) {
     case CAN_NAVIGATE:
       return {
@@ -26,7 +27,7 @@ export default function reducer (state: any = initialState, action: any) {
         ...state,
         tabId: action.tabId,
         url: action.url,
-        title: action.title,
+        title: action.title ,
         canBack: action.canBack,
         canForward: action.canForward
       }

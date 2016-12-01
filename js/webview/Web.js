@@ -10,7 +10,7 @@ import {
 import {connect} from 'react-redux'
 import {Emitter} from '../events/Emitter'
 import {progWebState} from '../reducers/webnavigator'
-import {createTab, updateTab} from '../reducers/webtabs'
+import {createTab, updateTab, removeTab} from '../reducers/webtabs'
 import {printObj} from '../utils/Common'
 
 
@@ -38,6 +38,11 @@ class Web extends Component {
     super(props)
     this._initEvent();
     this.props.createTab(this.props.id);
+  }
+
+  componentWillUnmount() {
+    console.log('$$$$$$$$$ Id: ' + this.props.id + ' componentWillUnmount');
+    this.props.removeTab(this.props.id);
   }
 
   render() {
@@ -146,6 +151,9 @@ function mapDispatchToProps(dispatch) {
       dispatch(updateTab(id,
                          navState.url,
                          _simplyTitle(navState.title)))
+    },
+    removeTab: (id: number) => {
+      dispatch(removeTab(id))
     }
   }
 }

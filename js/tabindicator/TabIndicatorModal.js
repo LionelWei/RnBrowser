@@ -82,8 +82,9 @@ class TabIndicatorModal extends Component {
   }
 
   _closeTab(id) {
-    this.setModalVisible(false)
+    console.log('tabindicator: _closeTab: ' + id);
     Emitter.emit('close_tab', id)
+    this.setModalVisible(false)
   }
 
   _refreshTabs = () => {
@@ -95,8 +96,12 @@ class TabIndicatorModal extends Component {
     this.tabViewList = []
 
     // 这里要用`let`, 而不是`var`
+    var j = 0;
     for (let i = 0; i < count; i++) {
-      let tabText = (i + 1) + ': ' + this.props.tabs[i].title;
+      if (!this.props.tabs[i]) {
+        continue
+      }
+      let tabText = (++j) + ': ' + this.props.tabs[i].title;
       let tabId = this.props.tabs[i].id;
       console.log('=== id' + i + ' tabId: ' + tabId);
       this.tabViewList.push(

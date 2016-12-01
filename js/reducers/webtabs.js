@@ -5,6 +5,7 @@ import {printObj} from '../utils/Common'
 const CREATE_TAB = 'CREATE_TAB'
 const UPDATE_TAB = 'UPDATE_TAB'
 const INIT_TAB = 'INIT_TAB'
+const REMOVE_TAB = 'REMOVE_TAB'
 
 const initialState = {
   tabs: []
@@ -22,8 +23,14 @@ export default function reducer (state: any = initialState, action: any) {
       return handleCreateTab(state, action);
     case UPDATE_TAB:
       return handleUpdateTab(state, action);
+    case REMOVE_TAB:
+      return handleRemoveTab(state, action);
     default:
-      return firstValidState || initialState
+      var newState = firstValidState || initialState
+      console.log('type: ' + action.type);
+      console.log('tabs: ' + newState.tabs.length);
+      return newState;
+
   }
 }
 
@@ -75,6 +82,12 @@ function handleUpdateTab(state: any = initialState, action: any) {
   return newState;
 }
 
+function handleRemoveTab(state: any, action: any) {
+  var newState = {...state};
+  newState.tabs.splice(action.id, 1);
+  return newState;
+}
+
 export function initTab() {
   return {
     type: INIT_TAB,
@@ -94,5 +107,12 @@ export function updateTab(id: number, url: string, title: string) {
     id: id,
     url: url,
     title: title
+  }
+}
+
+export function removeTab(id: number) {
+  return {
+    type: REMOVE_TAB,
+    id: id,
   }
 }
