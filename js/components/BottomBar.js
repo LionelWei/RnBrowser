@@ -13,10 +13,12 @@ import {
   TouchableHighlight
 } from 'react-native'
 
+import {connect} from 'react-redux'
 import EventEmitter from 'EventEmitter'
 
 import TouchableButton from './TouchableButton'
 import BottomMenuModal from '../bottompopup/BottomMenuModal'
+import TabIndicatorModal from '../tabindicator/TabIndicatorModal'
 import {BOTTOM_BAR_HEIGHT} from '../utils/Consts'
 import {Emitter} from '../events/Emitter'
 
@@ -32,9 +34,11 @@ const style = StyleSheet.create({
 
 const bg='bottombar_bg_with_shadow'
 
-export default class extends Component {
+class BottomBar extends Component {
   static propTypes = {
-    navigator: PropTypes.object
+    navigator: PropTypes.object,
+    canBack: PropTypes.bool,
+    canForward: PropTypes.bool
   };
 
   constructor() {
@@ -47,12 +51,14 @@ export default class extends Component {
       <View>
         <Image style={style.bottombar} source={{uri: bg}}>
           <TouchableButton
-            pressFn = {() => alert('后退')}
+            enabled = {this.props.canBack}
+            pressFn = {this._back}
             normalBg = 'icon_back_normal'
             pressBg = 'icon_back_pressed' />
 
           <TouchableButton
-            pressFn = {() => alert('前进')}
+            enabled = {this.props.canForward}
+            pressFn = {this._forward}
             normalBg = 'icon_forward_normal'
             pressBg = 'icon_forward_pressed' />
 
@@ -64,7 +70,9 @@ export default class extends Component {
             pressBg = 'icon_menu_pressed' />
 
           <TouchableButton
-            pressFn = {() => alert('新增')}
+            pressFn = {() => {
+              Emitter.emit('show_tab_indicator', true);
+            }}
             normalBg = 'icon_new_add_normal'
             pressBg = 'icon_new_add_pressed' />
 
@@ -74,7 +82,26 @@ export default class extends Component {
             pressBg = 'icon_home_pressed' />
         </Image>
         <BottomMenuModal />
+        <TabIndicatorModal />
       </View>
     )
   }
+
+  _back = () => {
+    Emitter.emit('web_back', this.props.tabId);
+  }
+
+  _forward = () => {
+    Emitter.emit('web_forward', this.props.tabId);
+  }
 }
+
+function mapStateToProps(state) {
+  return {
+    tabId: state.webnavigator.tabId,
+    canBack: state.webnavigator.canBack ? state.webnavigator.canBack : false,
+    canForward: state.webnavigator.canForward ? state.webnavigator.canForward : false
+  }
+}
+
+module.exports = connect(mapStateToProps, null)(BottomBar)

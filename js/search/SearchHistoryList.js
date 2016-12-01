@@ -12,7 +12,7 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 
-import {append, remove} from '../reducers/SearchHistory'
+import {append, remove} from '../reducers/searchhistory'
 import {Emitter} from '../events/Emitter'
 
 const dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
@@ -49,14 +49,14 @@ class SearchHistoryList extends Component {
 
 function mapStateToProps(state) {
   return {
-    listData: getListData(state.SearchHistory.list)
+    listData: getListData(state.searchhistory.list)
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    append: () => dispatch(append()),
-    remove: () => dispatch(remove())
+    append: () => dispatch(append(123)),  // 测试
+    remove: () => dispatch(remove(123))   // 测试
   }
 }
 
