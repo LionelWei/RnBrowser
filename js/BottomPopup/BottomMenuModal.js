@@ -35,7 +35,7 @@ export default class BottomMenuModal extends Component {
   render() {
     return (
       <Modal
-        animationType={"none"}
+        animationType={"slide"}
         transparent={true}
         visible={this.state.modalVisible}
         onRequestClose={() => {this.setModalVisible(false)}}>

@@ -76,7 +76,7 @@ class TabIndicatorModal extends Component {
   }
 
   _switchTab(id) {
-    console.log('Emitter.emit(switch_tab: ' + id);
+    console.log('Emitter.emit switch_tab: ' + id);
     this.setModalVisible(false)
     Emitter.emit('switch_tab', id)
   }

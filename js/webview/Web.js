@@ -3,7 +3,10 @@
  * @flow */
 
 import React, {PropTypes, Component } from 'react'
-import { WebView } from 'react-native'
+import {
+  WebView,
+  Modal
+} from 'react-native'
 import {connect} from 'react-redux'
 import {Emitter} from '../events/Emitter'
 import {progWebState} from '../reducers/webnavigator'
@@ -21,18 +24,46 @@ class Web extends Component {
   }
 
   state = {
-    url: DEFAULT_URL,
-    title: 'No Page Loaded',
-    loading: true,
-    scalesPageToFit: true,
+    navState: {
+      url: DEFAULT_URL,
+      title: 'No Page Loaded',
+      loading: true,
+      canBack: false,
+      canForward: false,
+      scalesPageToFit: true,
+    }
   };
 
   constructor(props: any) {
     super(props)
+    this._initEvent();
+    this.props.createTab(this.props.id);
+  }
+
+  render() {
+    return (
+      <WebView
+        source={{uri: this.state.navState.url}}
+        ref={WEBVIEW_REF}
+        automaticallyAdjustContentInsets={false}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        decelerationRate="normal"
+        onNavigationStateChange={this.onNavigationStateChange}
+        onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
+        startInLoadingState={true}
+        scalesPageToFit={this.state.navState.scalesPageToFit}
+      />
+    );
+  }
+
+  _initEvent() {
     Emitter.addListener('url_changed', (...args) => {
       var url: string = args[0];
       this.setState({
-        url: url
+        navState: {
+          url: url
+        }
       })
     });
 
@@ -50,24 +81,13 @@ class Web extends Component {
       }
     })
 
-    this.props.createTab(this.props.id);
-  }
-
-  render() {
-    return (
-      <WebView
-        source={{uri: this.state.url}}
-        ref={WEBVIEW_REF}
-        automaticallyAdjustContentInsets={false}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        decelerationRate="normal"
-        onNavigationStateChange={this.onNavigationStateChange}
-        onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
-        startInLoadingState={true}
-        scalesPageToFit={this.state.scalesPageToFit}
-      />
-    );
+    Emitter.addListener('switch_tab', (...args) => {
+      console.log('switch_tab: current: ' + this.props.id + ', switchTo: ' + args[0]);
+      var id = args[0];
+      if (this.props.id === id) {
+        this.props.propWebState(this.props.id, this.state.navState);
+      }
+    })
   }
 
   _back = () => {
@@ -84,10 +104,14 @@ class Web extends Component {
 
   onNavigationStateChange = (navState: any) => {
     this.setState({
-      url: navState.url,
-      title: navState.title,
-      loading: navState.loading,
-      scalesPageToFit: true
+      navState: {
+        url: navState.url,
+        title: navState.title,
+        loading: navState.loading,
+        canBack: navState.canGoBack,
+        canForward: navState.canGoForward,
+        scalesPageToFit: true
+      }
     });
 
     this.props.propWebState(this.props.id, navState);

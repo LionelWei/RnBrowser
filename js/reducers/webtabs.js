@@ -41,14 +41,27 @@ function handleCreateTab(state: any = initialState, action: any) {
     }
     return firstValidState
   } else {
-    return {
-      tabs: [
-        ...state.tabs,
-        {
-          id: action.id
-        }
-      ]
+    return findTab(action.id)
+          ? state
+          : {
+              tabs: [
+                ...state.tabs,
+                {
+                  id: action.id
+                }
+              ]
+            }
+  }
+
+  function findTab(tabId: number) {
+    console.log('findTab: toFind: ' + tabId);
+    for (var i in state.tabs) {
+      if (state.tabs[i].id === tabId) {
+        console.log('FOUND: ' + state.tabs[i].id + ', count: ' + state.tabs.length);
+        return true;
+      }
     }
+    return false
   }
 }
 

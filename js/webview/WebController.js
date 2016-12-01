@@ -5,8 +5,14 @@ import React, {PropTypes, Component } from 'react';
 import {
   WebView,
   View,
-  Text
+  Text,
+  Dimensions,
+  StyleSheet
 } from 'react-native';
+import {NAV_BAR_HEIGHT ,BOTTOM_BAR_HEIGHT} from '../utils/Consts'
+
+var {height, width} = Dimensions.get('window');
+height -= NAV_BAR_HEIGHT + BOTTOM_BAR_HEIGHT;
 
 import {connect} from 'react-redux'
 import {Emitter} from '../events/Emitter'
@@ -16,13 +22,14 @@ import {printObj} from '../utils/Common'
 class WebController extends Component {
   state = {
     tabList: [
-      <Web id={0} key={0}/>,
+      <View key={0} style={styles.overlay}>
+        <Web id={0} key={0}/>
+      </View>
     ],
     /*记录tab的个数, 目前是单调递增的, 即使删除一个tab再创建也会加1*/
     tabCount: 1,
     currentTabId: 0,
   }
-
 
   constructor(props: any) {
     super(props);
@@ -32,9 +39,18 @@ class WebController extends Component {
   render() {
     var currentId: number = this.state.currentTabId;
     console.log('currentTabId: ' + currentId + ', count: ' + this.state.tabList.length);
+
+    let exclueCurrentTabList = this.state.tabList.filter((elm, index) => {
+      return index != currentId;
+    });
+    let newTabList = [...exclueCurrentTabList, this.state.tabList[currentId]];
     return (
-      <View style={{flex: 1}}>
-        {this.state.tabList[currentId]}
+      <View style={{width: width, height: height}}>
+        {
+          newTabList.map((elem, index) => {
+            return elem;
+          })
+        }
       </View>
     )
   }
@@ -60,7 +76,9 @@ class WebController extends Component {
     this.setState({
       tabList: [
         ...this.state.tabList,
-        <Web id={primaryId} key={primaryId}/>
+        <View key={primaryId} style={styles.overlay}>
+          <Web id={primaryId} key={primaryId}/>
+        </View>
       ],
       tabCount: this.state.tabCount + 1,
       currentTabId: primaryId
@@ -88,9 +106,7 @@ class WebController extends Component {
 
     var currentId = this.state.currentTabId;
     var nearest = findNearestElement(tempList, currentId);
-    console.log('_closeWeb: currentId: ' + currentId + ', nearest: ' + nearest);
     tempList.splice(id, 1);
-
 
     this.setState({
       tabList: tempList,
@@ -128,6 +144,16 @@ class WebController extends Component {
 
   }
 }
+
+const styles = StyleSheet.create({
+  overlay:{
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  }
+})
 
 function mapDispatchToProps(dispatch) {
   return {
