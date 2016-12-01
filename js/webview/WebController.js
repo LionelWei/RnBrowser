@@ -23,7 +23,6 @@ class WebController extends Component {
     currentTabId: 0,
   }
 
-
   constructor(props: any) {
     super(props);
     this._initEvent();
@@ -88,9 +87,7 @@ class WebController extends Component {
 
     var currentId = this.state.currentTabId;
     var nearest = findNearestElement(tempList, currentId);
-    console.log('_closeWeb: currentId: ' + currentId + ', nearest: ' + nearest);
     tempList.splice(id, 1);
-
 
     this.setState({
       tabList: tempList,

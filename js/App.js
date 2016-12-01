@@ -60,7 +60,10 @@ export default class extends Component {
             }}
             configureScene={this.configureScene}
             renderScene={(route, navigator) => {
-              return <route.component navigator={navigator} {...route} {...route.passProps}/>
+              return <route.component
+                        navigator={navigator}
+                        {...route}
+                        {...route.passProps}/>
             }}
           />
         </View>

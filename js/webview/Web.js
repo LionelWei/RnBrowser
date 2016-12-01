@@ -3,7 +3,10 @@
  * @flow */
 
 import React, {PropTypes, Component } from 'react'
-import { WebView } from 'react-native'
+import {
+  WebView,
+  Modal
+} from 'react-native'
 import {connect} from 'react-redux'
 import {Emitter} from '../events/Emitter'
 import {progWebState} from '../reducers/webnavigator'
