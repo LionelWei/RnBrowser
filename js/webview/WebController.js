@@ -59,7 +59,7 @@ class WebController extends Component {
   }
 
   findViewByTabId(tabId): any {
-    for (let i = 0; i < this.state.tabList.length; i++) {
+    for (var i in this.state.tabList) {
       if (tabId === this.state.tabList[i].id) {
         return this.state.tabList[i]
       }
@@ -67,7 +67,7 @@ class WebController extends Component {
   }
 
   findIndexByTabId(tabId) {
-    for (let i = 0; i < this.state.tabList.length; i++) {
+    for (var i in this.state.tabList) {
       if (tabId === this.state.tabList[i].id) {
         return i;
       }
@@ -118,9 +118,9 @@ class WebController extends Component {
     console.log('id: ' + id + ', tempList: ' + tempList.length);
 
     var currentId = this.state.currentTabId;
-    var nearest = findNearestElement(tempList, currentId);
+    var nearest = findNearestElement(tempList, id);
     var toDeleteId = this.findIndexByTabId(id)
-    if (toDeleteId) {
+    if (toDeleteId || toDeleteId === 0) {
       console.log('toDeleteId ' + toDeleteId);
       tempList.splice(toDeleteId, 1);
     }

@@ -97,21 +97,20 @@ class TabIndicatorModal extends Component {
 
     // 这里要用`let`, 而不是`var`
     var j = 0;
-    for (let i = 0; i < count; i++) {
-      if (!this.props.tabs[i]) {
-        continue
-      }
-      let tabText = (++j) + ': ' + this.props.tabs[i].title;
-      let tabId = this.props.tabs[i].id;
-      console.log('=== id' + i + ' tabId: ' + tabId);
-      this.tabViewList.push(
-        <TabIndicatorItem
-          key={i}
-          switchTab={() => this._switchTab(tabId)}
-          closeTab={() => this._closeTab(tabId)}
-          tabText={tabText}/>
-      )
-    }
+    this.props.tabs
+      .filter(elm => elm != null)
+      .forEach(elm => {
+        let tabText = (++j) + ': ' + elm.title;
+        let tabId = elm.id;
+        console.log('=== id' + j + ' tabId: ' + tabId);
+        this.tabViewList.push(
+          <TabIndicatorItem
+            key={tabId}
+            switchTab={() => this._switchTab(tabId)}
+            closeTab={() => this._closeTab(tabId)}
+            tabText={tabText}/>
+        )
+      })
   }
 }
 
