@@ -53,14 +53,19 @@ class HomeTitleBar extends Component {
         <View style={{
           flex: 1
         }}>
-          <TouchableOpacity onPress={() => this._search()}>
-            <Text style={{
-              paddingLeft: 8,
-              color: '#333',
-              fontSize: 16}}>
-              {this.props.title ? this.props.title : '请输入网址'}
-            </Text>
-          </TouchableOpacity>
+        <TextInput
+          style={{
+            flex: 1,
+            paddingLeft: 8,
+            backgroundColor: 'transparent',
+            color: 'black',
+            fontSize: 16}}
+          autoFocus={false}
+          numberOfLines={1}
+          defaultValue={this.props.title}
+          placeholder="请输入网址"
+          onFocus={()=>this._search()}
+          underlineColorAndroid='transparent'/>
         </View>
         <View style={{
           paddingLeft: 12,

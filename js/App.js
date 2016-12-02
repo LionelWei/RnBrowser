@@ -26,6 +26,8 @@ export const STATUS_BAR_HEIGHT = (Platform.OS === 'ios' ? 20 : 25)
 export const NAV_BAR_HEIGHT = (Platform.OS === 'ios' ? 44 : 56)
 export const ABOVE_LOLIPOP = Platform.Version && Platform.Version > 19
 
+console.disableYellowBox = true;
+
 export default class extends Component {
 
   componentDidMount () {

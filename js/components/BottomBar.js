@@ -9,8 +9,10 @@ import {
   StyleSheet,
   Navigator,
   TouchableWithoutFeedback,
+  TouchableNativeFeedback,
   Modal,
-  TouchableHighlight
+  TouchableHighlight,
+  Platform
 } from 'react-native'
 
 import {connect} from 'react-redux'
