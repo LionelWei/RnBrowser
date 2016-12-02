@@ -8,7 +8,7 @@ import {
   StyleSheet
 } from 'react-native'
 
-import WebController from '../webview/WebController'
+import TabController from '../tabs/TabController'
 
 const style = StyleSheet.create({
   content: {
@@ -19,7 +19,7 @@ const style = StyleSheet.create({
 export default class extends Component {
   render() {
   return (
-      <WebController />
+      <TabController />
     )
   }
 }

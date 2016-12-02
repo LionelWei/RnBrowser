@@ -64,14 +64,14 @@ class HomeTitleBar extends Component {
           numberOfLines={1}
           defaultValue={this.props.title}
           placeholder="请输入网址"
-          onFocus={()=>this._search()}
+          onFocus={()=>this.search()}
           underlineColorAndroid='transparent'/>
         </View>
         <View style={{
           paddingLeft: 12,
           paddingRight: 12}}>
           <TouchableButton
-            pressFn = {() => this._search()}
+            pressFn = {() => this.search()}
             normalBg = 'icon_search_normal'
             pressBg = 'icon_search_pressed' />
         </View>
@@ -79,7 +79,7 @@ class HomeTitleBar extends Component {
     )
   }
 
-  _search() {
+  search() {
     if (this.props.navigator) {
       this.props.navigator.push({
         component: Search,

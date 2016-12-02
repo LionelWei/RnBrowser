@@ -45,7 +45,7 @@ class SearchTitleBar extends Component {
   render() {
     return (
       <View style={style.titlebar}>
-        <TouchableOpacity onPress={this._cancel}>
+        <TouchableOpacity onPress={this.cancel}>
           <Text style={{
             paddingLeft: 12,
             color: 'black',
@@ -67,14 +67,14 @@ class SearchTitleBar extends Component {
           selectTextOnFocus={true}
           placeholder="请输入网址"
           underlineColorAndroid='transparent'
-          onSubmitEditing={this._search}
-          onChangeText={this._handleTextInputChange}
+          onSubmitEditing={this.search}
+          onChangeText={this.handleTextInputChange}
         />
         <View style={{
           paddingLeft: 12,
           paddingRight: 12}}>
           <TouchableButton
-            pressFn = {this._search}
+            pressFn = {this.search}
             normalBg = 'icon_search_normal'
             pressBg = 'icon_search_pressed' />
         </View>
@@ -82,11 +82,11 @@ class SearchTitleBar extends Component {
     )
   }
 
-  _cancel = () => {
+  cancel = () => {
     Emitter.emit('search_cancel', true);
   }
 
-  _search = () => {
+  search = () => {
     var url: string = this.inputText;
     if (!url.startsWith("https://")
           && !url.startsWith("http://")) {
@@ -98,7 +98,7 @@ class SearchTitleBar extends Component {
     Emitter.emit('url_changed', this.inputText)
   }
 
-  _handleTextInputChange = (inputText) => {
+  handleTextInputChange = (inputText) => {
     var url = inputText;
     if (!/^[a-zA-Z-_]+:/.test(url)) {
       url = 'http://' + url;

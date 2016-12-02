@@ -20,7 +20,7 @@ import EventEmitter from 'EventEmitter'
 
 import TouchableButton from './TouchableButton'
 import BottomMenuModal from '../bottompopup/BottomMenuModal'
-import TabIndicatorModal from '../tabindicator/TabIndicatorModal'
+import TabIndicatorModal from '../tabs/tabindicator/TabIndicatorModal'
 import {BOTTOM_BAR_HEIGHT} from '../utils/Consts'
 import {Emitter} from '../events/Emitter'
 
@@ -54,13 +54,13 @@ class BottomBar extends Component {
         <Image style={style.bottombar} source={{uri: bg}}>
           <TouchableButton
             enabled = {this.props.canBack}
-            pressFn = {this._back}
+            pressFn = {this.back}
             normalBg = 'icon_back_normal'
             pressBg = 'icon_back_pressed' />
 
           <TouchableButton
             enabled = {this.props.canForward}
-            pressFn = {this._forward}
+            pressFn = {this.forward}
             normalBg = 'icon_forward_normal'
             pressBg = 'icon_forward_pressed' />
 
@@ -89,11 +89,11 @@ class BottomBar extends Component {
     )
   }
 
-  _back = () => {
+  back = () => {
     Emitter.emit('web_back', this.props.tabId);
   }
 
-  _forward = () => {
+  forward = () => {
     Emitter.emit('web_forward', this.props.tabId);
   }
 }

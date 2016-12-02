@@ -19,7 +19,7 @@ import {Emitter} from '../events/Emitter'
 import Web from './Web'
 import {printObj} from '../utils/Common'
 
-class WebController extends Component {
+class TabController extends Component {
   state = {
     tabList: [ {
         id: 0,
@@ -35,7 +35,7 @@ class WebController extends Component {
 
   constructor(props: any) {
     super(props);
-    this._initEvent();
+    this.initEvent();
   }
 
   render() {
@@ -75,23 +75,23 @@ class WebController extends Component {
     }
   }
 
-  _initEvent() {
+  initEvent() {
     Emitter.addListener('add_tab', (...args) => {
-      this._appendWeb();
+      this.appendWeb();
     })
 
     Emitter.addListener('switch_tab', (...args) => {
       var id = args[0];
-      this._switchWeb(id);
+      this.switchWeb(id);
     })
 
     Emitter.addListener('close_tab', (...args) => {
       var id = args[0];
-      this._closeWeb(id);
+      this.closeWeb(id);
     })
   }
 
-  _appendWeb() {
+  appendWeb() {
     var primaryId = this.state.tabCount;
     this.setState({
       tabList: [
@@ -108,13 +108,13 @@ class WebController extends Component {
     })
   }
 
-  _switchWeb(id: number) {
+  switchWeb(id: number) {
     this.setState({
       currentTabId: id
     })
   }
 
-  _closeWeb(id: number) {
+  closeWeb(id: number) {
     if (this.state.tabList.length == 1) {
       return;
     }
@@ -188,4 +188,4 @@ function mapDispatchToProps(dispatch) {
 
 module.exports = connect(
   null,
-  mapDispatchToProps)(WebController)
+  mapDispatchToProps)(TabController)
