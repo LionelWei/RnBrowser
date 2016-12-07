@@ -17,7 +17,7 @@ import {append} from '../reducers/searchhistory'
 
 import TouchableButton from '../components/TouchableButton'
 import {Emitter} from '../events/Emitter'
-import Transition from '../animation/NoTransition'
+import * as IMG from '../assets/imageAssets'
 
 const style = StyleSheet.create({
   titlebar: {
@@ -33,7 +33,8 @@ class SearchTitleBar extends Component {
 
   static propTypes = {
     defaultUrl: PropTypes.string,
-    append: PropTypes.func
+    append: PropTypes.func,
+    tabId: PropTypes.number,
   }
 
   inputText = '';
@@ -67,6 +68,7 @@ class SearchTitleBar extends Component {
           selectTextOnFocus={true}
           placeholder="请输入网址"
           underlineColorAndroid='transparent'
+          returnKeyType='search'
           onSubmitEditing={this.search}
           onChangeText={this.handleTextInputChange}
         />
@@ -75,15 +77,15 @@ class SearchTitleBar extends Component {
           paddingRight: 12}}>
           <TouchableButton
             pressFn = {this.search}
-            normalBg = 'icon_search_normal'
-            pressBg = 'icon_search_pressed' />
+            normalBg = {IMG.ICON_SEARCH_NORMAL}
+            pressBg = {IMG.ICON_SEARCH_PRESSED} />
         </View>
       </View>
     )
   }
 
   cancel = () => {
-    Emitter.emit('search_cancel', true);
+    this.popNavi();
   }
 
   search = () => {
@@ -93,9 +95,10 @@ class SearchTitleBar extends Component {
       alert('网址需以http://或者https://开头')
       return;
     }
-    this.props.append(this.inputText)
     console.log('inputUrl: ' + this.inputText);
-    Emitter.emit('url_changed', this.inputText)
+    this.props.append(this.inputText)
+    Emitter.emit('url_changed', this.props.tabId, this.inputText)
+    this.popNavi();
   }
 
   handleTextInputChange = (inputText) => {
@@ -105,6 +108,10 @@ class SearchTitleBar extends Component {
     }
     this.inputText = url;
   };
+
+  popNavi = () => {
+    this.props.navigator.pop()
+  }
 }
 
 function mapDispatchToProps(dispatch) {

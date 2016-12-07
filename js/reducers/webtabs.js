@@ -16,6 +16,7 @@ var firstValidState;
 
 export default function reducer (state: any = initialState, action: any) {
   console.log('webtabs type: ' + action.type);
+  console.log('webtab state tabs: \n' + state.tabs);
   switch (action.type) {
     case INIT_TAB:
       return handleInitTab(state, action);
@@ -26,11 +27,7 @@ export default function reducer (state: any = initialState, action: any) {
     case REMOVE_TAB:
       return handleRemoveTab(state, action);
     default:
-      var newState = firstValidState || initialState
-      console.log('type: ' + action.type);
-      console.log('tabs: ' + newState.tabs.length);
-      return newState;
-
+      return state;
   }
 }
 
@@ -41,10 +38,10 @@ function handleInitTab(state: any = initialState, action: any) {
 function handleCreateTab(state: any = initialState, action: any) {
   if (isFirstLaunch) {
     isFirstLaunch = false
-    firstValidState = {
-      tabs: [{
-        id: action.id
-      }]
+    firstValidState = {...initialState};
+    firstValidState.tabs[action.id] = {
+      id: action.id,
+      title: '主页'
     }
     return firstValidState
   } else {
@@ -54,7 +51,8 @@ function handleCreateTab(state: any = initialState, action: any) {
               tabs: [
                 ...state.tabs,
                 {
-                  id: action.id
+                  id: action.id,
+                  title: action.title || '主页'
                 }
               ]
             }
@@ -84,6 +82,7 @@ function handleUpdateTab(state: any = initialState, action: any) {
 
 function handleRemoveTab(state: any, action: any) {
   var newState = {...state};
+  console.log('handleRemoveTab: ' + action.id);
   newState.tabs.splice(action.id, 1);
   return newState;
 }

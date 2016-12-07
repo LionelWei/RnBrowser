@@ -18,21 +18,14 @@ import HistoryList from './SearchHistoryList'
 import {Emitter} from '../events/Emitter'
 
 export default class extends Component {
-  constructor() {
-    super()
-    Emitter.addListener('url_changed', (...args) => {
-      this.props.navigator.pop();
-    });
-    Emitter.addListener('search_cancel', (...args) => {
-      this.props.navigator.pop();
-    })
-  }
-
   render() {
     return (
-      <View style={{flex: 1}}>
-        <TitleBar defaultUrl={this.props.defaultUrl}/>
-        <HistoryList />
+      <View style={{flex: 1, backgroundColor: 'white'}}>
+        <TitleBar
+          defaultUrl={this.props.defaultUrl}
+          navigator={this.props.navigator}/>
+        <HistoryList
+          navigator={this.props.navigator}/>
       </View>
     )
   }

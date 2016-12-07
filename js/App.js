@@ -7,10 +7,14 @@ import {Provider} from 'react-redux'
 import {persistStore, autoRehydrate} from 'redux-persist'
 import {createStore, applyMiddleware} from 'redux'
 import {AsyncStorage} from 'react-native'
+import {nonPersistList} from './reducers/nonpersistlist'
 
 const createStoreWithMiddleware = applyMiddleware(thunk)(createStore)
 const store = autoRehydrate()(createStoreWithMiddleware)(reducers)
-persistStore(store, {storage: AsyncStorage})
+persistStore(store, {
+    blacklist: nonPersistList,
+    storage: AsyncStorage
+  }, null)
 
 import {
   Platform,

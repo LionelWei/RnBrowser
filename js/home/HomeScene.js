@@ -14,8 +14,6 @@ import {
 } from 'react-native'
 
 
-import BottomBar from '../components/BottomBar'
-import TitleBar from './HomeTitleBar'
 import HomeContent from './HomeContent'
 import {Emitter} from '../events/Emitter'
 
@@ -28,10 +26,14 @@ export default class extends Component {
     const {navigator} = this.props
     return (
       <View style={{flex: 1}}>
-        <TitleBar {...this.props}/>
-        <HomeContent/>
-        <BottomBar navigator={this.props.navigator}/>
+        {this.renderContent()}
       </View>
+    )
+  }
+
+  renderContent = () => {
+    return (
+      <HomeContent />
     )
   }
 }

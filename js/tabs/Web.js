@@ -5,7 +5,8 @@
 import React, {PropTypes, Component } from 'react'
 import {
   WebView,
-  Modal
+  View,
+  Text
 } from 'react-native'
 import {connect} from 'react-redux'
 import {Emitter} from '../events/Emitter'
@@ -20,12 +21,13 @@ var DEFAULT_URL = 'https://m.baidu.com/?from=1013843a&pu=sz%401321_480&wpo=btmfa
 
 class Web extends Component {
   static PropTypes = {
-    id: PropTypes.number.isRequired
+    id: PropTypes.number.isRequired,
+    url: PropTypes.string
   }
 
   state = {
-    navState: {
-      url: DEFAULT_URL,
+    navState : {
+      url: this.props.url || DEFAULT_URL,
       title: 'No Page Loaded',
       loading: true,
       canBack: false,
@@ -34,65 +36,58 @@ class Web extends Component {
     }
   };
 
+  closeTab = false;
+
   constructor(props: any) {
     super(props)
+    this.closeTab = false;
     this.initEvent();
-    this.props.createTab(this.props.id);
   }
 
   componentWillUnmount() {
-    console.log('$$$$$$$$$ Id: ' + this.props.id + ' componentWillUnmount');
-    this.props.removeTab(this.props.id);
+    console.log('$$$$$$$$$ Web componentWillUnmount');
+    if (!this.closeTab) {
+      this.props.updateTab(this.props.id, {
+                            url: '',
+                            title: '主页'
+                          });
+    }
+    this.unRegisterEvents();
   }
 
   render() {
     return (
-      <WebView
-        source={{uri: this.state.navState.url}}
-        ref={WEBVIEW_REF}
-        automaticallyAdjustContentInsets={false}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        decelerationRate="normal"
-        onNavigationStateChange={this.onNavigationStateChange}
-        onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
-        startInLoadingState={true}
-        scalesPageToFit={this.state.navState.scalesPageToFit}
-      />
+      <View style={{flex: 1}}>
+        <WebView
+          source={{uri: this.state.navState.url}}
+          ref={WEBVIEW_REF}
+          automaticallyAdjustContentInsets={false}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          decelerationRate="normal"
+          onNavigationStateChange={this.onNavigationStateChange}
+          onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
+          startInLoadingState={true}
+          scalesPageToFit={true}
+        />
+      </View>
     );
   }
 
-  _initEvent() {
-    Emitter.addListener('url_changed', (...args) => {
-      var url: string = args[0];
-      this.setState({
-        navState: {
-          url: url
-        }
-      })
-    });
+  initEvent() {
+    Emitter.addListener('url_changed', this.onUrlChanged);
+    Emitter.addListener('web_back', this.onWebBack);
+    Emitter.addListener('web_forward', this.onWebForward);
+    Emitter.addListener('switch_tab', this.onSwitchTab);
+    Emitter.addListener('close_tab', this.onCloseTab);
+  }
 
-    Emitter.addListener('web_back', (...args) => {
-      var tabId = args[0];
-      if (tabId === this.props.id) {
-        this.back()
-      }
-    })
-
-    Emitter.addListener('web_forward', (...args) => {
-      var tabId = args[0];
-      if (tabId === this.props.id) {
-        this.forward()
-      }
-    })
-
-    Emitter.addListener('switch_tab', (...args) => {
-      console.log('switch_tab: current: ' + this.props.id + ', switchTo: ' + args[0]);
-      var id = args[0];
-      if (this.props.id === id) {
-        this.props.propWebState(this.props.id, this.state.navState);
-      }
-    })
+  unRegisterEvents() {
+    Emitter.removeListener('url_changed', this.onUrlChanged);
+    Emitter.removeListener('web_back', this.onWebBack);
+    Emitter.removeListener('web_forward', this.onWebForward);
+    Emitter.removeListener('switch_tab', this.onSwitchTab);
+    Emitter.removeListener('close_tab', this.onCloseTab);
   }
 
   back = () => {
@@ -106,6 +101,47 @@ class Web extends Component {
   reload = () => {
     this.refs[WEBVIEW_REF].reload();
   };
+
+  onUrlChanged = (...args) => {
+    var tabId = args[0];
+    if (tabId === this.props.id) {
+      var url = args[1];
+      this.setState({
+        navState: {
+          url: url
+        }
+      })
+    }
+  }
+
+  onWebForward = (...args) => {
+    var tabId = args[0];
+    if (tabId === this.props.id) {
+      this.forward()
+    }
+  }
+
+  onWebBack = (...args) => {
+    var tabId = args[0];
+    if (tabId === this.props.id) {
+      this.back()
+    }
+  }
+
+  onSwitchTab = (...args) => {
+    console.log('switch_tab: current: ' + this.props.id + ', switchTo: ' + args[0]);
+    var id = args[0];
+    if (this.props.id === id) {
+      this.props.propWebState(this.props.id, this.state.navState);
+    }
+  }
+
+  onCloseTab = (...args) => {
+    var id = args[0];
+    if (this.props.id === id) {
+      this.closeTab = true;
+    }
+  }
 
   onNavigationStateChange = (navState: any) => {
     this.setState({

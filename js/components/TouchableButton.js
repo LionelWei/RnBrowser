@@ -9,6 +9,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback
 } from 'react-native'
+import * as img from '../assets/imageAssets'
 
 
 export default class TouchableButton extends Component {
@@ -16,9 +17,9 @@ export default class TouchableButton extends Component {
   static propTypes = {
     enabled: PropTypes.bool,
     pressFn: PropTypes.func,
-    normalBg: PropTypes.string.isRequired,
-    pressBg: PropTypes.string,
-    disabledBg: PropTypes.string,
+    normalBg: PropTypes.object,
+    pressBg: PropTypes.object,
+    disabledBg: PropTypes.object,
     width: PropTypes.number,
     height: PropTypes.number,
     description: PropTypes.string
@@ -39,14 +40,12 @@ export default class TouchableButton extends Component {
   render() {
     let enabled = this.props.enabled;
     let isPressing = this.state.isButtonPressing;
-    let disabledBg = this.props.disabledBg
-                    ? this.props.disabledBg
-                    : this.props.pressBg;
+    let disabledBg = this.props.disabledBg || this.props.pressBg;
     let settingBg = !enabled
                     ? this.props.pressBg
                     : (isPressing ? this.props.pressBg : this.props.normalBg)
-    let imgWidth = this.props.width ? this.props.width : 20;
-    let imgHeight = this.props.height ? this.props.height : 20;
+    let imgWidth = this.props.width || 20;
+    let imgHeight = this.props.height || 20;
     let desc = this.props.description;
     return (
       <TouchableWithoutFeedback
@@ -60,7 +59,7 @@ export default class TouchableButton extends Component {
               width: imgWidth,
               height: imgHeight
             }}
-            source={{uri: settingBg}}/>
+            source={settingBg}/>
           {desc
             ? <Text style={styles.descText}>{desc}</Text>
             : null}

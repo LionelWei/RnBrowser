@@ -2,89 +2,71 @@
 
 import React, { Component, PropTypes} from 'react';
 import {
-  Modal,
   Text,
   TouchableHighlight,
   View,
   StyleSheet,
   TouchableWithoutFeedback,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions
 } from 'react-native';
 
 import {connect} from 'react-redux'
-import EventEmitter from 'EventEmitter'
 import {Emitter} from '../../events/Emitter'
 
 import TabIndicatorItem from './TabIndicatorItem'
 
-class TabIndicatorModal extends Component {
-  state = {
-    modalVisible: false,
-  }
+var {height, width} = Dimensions.get('window');
 
-  constructor() {
-    super()
-    Emitter.addListener('show_tab_indicator', (...args) => {
-      var isVisible: bool = args[0];
-      this.setModalVisible(isVisible)
-    });
+class TabIndicatorInternal extends Component {
+  static propTypes = {
+    dismiss: PropTypes.func.isRequired
   }
-
-  setModalVisible(visible: bool) {
-    this.setState({modalVisible: visible});
-  }
-
   tabViewList = []
 
   render() {
     this.refreshTabs();
     return (
-      <Modal
-        animationType={"none"}
-        transparent={true}
-        visible={this.state.modalVisible}
-        onRequestClose={() => {this.setModalVisible(false)}}>
-        <TouchableWithoutFeedback
-          onPress={() => {this.setModalVisible(false)}}>
+      <TouchableWithoutFeedback
+        onPress={() => {this.props.dismiss()}}>
+        <View style={{
+            flex: 1
+          }}>
           <View style={{
-              flex: 1
-            }}>
-            <View style={{
-              flex: 1,
-              backgroundColor: 'black',
-              opacity: 0.2
-            }}/>
-            <View style={styles.container}>
-              <View style={styles.menu_content}>
-                {this.tabViewList}
-                <TouchableOpacity onPress={this.addTab}>
-                  <Text key={'new'} style={{fontSize: 20}}>
-                    新增标签
-                  </Text>
-                </TouchableOpacity>
-              </View>
+            flex: 1,
+            backgroundColor: 'black',
+            opacity: 0.2
+          }}/>
+          <View style={styles.container}>
+            <View style={styles.menu_content}>
+              {this.tabViewList}
+              <TouchableOpacity onPress={this.addTab}>
+                <Text key={'new'} style={{fontSize: 20}}>
+                  新增标签
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
 
   addTab = () => {
-    this.setModalVisible(false)
+    this.props.dismiss()
     Emitter.emit('add_tab', 0)
   }
 
   switchTab(id) {
     console.log('Emitter.emit switch_tab: ' + id);
-    this.setModalVisible(false)
+    this.props.dismiss()
     Emitter.emit('switch_tab', id)
   }
 
   closeTab(id) {
     console.log('tabindicator: _closeTab: ' + id);
     Emitter.emit('close_tab', id)
-    this.setModalVisible(false)
+    this.props.dismiss()
   }
 
   refreshTabs = () => {
@@ -98,7 +80,7 @@ class TabIndicatorModal extends Component {
     // 这里要用`let`, 而不是`var`
     var j = 0;
     this.props.tabs
-      .filter(elm => elm != null)
+      .filter(elm => (elm != null))
       .forEach(elm => {
         let tabText = (++j) + ': ' + elm.title;
         let tabId = elm.id;
@@ -144,4 +126,4 @@ function mapDispatchToProps(dispatch) {
 
 module.exports = connect(
   mapStateToProps,
-  mapDispatchToProps)(TabIndicatorModal)
+  mapDispatchToProps)(TabIndicatorInternal)

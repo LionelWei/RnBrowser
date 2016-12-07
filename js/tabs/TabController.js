@@ -12,20 +12,18 @@ import {
 import {NAV_BAR_HEIGHT ,BOTTOM_BAR_HEIGHT} from '../utils/Consts'
 
 var {height, width} = Dimensions.get('window');
-height -= NAV_BAR_HEIGHT + BOTTOM_BAR_HEIGHT;
 
 import {connect} from 'react-redux'
 import {Emitter} from '../events/Emitter'
-import Web from './Web'
 import {printObj} from '../utils/Common'
+
+import TabNavigator from './TabNavigator'
 
 class TabController extends Component {
   state = {
     tabList: [ {
         id: 0,
-        view: <View key={0} style={styles.overlay}>
-                <Web id={0} key={0}/>
-              </View>
+        view: this.renderTab(0, 0)
       }
     ],
     /*记录tab的个数, 目前是单调递增的, 即使删除一个tab再创建也会加1*/
@@ -77,30 +75,28 @@ class TabController extends Component {
 
   initEvent() {
     Emitter.addListener('add_tab', (...args) => {
-      this.appendWeb();
+      this.appendTab();
     })
 
     Emitter.addListener('switch_tab', (...args) => {
       var id = args[0];
-      this.switchWeb(id);
+      this.switchTab(id);
     })
 
     Emitter.addListener('close_tab', (...args) => {
       var id = args[0];
-      this.closeWeb(id);
+      this.closeTab(id);
     })
   }
 
-  appendWeb() {
+  appendTab() {
     var primaryId = this.state.tabCount;
     this.setState({
       tabList: [
         ...this.state.tabList,
         {
           id: primaryId,
-          view: <View key={primaryId} style={styles.overlay}>
-                  <Web id={primaryId} key={primaryId}/>
-                </View>
+          view: this.renderTab(primaryId, primaryId)
         }
       ],
       tabCount: this.state.tabCount + 1,
@@ -108,13 +104,13 @@ class TabController extends Component {
     })
   }
 
-  switchWeb(id: number) {
+  switchTab(id: number) {
     this.setState({
       currentTabId: id
     })
   }
 
-  closeWeb(id: number) {
+  closeTab(id: number) {
     if (this.state.tabList.length == 1) {
       return;
     }
@@ -168,6 +164,14 @@ class TabController extends Component {
       return prev
     }
 
+  }
+
+  renderTab(id: number, key: any) {
+    return (
+      <View key={key} style={styles.overlay}>
+        <TabNavigator id={id} key={id}/>
+      </View>
+    )
   }
 }
 
