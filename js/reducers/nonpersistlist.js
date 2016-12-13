@@ -1,2 +1,2 @@
 
-export const nonPersistList = ['webtabs', 'webnavigator'];
+export const nonPersistList = ['tabinfo', 'tabmanage'];

@@ -13,9 +13,9 @@ import {
   TouchableHighlight
 } from 'react-native'
 
-
-import HomeContent from './HomeContent'
 import {Emitter} from '../events/Emitter'
+
+import TabController from '../tabs/TabController'
 
 export default class extends Component {
   static propTypes = {
@@ -26,14 +26,8 @@ export default class extends Component {
     const {navigator} = this.props
     return (
       <View style={{flex: 1}}>
-        {this.renderContent()}
+        <TabController navigator={this.props.navigator}/>
       </View>
-    )
-  }
-
-  renderContent = () => {
-    return (
-      <HomeContent />
     )
   }
 }

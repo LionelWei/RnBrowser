@@ -64,6 +64,7 @@ class SearchTitleBar extends Component {
             fontSize: 16}}
           autoCapitalize="none"
           autoFocus={true}
+          autoCorrect={false}
           defaultValue={this.props.defaultUrl}
           selectTextOnFocus={true}
           placeholder="请输入网址"
@@ -95,7 +96,7 @@ class SearchTitleBar extends Component {
       alert('网址需以http://或者https://开头')
       return;
     }
-    console.log('inputUrl: ' + this.inputText);
+    console.log('inputUrl: ' + this.inputText + ', tabId: ' + this.props.tabId);
     this.props.append(this.inputText)
     Emitter.emit('url_changed', this.props.tabId, this.inputText)
     this.popNavi();

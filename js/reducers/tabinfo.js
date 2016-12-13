@@ -1,25 +1,31 @@
-/* @flow */
-
-import {printObj} from '../utils/Common'
-
+const SHOW_TAB_MANAGER = 'SHOW_TAB_MANAGER'
+const SHOW_TAB_PAGE = "SHOW_TAB_PAGE"
+const UPDATE_WEBSITE_INFO = 'UPDATE_WEBSITE_INFO'
 const CREATE_TAB = 'CREATE_TAB'
 const UPDATE_TAB = 'UPDATE_TAB'
-const INIT_TAB = 'INIT_TAB'
 const REMOVE_TAB = 'REMOVE_TAB'
 
 const initialState = {
-  tabs: []
+  isTabPageVisible: true, // 判断当前页面为标签页或网页
+  tabId: 0,   // 当前页面tab id
+  url: '',    // 当前页面url
+  title: '',  // 当前页面标题
+  loading: false,
+  canBack: false,  // 当前页面是否能后退
+  canForward: false, // 当前页面是否能前进
+  tabs: [], // tab信息汇总
 }
 
 var isFirstLaunch = true
 var firstValidState;
 
 export default function reducer (state: any = initialState, action: any) {
-  console.log('webtabs type: ' + action.type);
-  console.log('webtab state tabs: \n' + state.tabs);
+  console.log('tabinfo type: ' + action.type);
   switch (action.type) {
-    case INIT_TAB:
-      return handleInitTab(state, action);
+    case UPDATE_WEBSITE_INFO:
+      return handleUpdateWebInfo(state, action);
+    case SHOW_TAB_PAGE:
+      return handleShowTabPage(state, action);
     case CREATE_TAB:
       return handleCreateTab(state, action);
     case UPDATE_TAB:
@@ -27,12 +33,27 @@ export default function reducer (state: any = initialState, action: any) {
     case REMOVE_TAB:
       return handleRemoveTab(state, action);
     default:
-      return state;
+      return state
   }
 }
 
-function handleInitTab(state: any = initialState, action: any) {
-  return initialState;
+function handleUpdateWebInfo(state, action) {
+  return {
+    ...state,
+    tabId: action.tabId,
+    url: action.url,
+    title: action.title ,
+    canBack: action.canBack,
+    canForward: action.canForward,
+    isTabPageVisible: false,
+  }
+}
+
+function handleShowTabPage(state, action) {
+  return {
+    ...state,
+    isTabPageVisible: action.isTabPageVisible,
+  }
 }
 
 function handleCreateTab(state: any = initialState, action: any) {
@@ -48,6 +69,8 @@ function handleCreateTab(state: any = initialState, action: any) {
     return findTab(action.id)
           ? state
           : {
+              ...state,
+              isTabPageVisible: true,
               tabs: [
                 ...state.tabs,
                 {
@@ -59,10 +82,8 @@ function handleCreateTab(state: any = initialState, action: any) {
   }
 
   function findTab(tabId: number) {
-    console.log('findTab: toFind: ' + tabId);
     for (var i in state.tabs) {
       if (state.tabs[i].id === tabId) {
-        console.log('FOUND: ' + state.tabs[i].id + ', count: ' + state.tabs.length);
         return true;
       }
     }
@@ -71,11 +92,14 @@ function handleCreateTab(state: any = initialState, action: any) {
 }
 
 function handleUpdateTab(state: any = initialState, action: any) {
-  var newState = {...state};
+  var newState = {
+    ...state,
+  };
+  console.log('===== handleUpdateTab: ' + action.url + ', ' + action.title);
   newState.tabs[action.id] = {
     id: action.id,
     url: action.url,
-    title: action.title
+    title: action.title,
   }
   return newState;
 }
@@ -87,9 +111,25 @@ function handleRemoveTab(state: any, action: any) {
   return newState;
 }
 
-export function initTab() {
+export function updateWebState(id: number,
+                            canBack: bool,
+                            canForward: bool,
+                            url: string,
+                            title: string) {
   return {
-    type: INIT_TAB,
+    type: UPDATE_WEBSITE_INFO,
+    tabId: id,
+    url: url,
+    title: title,
+    canBack: canBack,
+    canForward: canForward
+  }
+}
+
+export function showTabPage(visible: bool) {
+  return {
+    type: SHOW_TAB_PAGE,
+    isTabPageVisible: visible
   }
 }
 

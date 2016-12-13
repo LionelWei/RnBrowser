@@ -17,9 +17,9 @@ export default class TouchableButton extends Component {
   static propTypes = {
     enabled: PropTypes.bool,
     pressFn: PropTypes.func,
-    normalBg: PropTypes.object,
-    pressBg: PropTypes.object,
-    disabledBg: PropTypes.object,
+    normalBg: PropTypes.number,
+    pressBg: PropTypes.number,
+    disabledBg: PropTypes.number,
     width: PropTypes.number,
     height: PropTypes.number,
     description: PropTypes.string

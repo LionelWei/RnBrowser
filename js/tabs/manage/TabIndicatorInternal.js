@@ -98,10 +98,9 @@ class TabIndicatorInternal extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'transparent',
+    backgroundColor: 'white',
     flexDirection: 'row',
     alignItems: 'flex-end',
-    marginBottom: 50
   },
   menu_content: {
     height: 220,
@@ -115,7 +114,7 @@ const styles = StyleSheet.create({
 
 function mapStateToProps(state) {
   return {
-    tabs: state.webtabs.tabs || []
+    tabs: state.tabinfo.tabs || []
   }
 }
 

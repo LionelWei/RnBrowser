@@ -22,6 +22,7 @@ export default class extends Component {
     return (
       <View style={{flex: 1, backgroundColor: 'white'}}>
         <TitleBar
+          tabId={this.props.tabId}
           defaultUrl={this.props.defaultUrl}
           navigator={this.props.navigator}/>
         <HistoryList

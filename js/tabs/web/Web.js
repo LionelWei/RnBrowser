@@ -9,10 +9,10 @@ import {
   Text
 } from 'react-native'
 import {connect} from 'react-redux'
-import {Emitter} from '../events/Emitter'
-import {progWebState} from '../reducers/webnavigator'
-import {createTab, updateTab, removeTab} from '../reducers/webtabs'
-import {printObj} from '../utils/Common'
+import {Emitter} from '../../events/Emitter'
+import {updateWebState} from '../../reducers/tabinfo'
+import {createTab, updateTab, removeTab, showTabPage} from '../../reducers/tabinfo'
+import {printObj} from '../../utils/Common'
 
 
 var TEXT_INPUT_REF = 'urlInput';
@@ -22,7 +22,8 @@ var DEFAULT_URL = 'https://m.baidu.com/?from=1013843a&pu=sz%401321_480&wpo=btmfa
 class Web extends Component {
   static PropTypes = {
     id: PropTypes.number.isRequired,
-    url: PropTypes.string
+    url: PropTypes.string,
+    navigator: PropTypes.func.isRequired,
   }
 
   state = {
@@ -30,8 +31,9 @@ class Web extends Component {
       url: this.props.url || DEFAULT_URL,
       title: 'No Page Loaded',
       loading: true,
-      canBack: false,
+      canBack: true, // 返回键始终有效, 如果当前网页不可后退, 则返回至首页
       canForward: false,
+      realGoBack: false,
       scalesPageToFit: true,
     }
   };
@@ -47,10 +49,15 @@ class Web extends Component {
   componentWillUnmount() {
     console.log('$$$$$$$$$ Web componentWillUnmount');
     if (!this.closeTab) {
+      this.props.updateWebState(this.props.id, {
+                            url: '',
+                            title: ''
+                          });
       this.props.updateTab(this.props.id, {
                             url: '',
                             title: '主页'
                           });
+      this.props.showTabPage(true);
     }
     this.unRegisterEvents();
   }
@@ -124,7 +131,12 @@ class Web extends Component {
   onWebBack = (...args) => {
     var tabId = args[0];
     if (tabId === this.props.id) {
-      this.back()
+      if (this.state.navState.realGoBack) {
+        console.log('this.state.navState.realGoBack');
+        this.back()
+      } else {
+        this.props.navigator.pop();
+      }
     }
   }
 
@@ -132,7 +144,7 @@ class Web extends Component {
     console.log('switch_tab: current: ' + this.props.id + ', switchTo: ' + args[0]);
     var id = args[0];
     if (this.props.id === id) {
-      this.props.propWebState(this.props.id, this.state.navState);
+      this.props.updateWebState(this.props.id, this.state.navState);
     }
   }
 
@@ -149,13 +161,13 @@ class Web extends Component {
         url: navState.url,
         title: navState.title,
         loading: navState.loading,
-        canBack: navState.canGoBack,
+        canBack: true, // 返回键始终有效, 如果当前网页不可后退, 则返回至首页
         canForward: navState.canGoForward,
+        realGoBack: navState.canGoBack,
         scalesPageToFit: true
       }
     });
-
-    this.props.propWebState(this.props.id, navState);
+    this.props.updateWebState(this.props.id, navState);
     this.props.updateTab(this.props.id, navState);
   };
 
@@ -166,16 +178,16 @@ class Web extends Component {
 
 function mapStateToProps(state) {
   return {
-    back: state.webnavigator.back,
-    forward: state.webnavigator.forward
+    back: state.tabinfo.back,
+    forward: state.tabinfo.forward
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    propWebState: (id: number, navState: any) => {
-      dispatch(progWebState(id,
-                            navState.canGoBack,
+    updateWebState: (id: number, navState: any) => {
+      dispatch(updateWebState(id,
+                            true, // navState.canGoBack,
                             navState.canGoForward,
                             navState.url,
                             simplifyTitle(navState.title)));
@@ -190,6 +202,9 @@ function mapDispatchToProps(dispatch) {
     },
     removeTab: (id: number) => {
       dispatch(removeTab(id))
+    },
+    showTabPage: (visible: bool) => {
+      dispatch(showTabPage(visible))
     }
   }
 }

@@ -15,17 +15,17 @@ import {
 import {connect} from 'react-redux'
 import EventEmitter from 'EventEmitter'
 
-import TouchableButton from '../components/TouchableButton'
-import Search from '../search/SearchScene'
-import {Emitter} from '../events/Emitter'
-import Transition from '../animation/NoTransition'
-import * as IMG from '../assets/imageAssets'
+import TouchableButton from '../../components/TouchableButton'
+import Search from '../../search/SearchScene'
+import {Emitter} from '../../events/Emitter'
+import Transition from '../../animation/NoTransition'
+import * as IMG from '../../assets/imageAssets'
 
 const style = StyleSheet.create({
   titlebar: {
     flexDirection: 'row',
     height: 48,
-    backgroundColor: '#fff',
+    backgroundColor: '#f1f2f3',
     alignItems: 'center'
   }
 })
@@ -33,7 +33,7 @@ const style = StyleSheet.create({
 class WebTitleBar extends Component {
   static defaultProps = {
     url: '',
-    title: '请输入网址'
+    title: '请输入网址',
   }
 
   constructor(props: any) {
@@ -41,6 +41,7 @@ class WebTitleBar extends Component {
   }
 
   render() {
+    console.log('==== WebTitleBar url: ' + this.props.url);
     return (
       <View style={style.titlebar}>
         <View style={{paddingLeft: 12}}>
@@ -86,7 +87,6 @@ class WebTitleBar extends Component {
         component: Search,
         scene: Transition.NONE,
         defaultUrl: this.props.url,
-        tabId: this.props.id,
         navigator: this.props.navigator
       })
     } else {
@@ -97,8 +97,8 @@ class WebTitleBar extends Component {
 
 function mapStateToProps(state) {
   return {
-    url: state.webnavigator.url,
-    title: state.webnavigator.title
+    url: state.tabinfo.url,
+    title: state.tabinfo.title
   }
 }
 

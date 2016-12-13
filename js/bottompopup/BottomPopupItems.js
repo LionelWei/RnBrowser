@@ -18,21 +18,18 @@ const style = StyleSheet.create({
   basic: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: 'transparent'
   },
   menu_content: {
     flex: 1,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: 'transparent',
   },
   menu_bottom: {
     height: BOTTOM_BAR_HEIGHT,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: 'transparent',
     borderTopWidth: 1,
     borderTopColor: '#ddd',
   }

@@ -4,5 +4,5 @@ module.exports = {
   WEIBO: "http://weibo.com/",
   TAOBAO: "https://m.taobao.com/",
   QQ: "http://info.3g.qq.com/g/s?aid=index&g_ut=3&from=4g_qqcom",
-  NETEASE: "http://3g.163.com/touch/all?nav=2&dataversion=A&version=v_standard"
+  NETEASE: "http://3g.163.com"
 }
