@@ -6,7 +6,8 @@ import React, {PropTypes, Component } from 'react'
 import {
   WebView,
   View,
-  Text
+  Text,
+  InteractionManager,
 } from 'react-native'
 import {connect} from 'react-redux'
 import {Emitter} from '../../events/Emitter'
@@ -19,6 +20,16 @@ var TEXT_INPUT_REF = 'urlInput';
 var WEBVIEW_REF = 'webview';
 var DEFAULT_URL = 'https://m.baidu.com/?from=1013843a&pu=sz%401321_480&wpo=btmfast';
 
+type State = {
+  url: string,
+  title: string,
+  loading: bool,
+  canBack: bool,
+  canForward: bool,
+  realGoBack: bool,
+  scalesPageToFit: bool,
+}
+
 class Web extends Component {
   static PropTypes = {
     id: PropTypes.number.isRequired,
@@ -26,8 +37,16 @@ class Web extends Component {
     navigator: PropTypes.func.isRequired,
   }
 
-  state = {
-    navState : {
+  firstLoad = false;
+
+  state: State;
+
+  closeTab = false;
+
+  constructor(props: any) {
+    super(props)
+
+    this.state = {
       url: this.props.url || DEFAULT_URL,
       title: 'No Page Loaded',
       loading: true,
@@ -35,15 +54,16 @@ class Web extends Component {
       canForward: false,
       realGoBack: false,
       scalesPageToFit: true,
-    }
-  };
+    };
 
-  closeTab = false;
-
-  constructor(props: any) {
-    super(props)
     this.closeTab = false;
     this.initEvent();
+    InteractionManager.runAfterInteractions(() => {
+      this.setState({
+          url: this.props.url
+        }
+      )
+    })
   }
 
   componentWillUnmount() {
@@ -63,21 +83,26 @@ class Web extends Component {
   }
 
   render() {
+    let isFirstLoad = this.firstLoad;
+    if (isFirstLoad) {
+      this.firstLoad = false;
+    }
     return (
-      <View style={{flex: 1}}>
-        <WebView
-          source={{uri: this.state.navState.url}}
-          ref={WEBVIEW_REF}
-          automaticallyAdjustContentInsets={false}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
-          decelerationRate="normal"
-          onNavigationStateChange={this.onNavigationStateChange}
-          onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
-          startInLoadingState={true}
-          scalesPageToFit={true}
-        />
-      </View>
+      isFirstLoad
+      ? <View/>
+      :
+      <WebView
+        source={{uri: this.state.url}}
+        ref={WEBVIEW_REF}
+        automaticallyAdjustContentInsets={false}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        decelerationRate="normal"
+        onNavigationStateChange={this.onNavigationStateChange}
+        onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
+        startInLoadingState={true}
+        scalesPageToFit={true}
+      />
     );
   }
 
@@ -114,9 +139,7 @@ class Web extends Component {
     if (tabId === this.props.id) {
       var url = args[1];
       this.setState({
-        navState: {
-          url: url
-        }
+        url: url
       })
     }
   }
@@ -131,8 +154,8 @@ class Web extends Component {
   onWebBack = (...args) => {
     var tabId = args[0];
     if (tabId === this.props.id) {
-      if (this.state.navState.realGoBack) {
-        console.log('this.state.navState.realGoBack');
+      if (this.state.realGoBack) {
+        console.log('this.state.realGoBack');
         this.back()
       } else {
         this.props.navigator.pop();
@@ -144,7 +167,7 @@ class Web extends Component {
     console.log('switch_tab: current: ' + this.props.id + ', switchTo: ' + args[0]);
     var id = args[0];
     if (this.props.id === id) {
-      this.props.updateWebState(this.props.id, this.state.navState);
+      this.props.updateWebState(this.props.id, this.state);
     }
   }
 
@@ -157,15 +180,13 @@ class Web extends Component {
 
   onNavigationStateChange = (navState: any) => {
     this.setState({
-      navState: {
-        url: navState.url,
-        title: navState.title,
-        loading: navState.loading,
-        canBack: true, // 返回键始终有效, 如果当前网页不可后退, 则返回至首页
-        canForward: navState.canGoForward,
-        realGoBack: navState.canGoBack,
-        scalesPageToFit: true
-      }
+      url: navState.url,
+      title: navState.title,
+      loading: navState.loading,
+      canBack: true, // 返回键始终有效, 如果当前网页不可后退, 则返回至首页
+      canForward: navState.canGoForward,
+      realGoBack: navState.canGoBack,
+      scalesPageToFit: true
     });
     this.props.updateWebState(this.props.id, navState);
     this.props.updateTab(this.props.id, navState);

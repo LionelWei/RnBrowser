@@ -30,6 +30,7 @@ const style = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-around',
+    backgroundColor: 'transparent',
     borderTopWidth: 1,
     borderTopColor: '#ddd',
   }
@@ -39,6 +40,11 @@ export default class BottomPopupMenu extends Component {
   static propTypes = {
     dismiss: PropTypes.func.isRequired
   };
+
+  // 父组件更新是无需重新渲染
+  shouldComponentUpdate() {
+    return false;
+  }
 
   render() {
     return (

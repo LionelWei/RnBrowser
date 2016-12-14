@@ -71,6 +71,8 @@ function handleCreateTab(state: any = initialState, action: any) {
           : {
               ...state,
               isTabPageVisible: true,
+              url: '',
+              title: '主页',
               tabs: [
                 ...state.tabs,
                 {

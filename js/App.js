@@ -22,7 +22,8 @@ import {
   BackAndroid,
   View,
   Navigator,
-  Text
+  Text,
+  ToastAndroid
 } from 'react-native'
 import Home from './home/HomeScene'
 
@@ -35,11 +36,11 @@ console.disableYellowBox = true;
 export default class extends Component {
 
   componentDidMount () {
-    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+    // BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
   componentWillUnmount () {
-    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+    // BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
   }
 
   render() {
@@ -52,9 +53,6 @@ export default class extends Component {
           <StatusBar
             barStyle='default'
             hidden={true}
-            backgroundColor='blue'
-            style={{height: STATUS_BAR_HEIGHT, backgroundColor: 'red'}}
-            translucent={ABOVE_LOLIPOP}
           />
           <Navigator
             style={{
@@ -62,7 +60,8 @@ export default class extends Component {
               backgroundColor: 'transparent'}}
             ref='navigator'
             initialRoute={{
-              component: Home
+              component: Home,
+              head: true
             }}
             configureScene={this.configureScene}
             renderScene={(route, navigator) => {
@@ -81,12 +80,27 @@ export default class extends Component {
     return route.scene || Navigator.SceneConfigs.FloatFromBottom
   }
 
+  lastBackPressed = Date.now();
+
   handleBack = () => {
     const navigator = this.refs.navigator
-    if (navigator && navigator.getCurrentRoutes().length > 1) {
-      navigator.pop()
-      return true
+
+    const routers = navigator.getCurrentRoutes();
+    if (routers.length >= 1) {
+      const top = routers[routers.length - 1];
+      const handleBack = top.handleBack || top.component.handleBack;
+      console.log('handleBack: ' + handleBack + ', component: ' + top.component + ', top: ' + top);
+      if (handleBack) {
+        // 路由或组件上决定这个界面自行处理back键
+        return handleBack();
+      }
+
+      if (routers.length > 1) {
+        // 默认行为： 退出当前界面。
+        navigator.pop();
+        return true;
+      }
     }
-    return false
+    return false;
   };
 }

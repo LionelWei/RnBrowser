@@ -7,7 +7,8 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  TouchableOpacity,
 } from 'react-native'
 import * as img from '../assets/imageAssets'
 
@@ -29,31 +30,25 @@ export default class TouchableButton extends Component {
     enabled: true
   }
 
-  state = {
-    isButtonPressing: false
-  }
-
   constructor() {
     super()
   }
 
   render() {
+    console.log('button render....');
     let enabled = this.props.enabled;
-    let isPressing = this.state.isButtonPressing;
     let disabledBg = this.props.disabledBg || this.props.pressBg;
-    let settingBg = !enabled
-                    ? this.props.pressBg
-                    : (isPressing ? this.props.pressBg : this.props.normalBg)
+    let settingBg = !enabled ? disabledBg : this.props.normalBg;
     let imgWidth = this.props.width || 20;
     let imgHeight = this.props.height || 20;
     let desc = this.props.description;
     return (
-      <TouchableWithoutFeedback
-        disabled = {!this.props.enabled}
-        onPress={this.props.pressFn}
-        onPressIn = {() => this.onTouchDown()}
-        onPressOut = {() => this.onTouchUp()}>
-        <View style={styles.container}>
+      <TouchableOpacity
+        onPress={this.props.pressFn}>
+        <View style={[styles.container, {
+          width: imgWidth + 30,
+          height: imgHeight + 30,
+          backgroundColor: 'white'}]}>
           <Image
             style={{
               width: imgWidth,
@@ -64,28 +59,16 @@ export default class TouchableButton extends Component {
             ? <Text style={styles.descText}>{desc}</Text>
             : null}
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
     )
-  }
-
-  onTouchDown() {
-    this.setState({
-      isButtonPressing: true
-    })
-
-  }
-
-  onTouchUp() {
-    this.setState({
-      isButtonPressing: false
-    })
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   descText: {
     paddingTop: 4,

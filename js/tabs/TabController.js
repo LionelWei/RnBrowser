@@ -9,6 +9,8 @@ import {
   Dimensions,
   StyleSheet,
   Navigator,
+  InteractionManager,
+  BackAndroid
 } from 'react-native';
 import {connect} from 'react-redux'
 import { takeSnapshot } from "react-native-view-shot";
@@ -19,13 +21,14 @@ var {height: HEIGHT, width: WIDTH} = Dimensions.get('window');
 import {Emitter} from '../events/Emitter'
 import {printObj} from '../utils/Common'
 
+import Transitions from '../animation/NoTransition'
 import TabNavigator from './main/TabNavigator'
 import TabManageScreen from './manage/TabManageScreen'
 import TabBottomBar from './main/TabBottomBar'
 import WebTitleBar from './web/WebTitleBar'
 import WebBottomBar from './web/WebBottomBar'
 import BottomMenuPopup from '../bottompopup/BottomMenuPopup'
-import {showTabManager} from '../reducers/tabmanage'
+import {showTabManager, updateTabThumbUris} from '../reducers/tabmanage'
 import {BottomToTop} from '../animation/NavigatorAnimation'
 
 class TabController extends Component {
@@ -51,6 +54,14 @@ class TabController extends Component {
   constructor(props: any) {
     super(props);
     this.initEvent();
+  }
+
+  componentDidMount () {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -98,15 +109,22 @@ class TabController extends Component {
     )
   }
 
+  uris = []
+  webBottomBar = null
+
   renderBottomBar = () => {
-    return this.props.isCurrentTabPage
-          ? <TabBottomBar
+    if (this.props.isCurrentTabPage) {
+      this.webBottomBar = null;
+      return <TabBottomBar
               menuPressFn={() => this.menuPopup.open()}
               tabPressFn={() => this.startTabManagerScreen(true)}/>
-          : <WebBottomBar
+    } else {
+      return <WebBottomBar
+              ref={(bar) => this.webBottomBar = bar}
               menuPressFn={() => this.menuPopup.open()}
               tabPressFn={() => this.startTabManagerScreen(true)}
               homePressFn={() => this.goToHome(this.state.currentTabId)}/>
+    }
   }
 
   renderMenuPopup = () => {
@@ -121,20 +139,23 @@ class TabController extends Component {
 
     let navigator = this.props.navigator
 
-    var promises = [...this.tabRefList].map(ref => {
+    navigator.push({
+      component: TabManageScreen,
+      currentListIndex: this.findIndexByTabId(this.state.currentTabId),
+      scene: BottomToTop,
+    })
+
+    var promises = this.tabRefList.map(ref => {
+      console.log('########## takeSnapshot...');
       return takeSnapshot(ref, {
-        quality: 0.8,
+        format: 'jpg',
+        quality: 0.6,
       })
     })
     Promise.all(promises).then(
       uris => {
+        this.props.updateTabThumbUris(uris)
         console.log('uris: ' + uris.toString());
-        navigator.push({
-          component: TabManageScreen,
-          dataSource: uris,
-          currentListIndex: this.findIndexByTabId(this.state.currentTabId),
-          scene: BottomToTop,
-        })
       },
       error => console.error("Oops, snapshot failed", error)
     )
@@ -142,27 +163,25 @@ class TabController extends Component {
 
   showCurrentTabAtFront() {
     var currentId: number = this.state.currentTabId;
-    var excludeCurrentTabList = this.state.tabList.filter((elm, index) => {
-      return elm.id != currentId;
-    });
+    var excludeCurrentTabList =
+      this.state.tabList.filter(e => {return e.id != currentId});
     return [...excludeCurrentTabList, this.findViewByTabId(currentId)];
   }
 
   findViewByTabId(tabId): any {
-    for (var i in this.state.tabList) {
-      if (tabId === this.state.tabList[i].id) {
-        return this.state.tabList[i]
-      }
-    }
+    let tab = null;
+    this.state.tabList
+        .filter(e => {return tabId === e.id})
+        .forEach(e => {tab = e})
+    return tab;
   }
 
   findIndexByTabId(tabId: number): number {
-    for (var i in this.state.tabList) {
-      if (tabId === this.state.tabList[i].id) {
-        return i;
-      }
-    }
-    return 0;
+    let findId = 0;
+    this.state.tabList
+        .filter(e => {return tabId === e.id})
+        .forEach((e, id) => {findId = id})
+    return findId;
   }
 
   initEvent() {
@@ -255,6 +274,27 @@ class TabController extends Component {
     let index: number = this.findIndexByTabId(tabId);
     this.tabRefList[index].popToMain();
   }
+
+  handleTabBack = () => {
+  }
+
+  handleBack = () => {
+    const navigator = this.props.navigator
+    const routers = navigator.getCurrentRoutes();
+    if (routers.length > 1) {
+      navigator.pop();
+      return true;
+    }
+
+    // 如果当前页面是tab首页, 则退出app
+    // 如果是web页面, 则执行返回操作
+    if (this.props.isCurrentTabPage) {
+      return false;
+    } else {
+      Emitter.emit('web_back', this.state.currentTabId);
+      return true;
+    }
+  };
 }
 
 const styles = StyleSheet.create({
@@ -283,6 +323,9 @@ function mapDispatchToProps(dispatch) {
   return {
     showTabManager: (visible: bool) => {
       dispatch(showTabManager(visible))
+    },
+    updateTabThumbUris: (uris: Array<String>) => {
+      dispatch(updateTabThumbUris(uris))
     }
   }
 }

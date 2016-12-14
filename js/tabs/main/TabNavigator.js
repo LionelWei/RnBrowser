@@ -21,6 +21,7 @@ class TabNavigator extends Component {
   render() {
     return (
       <Navigator
+        style={{backgroundColor: 'white'}}
         ref={(navigator) => this.navigator = navigator}
         initialRoute={{
           component: TabPage,

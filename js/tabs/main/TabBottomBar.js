@@ -28,7 +28,7 @@ const style = StyleSheet.create({
     height: BOTTOM_BAR_HEIGHT,
     alignItems: 'center',
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     backgroundColor: 'white',
     paddingLeft: 40,
     paddingRight: 40,
@@ -50,24 +50,17 @@ class TabBottomBar extends Component {
   render() {
     const {navigator} = this.props
     return (
-      <View>
-        <View style={style.bottombar}>
-          <View style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between'}}>
-            <TouchableButton
-              pressFn={() => this.props.menuPressFn()}
-              normalBg = {IMG.ICON_MENU_NORMAL}
-              pressBg = {IMG.ICON_MENU_PRESSED} />
-            <TouchableButton
-              pressFn = {() => this.props.tabPressFn()}
-              normalBg = {IMG.ICON_NEW_ADD_NORMAL}
-              pressBg = {IMG.ICON_NEW_ADD_PRESSED} />
-          </View>
-        </View>
+      <View style={style.bottombar}>
+        <TouchableButton
+          bottombar={true}
+          pressFn={() => this.props.menuPressFn()}
+          normalBg = {IMG.ICON_MENU_NORMAL}
+          pressBg = {IMG.ICON_MENU_PRESSED} />
+        <TouchableButton
+          bottombar={true}
+          pressFn = {() => this.props.tabPressFn()}
+          normalBg = {IMG.ICON_NEW_ADD_NORMAL}
+          pressBg = {IMG.ICON_NEW_ADD_PRESSED} />
       </View>
     )
   }

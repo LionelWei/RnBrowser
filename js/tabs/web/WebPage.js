@@ -25,15 +25,10 @@ class WebPage extends ZoomablePage {
 
   onRender: Function = () => {
     return (
-      <View style={{
-        flex: 1,
-        backgroundColor: 'white',
-      }}>
-        <Web
-          id={this.props.id}
-          url={this.props.url}
-          navigator={this.props.navigator}/>
-      </View>
+      <Web
+        id={this.props.id}
+        url={this.props.url}
+        navigator={this.props.navigator}/>
     )
   }
 }

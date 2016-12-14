@@ -63,7 +63,6 @@ export default class ZoomablePage extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'transparent',
     flex: 1,
     flexDirection: 'column',
   },

@@ -49,7 +49,6 @@ class TabPage extends ZoomablePage {
   onRender: Function = () => {
     return (
       <View style={{
-        backgroundColor: 'white',
         flex: 1,
         flexDirection: 'column',
       }}>
@@ -119,9 +118,9 @@ class TabPage extends ZoomablePage {
           <Image style={styles.web_icon} source={IMG.WEB_ICON_WEIBO}/>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => this.gotoWeb(SITES.TAOBAO)}>
+        <TouchableWithoutFeedback onPress={() => this.gotoWeb(SITES.TAOBAO)}>
           <Image style={styles.web_icon} source={IMG.WEB_ICON_TAOBAO}/>
-        </TouchableOpacity>
+        </TouchableWithoutFeedback>
 
         <TouchableOpacity onPress={() => this.gotoWeb(SITES.QQ)}>
           <Image style={styles.web_icon} source={IMG.WEB_ICON_QQ}/>
@@ -152,7 +151,7 @@ class TabPage extends ZoomablePage {
   gotoWeb = (url: string) => {
     this.props.navigator.push({
       component: WebPage,
-      scene: LeftToRight,
+      scene: Transition.NONE,
       id: this.props.id,
       url: url
     })

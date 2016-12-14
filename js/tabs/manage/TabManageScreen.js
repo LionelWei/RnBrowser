@@ -11,6 +11,7 @@ import {
   ListView,
   TouchableOpacity,
 } from 'react-native';
+import { takeSnapshot } from "react-native-view-shot";
 import {connect} from 'react-redux'
 
 import TouchableButton from '../../components/TouchableButton'
@@ -26,22 +27,40 @@ var scaleDimension = {
 }
 
 class TabManageScreen extends Component {
+  state: {
+    dataSource: Array<String>
+  }
+
   static propTypes = {
-    dataSource: PropTypes.array.isRequired,
+    uris: PropTypes.array.isRequired,
     navigator: PropTypes.object.isRequired,
     currentListIndex: PropTypes.number.isRequired,
+  }
+
+  state = {
+    dataSource: this.props.uris
   }
 
   ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
   listView = {}
 
+  constructor(props: any) {
+    super(props)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    console.log('TabManageScreen, next uris: ' + nextProps.uris);
+  }
+
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   if (nextState.dataSource != this.state.dataSource) {
+  //     return true;
+  //   }
+  //   return false
+  // }
+
   componentDidMount() {
-    // 让当前tab显示在中间
-    setTimeout(() => {
-      let offset = this.props.currentListIndex * scaleDimension.w * 1.1;
-      this.listView.scrollTo(0, offset, false);
-    }, 100);
   }
 
   render() {
@@ -56,17 +75,21 @@ class TabManageScreen extends Component {
   renderBody = () => {
     return (
       <View style={styles.body}>
-        <ListView
-          ref={(listview) => this.listView = listview}
-          contentContainerStyle={{
-            paddingLeft: 20,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          horizontal={true}
-          dataSource={this.ds.cloneWithRows(this.props.dataSource)}
-          renderRow={(rowData, sectionID, rowID) => this.renderItem(rowData, sectionID, rowID)}
-        />
+        {
+          this.props.uris && this.props.uris.length > 0
+          ? <ListView
+              ref={(listview) => this.listView = listview}
+              contentContainerStyle={{
+                paddingLeft: 20,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              horizontal={true}
+              dataSource={this.ds.cloneWithRows(this.props.uris)}
+              renderRow={(rowData, sectionID, rowID) => this.renderItem(rowData, sectionID, rowID)}
+            />
+          : null
+        }
       </View>
     )
   }
@@ -102,6 +125,14 @@ class TabManageScreen extends Component {
           pressBg = {IMG.ICON_BACK_PRESSED} />
       </View>
     )
+  }
+
+  // 让当前tab显示在中间
+  adjustPositionByCurrentWeb = () => {
+    if (this.listView) {
+      let offset = this.props.currentListIndex * scaleDimension.w * 1.1;
+      this.listView.scrollTo(0, offset, false);
+    }
   }
 
   add = () => {
@@ -147,7 +178,8 @@ const styles = StyleSheet.create({
 
 function mapStateToProps(state) {
   return {
-    tabs: state.tabinfo.tabs || []
+    tabs: state.tabinfo.tabs || [],
+    uris: state.tabmanage.tabThumbUris
   }
 }
 

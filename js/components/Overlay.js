@@ -6,14 +6,39 @@ import { StyleSheet, Dimensions, TouchableOpacity, Animated } from 'react-native
 const { width: WIDTH, height: HEIGHT } = Dimensions.get('window');
 
 class Overlay extends Component {
-  constructor(props) {
+  static propTypes = {
+    onPress: PropTypes.func,
+    backgroundColor: PropTypes.string,
+    opacity: PropTypes.number,
+    animationDuration: PropTypes.number,
+    showOverlay: PropTypes.bool,
+    pointerEvents: PropTypes.string,
+  };
+
+  static defaultProps = {
+    backgroundColor: '#000',
+    opacity: 0.4,
+    animationDuration: 300,
+    showOverlay: false,
+  };
+
+  state: {
+    opacity: Object
+  }
+
+  constructor(props: any) {
     super(props);
     this.state = {
       opacity: new Animated.Value(0),
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  // 父组件更新是无需重新渲染
+  shouldComponentUpdate() {
+    return false;
+  }
+
+  componentWillReceiveProps(nextProps: any) {
     if (this.props.showOverlay !== nextProps.showOverlay) {
       const toValue = nextProps.showOverlay ? nextProps.opacity : 0;
       Animated.timing(this.state.opacity, {
@@ -38,23 +63,6 @@ class Overlay extends Component {
     );
   }
 }
-
-
-Overlay.propTypes = {
-  onPress: PropTypes.func,
-  backgroundColor: PropTypes.string,
-  opacity: PropTypes.number,
-  animationDuration: PropTypes.number,
-  showOverlay: PropTypes.bool,
-  pointerEvents: PropTypes.string,
-};
-
-Overlay.defaultProps = {
-  backgroundColor: '#000',
-  opacity: 0.4,
-  animationDuration: 300,
-  showOverlay: false,
-};
 
 const styles = StyleSheet.create({
   overlay: {

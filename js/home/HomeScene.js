@@ -17,17 +17,31 @@ import {Emitter} from '../events/Emitter'
 
 import TabController from '../tabs/TabController'
 
-export default class extends Component {
+export default class Home extends Component {
   static propTypes = {
     navigator: PropTypes.object
   };
+
+  tabController = {}
 
   render() {
     const {navigator} = this.props
     return (
       <View style={{flex: 1}}>
-        <TabController navigator={this.props.navigator}/>
+        <TabController
+          ref={(tab) => this.tabController = tab}
+          navigator={this.props.navigator}/>
       </View>
     )
+  }
+
+  static handleBack() {
+    console.log('home handleBack()');
+    this.tabController.handleBack();
+    return true
+  }
+
+  handleBack0() {
+
   }
 }

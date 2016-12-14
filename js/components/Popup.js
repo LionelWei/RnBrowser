@@ -16,7 +16,7 @@ import Overlay from '../components/Overlay'
 
 var {height: HEIGHT, width: WIDTH} = Dimensions.get('window');
 
-var slideAnimation = new SlideAnimation({ animationDuration: 150 })
+var slideAnimation = new SlideAnimation({ animationDuration: 50 })
 
 export default class extends Component {
   state = {
@@ -34,6 +34,7 @@ export default class extends Component {
   }
 
   componentWillReceiveProps(nextProps: any) {
+    console.log('Popup componentWillReceiveProps');
     this.setVisible(nextProps.isVisible);
   }
 
@@ -48,6 +49,10 @@ export default class extends Component {
         visible: visible
       })
     })
+  }
+
+  shouldComponentUpdate(nextProps: any, nextState: any) {
+    return true;
   }
 
   render() {
@@ -83,8 +88,10 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end'
   },
   hidden: {
-    bottom: 10000,
+    top: 1000,
     left: 0,
+    width: 0,
+    height: 0,
   },
   menu_content: {
     height: 220,
