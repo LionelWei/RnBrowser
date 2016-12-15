@@ -18,6 +18,12 @@ class TabNavigator extends Component {
 
   navigator = {}
 
+  unMounted = false;
+  
+  componentWillUnmount() {
+    this.unMounted = true;
+  }
+
   render() {
     return (
       <Navigator

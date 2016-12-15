@@ -65,11 +65,11 @@ class TabController extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    setTimeout(() => {
-      if (nextProps.isTabManagerVisible) {
-        this.startTabManagerScreen(true)
-      }
-    }, 400)
+    // setTimeout(() => {
+    //   if (nextProps.isTabManagerVisible) {
+    //     this.startTabManagerScreen(true)
+    //   }
+    // }, 400)
   }
 
   // 如果要支持下滑时自动隐藏标题栏和底栏的话, 可以考虑把titlebar和bottombar的布局
@@ -145,6 +145,8 @@ class TabController extends Component {
       scene: BottomToTop,
     })
 
+    console.log('==== startTabManagerScreen tabRefList length: ' + this.tabRefList.length);
+
     var promises = this.tabRefList.map(ref => {
       console.log('########## takeSnapshot...');
       return takeSnapshot(ref, {
@@ -171,16 +173,22 @@ class TabController extends Component {
   findViewByTabId(tabId): any {
     let tab = null;
     this.state.tabList
-        .filter(e => {return tabId === e.id})
-        .forEach(e => {tab = e})
+        .forEach(e => {
+          if (tabId === e.id) {
+            tab = e;
+          }
+        })
     return tab;
   }
 
   findIndexByTabId(tabId: number): number {
     let findId = 0;
     this.state.tabList
-        .filter(e => {return tabId === e.id})
-        .forEach((e, id) => {findId = id})
+          .forEach((e, i) => {
+            if (tabId === e.id) {
+              findId = i;
+            }
+          })
     return findId;
   }
 
@@ -233,8 +241,8 @@ class TabController extends Component {
     var nearest = findNearestElement(tempList, id);
     var toDeleteId = this.findIndexByTabId(id)
     if (toDeleteId || toDeleteId === 0) {
-      console.log('toDeleteId ' + toDeleteId);
       tempList.splice(toDeleteId, 1);
+      this.tabRefList.splice(toDeleteId, 1);
     }
 
     this.setState({
@@ -244,6 +252,7 @@ class TabController extends Component {
 
     console.log('==== _closeWeb switchTab: ' + nearest);
     Emitter.emit('switch_tab', nearest);
+
 
     function findNearestElement(arr: Array<Object>, id: number) {
       var prevList = arr.filter(e => e.id <= id);
@@ -265,7 +274,7 @@ class TabController extends Component {
         <TabNavigator
           id={id}
           key={id}
-          ref={(tab) => this.tabRefList.push(tab)}/>
+          ref={(tab) => {tab && this.tabRefList.push(tab)}}/>
       </View>
     )
   }
@@ -273,9 +282,6 @@ class TabController extends Component {
   goToHome(tabId: number) {
     let index: number = this.findIndexByTabId(tabId);
     this.tabRefList[index].popToMain();
-  }
-
-  handleTabBack = () => {
   }
 
   handleBack = () => {

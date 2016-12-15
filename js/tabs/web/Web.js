@@ -22,12 +22,6 @@ var DEFAULT_URL = 'https://m.baidu.com/?from=1013843a&pu=sz%401321_480&wpo=btmfa
 
 type State = {
   url: string,
-  title: string,
-  loading: bool,
-  canBack: bool,
-  canForward: bool,
-  realGoBack: bool,
-  scalesPageToFit: bool,
 }
 
 class Web extends Component {
@@ -37,60 +31,48 @@ class Web extends Component {
     navigator: PropTypes.func.isRequired,
   }
 
-  firstLoad = false;
+  state: State = {
+    url: this.props.url
+  }
 
-  state: State;
-
+  title: string = '';
   closeTab = false;
+  navState: Object = {}
 
   constructor(props: any) {
     super(props)
-
     this.state = {
-      url: this.props.url || DEFAULT_URL,
-      title: 'No Page Loaded',
-      loading: true,
-      canBack: true, // 返回键始终有效, 如果当前网页不可后退, 则返回至首页
-      canForward: false,
-      realGoBack: false,
-      scalesPageToFit: true,
-    };
-
-    this.closeTab = false;
+      url: this.props.url
+    }
     this.initEvent();
-    InteractionManager.runAfterInteractions(() => {
-      this.setState({
-          url: this.props.url
-        }
-      )
-    })
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState.url != this.state.url) {
+      return true;
+    }
+    if (nextProps.frontTabId != this.props.frontTabId) {
+      return false
+    }
+    return false
   }
 
   componentWillUnmount() {
     console.log('$$$$$$$$$ Web componentWillUnmount');
     if (!this.closeTab) {
-      this.props.updateWebState(this.props.id, {
-                            url: '',
-                            title: ''
-                          });
-      this.props.updateTab(this.props.id, {
-                            url: '',
-                            title: '主页'
-                          });
+      let navState = {
+        url: '',
+        title: '主页'
+      }
+      this.props.updateWebState(this.props.id, navState);
+      this.props.updateTab(this.props.id, navState);
       this.props.showTabPage(true);
     }
     this.unRegisterEvents();
   }
 
   render() {
-    let isFirstLoad = this.firstLoad;
-    if (isFirstLoad) {
-      this.firstLoad = false;
-    }
     return (
-      isFirstLoad
-      ? <View/>
-      :
       <WebView
         source={{uri: this.state.url}}
         ref={WEBVIEW_REF}
@@ -154,8 +136,8 @@ class Web extends Component {
   onWebBack = (...args) => {
     var tabId = args[0];
     if (tabId === this.props.id) {
-      if (this.state.realGoBack) {
-        console.log('this.state.realGoBack');
+      if (this.navState.canGoBack) {
+        console.log('canGoBack');
         this.back()
       } else {
         this.props.navigator.pop();
@@ -167,7 +149,7 @@ class Web extends Component {
     console.log('switch_tab: current: ' + this.props.id + ', switchTo: ' + args[0]);
     var id = args[0];
     if (this.props.id === id) {
-      this.props.updateWebState(this.props.id, this.state);
+      this.props.updateWebState(this.props.id, this.navState);
     }
   }
 
@@ -179,16 +161,11 @@ class Web extends Component {
   }
 
   onNavigationStateChange = (navState: any) => {
-    this.setState({
-      url: navState.url,
-      title: navState.title,
-      loading: navState.loading,
-      canBack: true, // 返回键始终有效, 如果当前网页不可后退, 则返回至首页
-      canForward: navState.canGoForward,
-      realGoBack: navState.canGoBack,
-      scalesPageToFit: true
-    });
-    this.props.updateWebState(this.props.id, navState);
+    console.log('$$$$$$$$$ onNavigationStateChange front: ' + this.props.frontTabId + ', id: ' + this.props.id);
+    this.navState = navState;
+    if (this.props.id === this.props.frontTabId) {
+      this.props.updateWebState(this.props.id, navState);
+    }
     this.props.updateTab(this.props.id, navState);
   };
 
@@ -199,6 +176,7 @@ class Web extends Component {
 
 function mapStateToProps(state) {
   return {
+    frontTabId: state.tabinfo.tabId,
     back: state.tabinfo.back,
     forward: state.tabinfo.forward
   }

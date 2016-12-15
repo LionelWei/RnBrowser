@@ -2,7 +2,6 @@
 
 module.exports = {
   ATOM_ICON: require('./atom_icon.png'),
-  EGAME_LOGO: require('./egame_logo.png'),
   GITHUB_LOGO: require('./github_logo.png'),
   ICO_SEARCH_S_NORMAL: require('./ico_search_s_normal.png'),
   ICO_SEARCH_S_PRESSED: require('./ico_search_s_pressed.png'),
@@ -51,4 +50,7 @@ module.exports = {
   WEB_ICON_QQ: require('./web_icon_qq.png'),
   WEB_ICON_TAOBAO: require('./web_icon_taobao.png'),
   WEB_ICON_WEIBO: require('./web_icon_weibo.png'),
+  EGAME_ICON: require('./egame_icon.png'),
+  YOUKU_ICON: require('./youku_icon.png'),
+  ICON_CLOSE_NORMAL: require('./icon_close_normal.png')
 }

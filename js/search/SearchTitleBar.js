@@ -34,7 +34,6 @@ class SearchTitleBar extends Component {
   static propTypes = {
     defaultUrl: PropTypes.string,
     append: PropTypes.func,
-    tabId: PropTypes.number,
   }
 
   inputText = '';
@@ -96,9 +95,9 @@ class SearchTitleBar extends Component {
       alert('网址需以http://或者https://开头')
       return;
     }
-    console.log('inputUrl: ' + this.inputText + ', tabId: ' + this.props.tabId);
+    console.log('inputUrl: ' + this.inputText + ', frontTabId: ' + this.props.frontTabId);
     this.props.append(this.inputText)
-    Emitter.emit('url_changed', this.props.tabId, this.inputText)
+    Emitter.emit('url_changed', this.props.frontTabId, this.inputText)
     this.popNavi();
   }
 
@@ -115,6 +114,11 @@ class SearchTitleBar extends Component {
   }
 }
 
+function mapStateToProps(state) {
+  return {
+    frontTabId: state.tabinfo.tabId,
+  }
+}
 function mapDispatchToProps(dispatch) {
   return {
     append: (url) => dispatch(append(url)),
@@ -122,5 +126,5 @@ function mapDispatchToProps(dispatch) {
 }
 
 module.exports = connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps)(SearchTitleBar)

@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import {NAV_BAR_HEIGHT ,BOTTOM_BAR_HEIGHT} from '../../utils/Consts'
 
-import {createTab, removeTab, showTabPage} from '../../reducers/tabinfo'
+import {createTab, removeTab, showTabPage, updateWebState} from '../../reducers/tabinfo'
 
 import {connect} from 'react-redux'
 import {Emitter} from '../../events/Emitter'
@@ -28,6 +28,7 @@ import {LeftToRight} from '../../animation/NavigatorAnimation'
 import BottomMenuPopup from '../../bottompopup/BottomMenuPopup'
 import TabIndicatorPopup from '../manage/TabIndicatorPopup'
 import ZoomablePage from '../../components/ZoomablePage'
+import WebsiteIcon from './WebsiteIcon'
 import * as SITES from './CommonWebSites'
 import * as IMG from '../../assets/imageAssets'
 
@@ -39,6 +40,7 @@ class TabPage extends ZoomablePage {
     super(props);
     this.initEvent();
     this.props.createTab(this.props.id);
+    this.props.updateWebState(this.props.id)
   }
 
   componentWillUnmount() {
@@ -108,47 +110,61 @@ class TabPage extends ZoomablePage {
       <View style={{
         marginTop: 30,
         flexDirection: 'row',
-        justifyContent: 'space-around'
+        flexWrap: 'wrap',
+        justifyContent: 'flex-start'
       }}>
-        <TouchableOpacity onPress={() => this.gotoWeb(SITES.BAIDU)}>
-          <Image style={styles.web_icon} source={IMG.WEB_ICON_BAIDU}/>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => this.gotoWeb(SITES.WEIBO)}>
-          <Image style={styles.web_icon} source={IMG.WEB_ICON_WEIBO}/>
-        </TouchableOpacity>
-
-        <TouchableWithoutFeedback onPress={() => this.gotoWeb(SITES.TAOBAO)}>
-          <Image style={styles.web_icon} source={IMG.WEB_ICON_TAOBAO}/>
-        </TouchableWithoutFeedback>
-
-        <TouchableOpacity onPress={() => this.gotoWeb(SITES.QQ)}>
-          <Image style={styles.web_icon} source={IMG.WEB_ICON_QQ}/>
-        </TouchableOpacity>
+        <WebsiteIcon
+          pressFn={() => {this.gotoWeb(SITES.BAIDU)}}
+          icon={IMG.WEB_ICON_BAIDU}/>
+        <WebsiteIcon
+          pressFn={() => {this.gotoWeb(SITES.YOUKU)}}
+          icon={IMG.YOUKU_ICON}/>
+        <WebsiteIcon
+          pressFn={() => {this.gotoWeb(SITES.EGAME)}}
+          icon={IMG.EGAME_ICON}/>
+        <WebsiteIcon
+          pressFn={() => {this.gotoWeb(SITES.QQ)}}
+          icon={IMG.WEB_ICON_QQ}/>
+        <WebsiteIcon
+          pressFn={() => {this.gotoWeb(SITES.TAOBAO)}}
+          icon={IMG.WEB_ICON_TAOBAO}/>
       </View>
     )
   }
 
   initEvent() {
     Emitter.addListener('url_changed', this.onUrlChanged);
+    Emitter.addListener('switch_tab', this.onSwitchTab);
   }
 
   unRegisterEvents() {
     Emitter.removeListener('url_changed', this.onUrlChanged);
+    Emitter.addListener('switch_tab', this.onSwitchTab);
   }
 
   onUrlChanged = (...args) => {
     var tabId = args[0];
     if (tabId === this.props.id) {
       var routeStack = this.props.navigator.getCurrentRoutes();
-      if (routeStack.length === 2) {
+      if (routeStack.length === 1) {
         var url = args[1];
         setTimeout(() => this.gotoWeb(url), 100);
       }
     }
   }
 
+  onSwitchTab = (...args) => {
+    var id = args[0];
+    if (this.props.id === id) {
+      var routeStack = this.props.navigator.getCurrentRoutes();
+      if (routeStack.length === 1) {
+        this.props.updateWebState(this.props.id);
+      }
+    }
+  }
+
   gotoWeb = (url: string) => {
+    console.log('=== gotoWeb url: ' + url);
     this.props.navigator.push({
       component: WebPage,
       scene: Transition.NONE,
@@ -179,10 +195,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
   },
-  web_icon: {
-    height: 40,
-    width: 40,
-  }
 })
 
 function mapStateToProps(state) {
@@ -193,6 +205,14 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
+    updateWebState: (id: number) => {
+      dispatch(updateWebState(id,
+                            false,
+                            false,
+                            '',
+                            '主页',
+                            true));
+    },
     createTab: (id: number) => {
       dispatch(createTab(id))
     },

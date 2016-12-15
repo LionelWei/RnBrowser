@@ -18,7 +18,7 @@ class Overlay extends Component {
   static defaultProps = {
     backgroundColor: '#000',
     opacity: 0.4,
-    animationDuration: 300,
+    animationDuration: 100,
     showOverlay: false,
   };
 

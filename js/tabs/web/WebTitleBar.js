@@ -26,7 +26,7 @@ const style = StyleSheet.create({
   titlebar: {
     flexDirection: 'row',
     height: NAV_BAR_HEIGHT,
-    backgroundColor: '#f1f2f3',
+    backgroundColor: 'white',
     alignItems: 'center'
   }
 })
@@ -56,19 +56,25 @@ class WebTitleBar extends Component {
         <View style={{
           flex: 1
         }}>
-        <TextInput
+        <TouchableOpacity
           style={{
             flex: 1,
-            paddingLeft: 8,
-            backgroundColor: 'transparent',
-            color: 'black',
-            fontSize: 16}}
-          autoFocus={false}
-          numberOfLines={1}
-          defaultValue={this.props.title}
-          placeholder="请输入网址"
-          onFocus={()=>this.search()}
-          underlineColorAndroid='transparent'/>
+            paddingLeft: 8,}}
+          onPress={()=>this.search()}>
+          <View style={{
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+            <Text
+              style={{
+                color: 'black',
+                fontSize: 16}}
+              numberOfLines={1}>
+                {this.props.title}
+            </Text>
+          </View>
+        </TouchableOpacity>
         </View>
         <View style={{
           paddingLeft: 12,

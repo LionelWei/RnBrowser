@@ -45,7 +45,7 @@ function handleUpdateWebInfo(state, action) {
     title: action.title ,
     canBack: action.canBack,
     canForward: action.canForward,
-    isTabPageVisible: false,
+    isTabPageVisible: action.showTabPage,
   }
 }
 
@@ -72,7 +72,7 @@ function handleCreateTab(state: any = initialState, action: any) {
               ...state,
               isTabPageVisible: true,
               url: '',
-              title: '主页',
+              title: '',
               tabs: [
                 ...state.tabs,
                 {
@@ -117,14 +117,16 @@ export function updateWebState(id: number,
                             canBack: bool,
                             canForward: bool,
                             url: string,
-                            title: string) {
+                            title: string,
+                            showTabPage: bool) {
   return {
     type: UPDATE_WEBSITE_INFO,
     tabId: id,
     url: url,
     title: title,
     canBack: canBack,
-    canForward: canForward
+    canForward: canForward,
+    showTabPage: showTabPage || false,
   }
 }
 

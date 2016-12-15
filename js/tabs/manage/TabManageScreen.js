@@ -51,14 +51,17 @@ class TabManageScreen extends Component {
 
   componentWillReceiveProps(nextProps) {
     console.log('TabManageScreen, next uris: ' + nextProps.uris);
+    this.setState({
+      dataSource: nextProps.uris
+    })
   }
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   if (nextState.dataSource != this.state.dataSource) {
-  //     return true;
-  //   }
-  //   return false
-  // }
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState.dataSource != this.state.dataSource) {
+      return true;
+    }
+    return false
+  }
 
   componentDidMount() {
   }
@@ -76,7 +79,7 @@ class TabManageScreen extends Component {
     return (
       <View style={styles.body}>
         {
-          this.props.uris && this.props.uris.length > 0
+          this.state.dataSource && this.state.dataSource.length > 0
           ? <ListView
               ref={(listview) => this.listView = listview}
               contentContainerStyle={{
@@ -108,6 +111,25 @@ class TabManageScreen extends Component {
             height: scaleDimension.h}}
             source={{uri: rowData}} />
         </TouchableOpacity>
+        <View
+          style={{
+            width: scaleDimension.w,
+            height: 40,
+            backgroundColor: '#000000aa',
+            flex:1,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'absolute',
+            bottom: 0,
+          }}>
+          <TouchableOpacity onPress={() => this.closeTab(rowID)}>
+            <Image style={{
+              width: 30,
+              height: 30,
+              }} source={IMG.ICON_CLOSE_NORMAL}/>
+          </TouchableOpacity>
+        </View>
       </View>
     )
   }
@@ -148,6 +170,21 @@ class TabManageScreen extends Component {
   switchTab = (rowId: number) => {
     Emitter.emit('switch_tab', this.props.tabs[rowId].id)
     setTimeout(() => this.back(), 100)
+  }
+
+  closeTab = (rowId: number) => {
+    let tabId = this.props.tabs[rowId].id;
+    console.log('==== length: ' + this.state.dataSource.length);
+    if (this.state.dataSource.length === 1) {
+      this.back()
+    } else {
+      let newDataSource = this.state.dataSource.splice(rowId, 1)
+      this.setState({
+        dataSource: newDataSource
+      })
+    }
+    console.log('===== TabManageScreen closeTab: ' + tabId);
+    Emitter.emit('close_tab', tabId);
   }
 }
 

@@ -25,7 +25,6 @@ export default class extends Component {
   }
 
   open = () => {
-    console.log('==== open ====');
     this.setVisible(true)
   }
 
@@ -34,20 +33,20 @@ export default class extends Component {
   }
 
   componentWillReceiveProps(nextProps: any) {
-    console.log('Popup componentWillReceiveProps');
     this.setVisible(nextProps.isVisible);
   }
 
   setVisible(visible: bool) {
     this.setState({
-      visible: true,
+      visible: visible,
       showOverlay: visible
     })
 
     slideAnimation.toValue(visible ? 1 : 0, () => {
-      this.setState({
-        visible: visible
-      })
+      // 减少渲染次数
+      // this.setState({
+      //   visible: visible
+      // })
     })
   }
 
