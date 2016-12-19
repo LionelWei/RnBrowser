@@ -15,6 +15,7 @@ import {
 import {connect} from 'react-redux'
 import {append} from '../reducers/searchhistory'
 
+import {NAV_BAR_HEIGHT} from '../utils/Consts'
 import TouchableButton from '../components/TouchableButton'
 import {Emitter} from '../events/Emitter'
 import * as IMG from '../assets/imageAssets'
@@ -22,7 +23,7 @@ import * as IMG from '../assets/imageAssets'
 const style = StyleSheet.create({
   titlebar: {
     flexDirection: 'row',
-    height: 48,
+    height: NAV_BAR_HEIGHT,
     backgroundColor: '#fff',
     alignItems: 'center'
   }

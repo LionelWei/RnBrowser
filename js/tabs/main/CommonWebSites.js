@@ -7,4 +7,5 @@ module.exports = {
   NETEASE: "http://3g.163.com",
   EGAME: 'http://h5.play.cn',
   YOUKU: 'http://m.youku.com',
+  CNBETA: 'http://m.cnbeta.com',
 }

@@ -28,12 +28,20 @@ export default class extends Component {
     this.setVisible(true)
   }
 
-  onOverlayPress= () => {
+  close = () => {
+    this.setVisible(false)
+  }
+
+  onOverlayPress = () => {
     this.setVisible(false)
   }
 
   componentWillReceiveProps(nextProps: any) {
     this.setVisible(nextProps.isVisible);
+  }
+
+  isVisible = () => {
+    return this.state.visible;
   }
 
   setVisible(visible: bool) {

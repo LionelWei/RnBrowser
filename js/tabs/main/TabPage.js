@@ -128,6 +128,9 @@ class TabPage extends ZoomablePage {
         <WebsiteIcon
           pressFn={() => {this.gotoWeb(SITES.TAOBAO)}}
           icon={IMG.WEB_ICON_TAOBAO}/>
+        <WebsiteIcon
+          pressFn={() => {this.gotoWeb(SITES.CNBETA)}}
+          icon={IMG.CNBETA_ICON}/>
       </View>
     )
   }

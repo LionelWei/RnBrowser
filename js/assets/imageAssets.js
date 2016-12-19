@@ -52,5 +52,8 @@ module.exports = {
   WEB_ICON_WEIBO: require('./web_icon_weibo.png'),
   EGAME_ICON: require('./egame_icon.png'),
   YOUKU_ICON: require('./youku_icon.png'),
-  ICON_CLOSE_NORMAL: require('./icon_close_normal.png')
+  CNBETA_ICON: require('./cnbeta_icon.png'),
+  ICON_CLOSE_NORMAL: require('./icon_close_normal.png'),
+  ICON_ADD_WEB: require('./icon_add_web.png'),
+  ICON_BOTTOM_TABS: require('./icon_bottom_tabs.png'),
 }

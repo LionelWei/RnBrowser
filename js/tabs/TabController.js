@@ -285,6 +285,11 @@ class TabController extends Component {
   }
 
   handleBack = () => {
+    if (this.menuPopup.isVisible()) {
+      this.menuPopup.close()
+      return true
+    }
+    
     const navigator = this.props.navigator
     const routers = navigator.getCurrentRoutes();
     if (routers.length > 1) {

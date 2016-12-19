@@ -19,6 +19,7 @@ import {connect} from 'react-redux'
 import EventEmitter from 'EventEmitter'
 
 import TouchableButton from '../../components/TouchableButton'
+import TabCount from '../../components/TabCount'
 import {BOTTOM_BAR_HEIGHT} from '../../utils/Consts'
 import {Emitter} from '../../events/Emitter'
 import * as IMG from '../../assets/imageAssets'
@@ -52,18 +53,22 @@ class TabBottomBar extends Component {
     return (
       <View style={style.bottombar}>
         <TouchableButton
-          bottombar={true}
           pressFn={() => this.props.menuPressFn()}
           normalBg = {IMG.ICON_MENU_NORMAL}
           pressBg = {IMG.ICON_MENU_PRESSED} />
-        <TouchableButton
-          bottombar={true}
-          pressFn = {() => this.props.tabPressFn()}
-          normalBg = {IMG.ICON_NEW_ADD_NORMAL}
-          pressBg = {IMG.ICON_NEW_ADD_PRESSED} />
+        <TabCount
+          pressFn={() => this.props.tabPressFn()}
+          tabCount={this.props.tabCount}
+        />
       </View>
     )
   }
 }
 
-module.exports = connect(null, null)(TabBottomBar)
+function mapStateToProps(state) {
+  return {
+    tabCount: state.tabinfo.tabs.length,
+  }
+}
+
+module.exports = connect(mapStateToProps, null)(TabBottomBar)

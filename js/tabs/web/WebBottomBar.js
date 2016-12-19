@@ -8,17 +8,14 @@ import {
   Text,
   StyleSheet,
   Navigator,
-  TouchableWithoutFeedback,
-  TouchableNativeFeedback,
-  Modal,
   TouchableHighlight,
+  TouchableOpacity,
   Platform
 } from 'react-native'
 
 import {connect} from 'react-redux'
 import TouchableButton from '../../components/TouchableButton'
-import BottomMenuPopup from '../../bottompopup/BottomMenuPopup'
-import TabIndicatorPopup from '../manage/TabIndicatorPopup'
+import TabCount from '../../components/TabCount'
 import {BOTTOM_BAR_HEIGHT} from '../../utils/Consts'
 import {Emitter} from '../../events/Emitter'
 import * as IMG from '../../assets/imageAssets'
@@ -45,6 +42,16 @@ class WebBottomBar extends Component {
     homePressFn: PropTypes.func,
   };
 
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.tabCount !== this.props.tabCount
+      || nextProps.tabId !== this.props.tabId
+      || nextProps.canBack !== this.props.canBack
+      || nextProps.canForward !== this.props.canForward) {
+      return true
+    }
+    return false
+  }
+
   render() {
     return (
       <View style={style.bottombar}>
@@ -65,10 +72,10 @@ class WebBottomBar extends Component {
           normalBg = {IMG.ICON_MENU_NORMAL}
           pressBg = {IMG.ICON_MENU_PRESSED} />
 
-        <TouchableButton
+        <TabCount
           pressFn={this.props.tabPressFn}
-          normalBg = {IMG.ICON_NEW_ADD_NORMAL}
-          pressBg = {IMG.ICON_NEW_ADD_PRESSED} />
+          tabCount={this.props.tabCount}
+        />
 
         <TouchableButton
           pressFn = {this.props.homePressFn}
@@ -89,6 +96,7 @@ class WebBottomBar extends Component {
 
 function mapStateToProps(state) {
   return {
+    tabCount: state.tabinfo.tabs.length,
     tabId: state.tabinfo.tabId,
     canBack: state.tabinfo.canBack || false,
     canForward: state.tabinfo.canForward || false,

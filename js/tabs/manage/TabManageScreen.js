@@ -83,12 +83,11 @@ class TabManageScreen extends Component {
           ? <ListView
               ref={(listview) => this.listView = listview}
               contentContainerStyle={{
-                paddingLeft: 20,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
               horizontal={true}
-              dataSource={this.ds.cloneWithRows(this.props.uris)}
+              dataSource={this.ds.cloneWithRows(this.state.dataSource)}
               renderRow={(rowData, sectionID, rowID) => this.renderItem(rowData, sectionID, rowID)}
             />
           : null
@@ -101,7 +100,7 @@ class TabManageScreen extends Component {
     console.log('sectionId: ' + sectionID + ', rowId: ' + rowID + ', tabId:  ' + this.props.tabs[rowID].id)
 
     return (
-      <View style={{paddingLeft: 20}}>
+      <View style={{paddingLeft: 10, paddingRight: 10}}>
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={()=> this.switchTab(rowID)}>
@@ -111,23 +110,31 @@ class TabManageScreen extends Component {
             height: scaleDimension.h}}
             source={{uri: rowData}} />
         </TouchableOpacity>
-        <View
-          style={{
-            width: scaleDimension.w,
-            height: 40,
-            backgroundColor: '#000000aa',
-            flex:1,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            position: 'absolute',
-            bottom: 0,
-          }}>
-          <TouchableOpacity onPress={() => this.closeTab(rowID)}>
-            <Image style={{
-              width: 30,
-              height: 30,
-              }} source={IMG.ICON_CLOSE_NORMAL}/>
+
+        <View style={{
+          width: scaleDimension.w,
+          height: 40,
+          bottom: 0,
+          position: 'absolute',
+        }}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => this.closeTab(rowID)}>
+            <View
+              style={{
+                width: scaleDimension.w,
+                height: 40,
+                backgroundColor: '#000000aa',
+                flex:1,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Image style={{
+                width: 30,
+                height: 30,
+                }} source={IMG.ICON_CLOSE_NORMAL}/>
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -174,17 +181,17 @@ class TabManageScreen extends Component {
 
   closeTab = (rowId: number) => {
     let tabId = this.props.tabs[rowId].id;
-    console.log('==== length: ' + this.state.dataSource.length);
     if (this.state.dataSource.length === 1) {
       this.back()
     } else {
-      let newDataSource = this.state.dataSource.splice(rowId, 1)
+      let newDataSource = this.state.dataSource.slice()
+      newDataSource.splice(rowId, 1)
       this.setState({
         dataSource: newDataSource
       })
+      console.log('===== TabManageScreen closeTab: ' + tabId);
+      Emitter.emit('close_tab', tabId);
     }
-    console.log('===== TabManageScreen closeTab: ' + tabId);
-    Emitter.emit('close_tab', tabId);
   }
 }
 
@@ -206,10 +213,9 @@ const styles = StyleSheet.create({
 
   body: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingRight: 10,
   }
 })
 

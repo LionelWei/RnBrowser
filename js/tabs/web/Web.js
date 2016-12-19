@@ -8,13 +8,16 @@ import {
   View,
   Text,
   InteractionManager,
+  Platform,
 } from 'react-native'
 import {connect} from 'react-redux'
 import {Emitter} from '../../events/Emitter'
 import {updateWebState} from '../../reducers/tabinfo'
 import {createTab, updateTab, removeTab, showTabPage} from '../../reducers/tabinfo'
 import {printObj} from '../../utils/Common'
+import WebViewAndroid from './WebViewAndroid'
 
+var DefaultWebView = Platform.OS === 'ios' ? WebView : WebViewAndroid
 
 var TEXT_INPUT_REF = 'urlInput';
 var WEBVIEW_REF = 'webview';
@@ -73,7 +76,7 @@ class Web extends Component {
 
   render() {
     return (
-      <WebView
+      <DefaultWebView
         source={{uri: this.state.url}}
         ref={WEBVIEW_REF}
         automaticallyAdjustContentInsets={false}
@@ -210,6 +213,9 @@ function mapDispatchToProps(dispatch) {
 
 function simplifyTitle(oldTitle: string) {
   var title = oldTitle;
+  if (!title || title === '') {
+    title = '加载中...'
+  }
   return (title.length > 10
         && (subWithToken('_')
         || subWithToken(',')
