@@ -67,14 +67,6 @@ export default class BottomPopupMenu extends Component {
             height = {32} />
 
           <TouchableButton
-            pressFn = {()=>alert('夜间模式')}
-            normalBg = {IMG.ICON_NIGHT_NORMAL}
-            pressBg = {IMG.ICON_NIGHT_PRESSED}
-            description = '夜间模式'
-            width = {32}
-            height = {32} />
-
-          <TouchableButton
             pressFn = {()=>alert('检查更新')}
             normalBg = {IMG.ICON_CHECK_UPDATE_NORMAL}
             pressBg = {IMG.ICON_CHECK_UPDATE_PRESSED}
@@ -83,14 +75,6 @@ export default class BottomPopupMenu extends Component {
             height = {32} />
         </View>
         <View style={style.menu_content}>
-          <TouchableButton
-            pressFn = {() => alert('收藏')}
-            normalBg = {IMG.ICON_UNFAVOR_NORMAL}
-            pressBg = {IMG.ICON_UNFAVOR_PRESSED}
-            description = '收藏'
-            width = {32}
-            height = {32} />
-
           <TouchableButton
             pressFn = {() => alert('设置')}
             normalBg = {IMG.ICON_SETTING_NORMAL}

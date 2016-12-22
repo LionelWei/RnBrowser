@@ -4,7 +4,8 @@ import {
   Dimensions,
   Navigator
 } from 'react-native';
-var SCREEN_WIDTH = Dimensions.get('window').width;
+
+import {SCREEN_WIDTH} from '../utils/Consts'
 var BaseConfigLeftToRight = Navigator.SceneConfigs.FloatFromRight;
 var BaseConfigBottomToTop = Navigator.SceneConfigs.FloatFromBottom;
 

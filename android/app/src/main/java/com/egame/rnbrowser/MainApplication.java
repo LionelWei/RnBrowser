@@ -1,10 +1,12 @@
 package com.egame.rnbrowser;
 
 import android.app.Application;
+import android.util.Log;
 
+import com.egame.reactnativeviewcapture.ViewCapturePackage;
+import com.egame.rnbrowser.sdk.SdkIntegration;
 import com.egame.rnbrowser.webview.WebViewPackage;
 import com.facebook.react.ReactApplication;
-import fr.greweb.reactnativeviewshot.RNViewShotPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -25,8 +27,8 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                     new MainReactPackage(),
-                    new RNViewShotPackage(),
-                    new WebViewPackage()
+                    new WebViewPackage(),
+                    new ViewCapturePackage()
             );
         }
     };
@@ -34,5 +36,12 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     public ReactNativeHost getReactNativeHost() {
         return mReactNativeHost;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.e("MainApplication", "onCreate: main thread");
+        SdkIntegration.integrate(this);
     }
 }

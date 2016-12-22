@@ -13,8 +13,7 @@ import {
 
 import SlideAnimation from '../animation/SlideAnimation'
 import Overlay from '../components/Overlay'
-
-var {height: HEIGHT, width: WIDTH} = Dimensions.get('window');
+import {SCREEN_HEIGHT, SCREEN_WIDTH} from '../utils/Consts'
 
 var slideAnimation = new SlideAnimation({ animationDuration: 50 })
 
@@ -89,8 +88,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom:0,
     left: 0,
-    width: WIDTH,
-    height: HEIGHT,
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
     flexDirection: 'column',
     justifyContent: 'flex-end'
   },

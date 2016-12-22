@@ -13,10 +13,14 @@ import {
   BackAndroid
 } from 'react-native';
 import {connect} from 'react-redux'
-import { takeSnapshot } from "react-native-view-shot";
-import {NAV_BAR_HEIGHT ,BOTTOM_BAR_HEIGHT} from '../utils/Consts'
+import {capture} from "../nativemodules/ViewCapture";
 
-var {height: HEIGHT, width: WIDTH} = Dimensions.get('window');
+import {
+  NAV_BAR_HEIGHT,
+  BOTTOM_BAR_HEIGHT,
+  SCREEN_WIDTH,
+  SCREEN_HEIGHT,
+} from '../utils/Consts'
 
 import {Emitter} from '../events/Emitter'
 import {printObj} from '../utils/Common'
@@ -29,7 +33,7 @@ import WebTitleBar from './web/WebTitleBar'
 import WebBottomBar from './web/WebBottomBar'
 import BottomMenuPopup from '../bottompopup/BottomMenuPopup'
 import {showTabManager, updateTabThumbUris} from '../reducers/tabmanage'
-import {BottomToTop} from '../animation/NavigatorAnimation'
+import {BottomToTop, LeftToRight} from '../animation/NavigatorAnimation'
 
 class TabController extends Component {
   static propTypes = {
@@ -65,11 +69,6 @@ class TabController extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // setTimeout(() => {
-    //   if (nextProps.isTabManagerVisible) {
-    //     this.startTabManagerScreen(true)
-    //   }
-    // }, 400)
   }
 
   // 如果要支持下滑时自动隐藏标题栏和底栏的话, 可以考虑把titlebar和bottombar的布局
@@ -96,7 +95,7 @@ class TabController extends Component {
   renderSpaceHoler = () => {
     let offset = BOTTOM_BAR_HEIGHT + NAV_BAR_HEIGHT;
     return (
-      <View style={{height: HEIGHT - offset}} / >
+      <View style={{height: SCREEN_HEIGHT - offset}} / >
     )
   }
 
@@ -142,16 +141,16 @@ class TabController extends Component {
     navigator.push({
       component: TabManageScreen,
       currentListIndex: this.findIndexByTabId(this.state.currentTabId),
-      scene: BottomToTop,
+      scene: Transitions.NONE,
     })
 
     console.log('==== startTabManagerScreen tabRefList length: ' + this.tabRefList.length);
 
     var promises = this.tabRefList.map(ref => {
       console.log('########## takeSnapshot...');
-      return takeSnapshot(ref, {
+      return capture(ref, {
         format: 'jpg',
-        quality: 0.6,
+        quality: 1.0,
       })
     })
     Promise.all(promises).then(
@@ -289,7 +288,7 @@ class TabController extends Component {
       this.menuPopup.close()
       return true
     }
-    
+
     const navigator = this.props.navigator
     const routers = navigator.getCurrentRoutes();
     if (routers.length > 1) {
@@ -318,14 +317,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: NAV_BAR_HEIGHT,
     left: 0,
-    width: WIDTH,
-    height: HEIGHT - NAV_BAR_HEIGHT - BOTTOM_BAR_HEIGHT,
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT - NAV_BAR_HEIGHT - BOTTOM_BAR_HEIGHT,
   },
 })
 
 function mapStateToProps(state) {
   return {
-    isTabManagerVisible: state.tabmanage.showManager,
     isCurrentTabPage: state.tabinfo.isTabPageVisible,
   }
 }

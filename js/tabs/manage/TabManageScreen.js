@@ -19,11 +19,16 @@ import * as IMG from '../../assets/imageAssets'
 import {showTabManager} from '../../reducers/tabmanage'
 import {Emitter} from '../../events/Emitter'
 
-import {NAV_BAR_HEIGHT, BOTTOM_BAR_HEIGHT} from '../../utils/Consts'
-var {height: HEIGHT, width: WIDTH} = Dimensions.get('window');
+import {
+  NAV_BAR_HEIGHT,
+  BOTTOM_BAR_HEIGHT,
+  SCREEN_WIDTH,
+  SCREEN_HEIGHT,
+} from '../../utils/Consts'
+
 var scaleDimension = {
-  w: WIDTH * 0.8,
-  h: (HEIGHT - NAV_BAR_HEIGHT - BOTTOM_BAR_HEIGHT) * 0.8,
+  w: SCREEN_WIDTH * 0.8,
+  h: (SCREEN_HEIGHT - NAV_BAR_HEIGHT - BOTTOM_BAR_HEIGHT) * 0.8,
 }
 
 class TabManageScreen extends Component {
@@ -170,8 +175,8 @@ class TabManageScreen extends Component {
   }
 
   back = () => {
-    this.props.showTabManager(false);
     this.props.navigator.pop();
+    // this.props.showTabManager(false);
   }
 
   switchTab = (rowId: number) => {

@@ -3,7 +3,7 @@
 import React, { PropTypes, Component } from 'react';
 import { StyleSheet, Dimensions, TouchableOpacity, Animated } from 'react-native';
 
-const { width: WIDTH, height: HEIGHT } = Dimensions.get('window');
+import {SCREEN_HEIGHT, SCREEN_WIDTH} from '../utils/Consts'
 
 class Overlay extends Component {
   static propTypes = {
@@ -69,8 +69,8 @@ const styles = StyleSheet.create({
     flex: 1,
     top: 0,
     left: 0,
-    width: WIDTH,
-    height: HEIGHT,
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
     position: 'absolute',
   },
 });

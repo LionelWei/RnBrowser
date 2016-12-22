@@ -26,14 +26,12 @@ import Search from '../../search/SearchScene'
 import Transition from '../../animation/NoTransition'
 import {LeftToRight} from '../../animation/NavigatorAnimation'
 import BottomMenuPopup from '../../bottompopup/BottomMenuPopup'
-import TabIndicatorPopup from '../manage/TabIndicatorPopup'
 import ZoomablePage from '../../components/ZoomablePage'
 import WebsiteIcon from './WebsiteIcon'
 import * as SITES from './CommonWebSites'
 import * as IMG from '../../assets/imageAssets'
 
-
-var {height, width} = Dimensions.get('window');
+import {SCREEN_WIDTH} from '../../utils/Consts'
 
 class TabPage extends ZoomablePage {
   constructor(props: any) {
@@ -89,7 +87,7 @@ class TabPage extends ZoomablePage {
       <View>
         <Text
           style={{
-            width: width - 20,
+            width: SCREEN_WIDTH - 20,
             height: 50,
             marginTop: 10,
             marginBottom: 10,

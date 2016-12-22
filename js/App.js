@@ -48,16 +48,15 @@ export default class extends Component {
       <Provider store={store}>
         <View style={{
           flex: 1,
-          flexDirection: 'column',
-          backgroundColor: 'transparent'}}>
+          flexDirection: 'column'}}>
           <StatusBar
             barStyle='default'
-            hidden={true}
+            hidden={false}
+            backgroundColor='silver'
           />
           <Navigator
             style={{
-              flex: 1,
-              backgroundColor: 'transparent'}}
+              flex: 1}}
             ref='navigator'
             initialRoute={{
               component: Home,

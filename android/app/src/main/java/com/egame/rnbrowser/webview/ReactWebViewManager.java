@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.JavascriptInterface;
 
+import com.egame.reactnativeurldownload.UrlDownloadUtils;
 import com.egame.rnbrowser.webview.events.TopLoadingErrorEvent;
 import com.egame.rnbrowser.webview.events.TopLoadingFinishEvent;
 import com.egame.rnbrowser.webview.events.TopLoadingStartEvent;
@@ -342,6 +343,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
+        webView.setDownloadListener(new WebViewDownloadListener(webView));
 
         return webView;
     }

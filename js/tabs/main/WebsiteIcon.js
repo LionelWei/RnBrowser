@@ -13,8 +13,8 @@ import {
   TouchableWithoutFeedback
 } from 'react-native';
 
-var {height, width} = Dimensions.get('window');
-var ICON_WIDTH = width / 4
+import {SCREEN_WIDTH} from '../../utils/Consts'
+var ICON_WIDTH = SCREEN_WIDTH / 4
 
 export default class WebsiteIcon extends Component {
   static propTypes = {
