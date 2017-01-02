@@ -24,7 +24,8 @@ export default class extends Component {
         <TitleBar
           tabId={this.props.tabId}
           defaultUrl={this.props.defaultUrl}
-          navigator={this.props.navigator}/>
+          navigator={this.props.navigator}
+          onUrlChanged={this.props.onUrlChanged}/>
         <HistoryList
           navigator={this.props.navigator}/>
       </View>

@@ -9,16 +9,8 @@ import {createStore, applyMiddleware} from 'redux'
 import {AsyncStorage} from 'react-native'
 import {nonPersistList} from './reducers/nonpersistlist'
 
-const createStoreWithMiddleware = applyMiddleware(thunk)(createStore)
-const store = autoRehydrate()(createStoreWithMiddleware)(reducers)
-persistStore(store, {
-    blacklist: nonPersistList,
-    storage: AsyncStorage
-  }, null)
-
 import {
   Platform,
-  StatusBar,
   BackAndroid,
   View,
   Navigator,
@@ -26,10 +18,14 @@ import {
   ToastAndroid
 } from 'react-native'
 import Home from './home/HomeScene'
+import CustomStatusBar from './components/CustomStatusBar'
 
-export const STATUS_BAR_HEIGHT = (Platform.OS === 'ios' ? 20 : 25)
-export const NAV_BAR_HEIGHT = (Platform.OS === 'ios' ? 44 : 56)
-export const ABOVE_LOLIPOP = Platform.Version && Platform.Version > 19
+const createStoreWithMiddleware = applyMiddleware(thunk)(createStore)
+const store = autoRehydrate()(createStoreWithMiddleware)(reducers)
+persistStore(store, {
+    blacklist: nonPersistList,
+    storage: AsyncStorage
+  }, null)
 
 console.disableYellowBox = true;
 
@@ -49,11 +45,7 @@ export default class extends Component {
         <View style={{
           flex: 1,
           flexDirection: 'column'}}>
-          <StatusBar
-            barStyle='default'
-            hidden={false}
-            backgroundColor='silver'
-          />
+          <CustomStatusBar />
           <Navigator
             style={{
               flex: 1}}

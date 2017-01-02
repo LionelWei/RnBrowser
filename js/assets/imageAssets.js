@@ -56,4 +56,6 @@ module.exports = {
   ICON_CLOSE_NORMAL: require('./icon_close_normal.png'),
   ICON_ADD_WEB: require('./icon_add_web.png'),
   ICON_BOTTOM_TABS: require('./icon_bottom_tabs.png'),
+  ICON_WEB_STOP_LOADING: require('./icon_web_stop_loading.png'),
+  ICON_WEB_REFRESH: require('./icon_web_refresh.png'),
 }

@@ -35,18 +35,47 @@ class SearchHistoryList extends Component {
     return (
       <ListView
         dataSource={this.props.listData}
-        renderRow={(rowData) =>
-          <TouchableOpacity
-            style={{flex: 1}}
-            onPress={() => this.props.append()}>
-            <Text>{rowData}</Text>
-          </TouchableOpacity>
-        }
+        renderRow={(rowData) => this.renderItem(rowData)}
       />
     );
   }
+
+  renderItem = (itemData) => {
+    return (
+      <TouchableOpacity
+        style={{flex: 1, height: 48}}
+        onPress={() => this.props.append()}>
+        <View style={styles.item_container}>
+          <Text
+            style={styles.title}
+            numberOfLines={1}>
+            {itemData}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    )
+  }
 }
 
+const styles = StyleSheet.create({
+  item_container: {
+    flex:1,
+    flexDirection: 'row',
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingTop: 8,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f2f3',
+    alignItems: 'center',
+  },
+  title: {
+    flex: 1,
+    fontSize: 16,
+    color: 'black',
+    alignSelf: 'center'
+  },
+})
 function mapStateToProps(state) {
   return {
     listData: getListData(state.searchhistory.list)

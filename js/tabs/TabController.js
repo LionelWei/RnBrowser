@@ -10,7 +10,8 @@ import {
   StyleSheet,
   Navigator,
   InteractionManager,
-  BackAndroid
+  BackAndroid,
+  findNodeHandle
 } from 'react-native';
 import {connect} from 'react-redux'
 import {capture} from "../nativemodules/ViewCapture";
@@ -25,15 +26,14 @@ import {
 import {Emitter} from '../events/Emitter'
 import {printObj} from '../utils/Common'
 
-import Transitions from '../animation/NoTransition'
 import TabNavigator from './main/TabNavigator'
 import TabManageScreen from './manage/TabManageScreen'
 import TabBottomBar from './main/TabBottomBar'
 import WebTitleBar from './web/WebTitleBar'
 import WebBottomBar from './web/WebBottomBar'
 import BottomMenuPopup from '../bottompopup/BottomMenuPopup'
-import {showTabManager, updateTabThumbUris} from '../reducers/tabmanage'
-import {BottomToTop, LeftToRight} from '../animation/NavigatorAnimation'
+import {createTab, removeTab, setFrontTab} from '../reducers/tabinfo'
+import Transitions from '../animation/NavigatorAnimation'
 
 class TabController extends Component {
   static propTypes = {
@@ -44,7 +44,7 @@ class TabController extends Component {
     tabList: [
       {
         id: 0,
-        view: this.renderTab(0, 0)
+        view: this.renderTab(0)
       }
     ],
     /*记录tab的个数, 目前是单调递增的, 即使删除一个tab再创建也会加1*/
@@ -54,9 +54,11 @@ class TabController extends Component {
 
   menuPopup = {};
   tabRefList = []
+  uris = []
 
   constructor(props: any) {
     super(props);
+    this.props.createTab(0)
     this.initEvent();
   }
 
@@ -71,31 +73,12 @@ class TabController extends Component {
   componentWillReceiveProps(nextProps) {
   }
 
-  // 如果要支持下滑时自动隐藏标题栏和底栏的话, 可以考虑把titlebar和bottombar的布局
-  // 设为'absolute'
   render() {
     return (
       <View style={styles.container} >
-        {this.renderTitleBar()}
-        {this.renderSpaceHoler()}
-        {this.renderBottomBar()}
         {this.renderOverlayBody()}
         {this.renderMenuPopup()}
       </View>
-    )
-  }
-
-  renderTitleBar = () => {
-    console.log('isCurrentTabPage: ' + this.props.isCurrentTabPage);
-    return <WebTitleBar
-            navigator={this.props.navigator}/>
-  }
-
-  // 只是为了占位
-  renderSpaceHoler = () => {
-    let offset = BOTTOM_BAR_HEIGHT + NAV_BAR_HEIGHT;
-    return (
-      <View style={{height: SCREEN_HEIGHT - offset}} / >
     )
   }
 
@@ -108,58 +91,28 @@ class TabController extends Component {
     )
   }
 
-  uris = []
-  webBottomBar = null
-
-  renderBottomBar = () => {
-    if (this.props.isCurrentTabPage) {
-      this.webBottomBar = null;
-      return <TabBottomBar
-              menuPressFn={() => this.menuPopup.open()}
-              tabPressFn={() => this.startTabManagerScreen(true)}/>
-    } else {
-      return <WebBottomBar
-              ref={(bar) => this.webBottomBar = bar}
-              menuPressFn={() => this.menuPopup.open()}
-              tabPressFn={() => this.startTabManagerScreen(true)}
-              homePressFn={() => this.goToHome(this.state.currentTabId)}/>
-    }
-  }
-
   renderMenuPopup = () => {
     return <BottomMenuPopup
-              ref={(popup) => { this.menuPopup = popup;}}/>
+            ref={(popup) => { this.menuPopup = popup;}}
+            navigator={this.props.navigator}
+           />
   }
 
-  startTabManagerScreen = (visible) => {
-    if (!visible) {
-      return;
-    }
-
+  startTabManagerScreen = () => {
     let navigator = this.props.navigator
+    let viewList = this.tabRefList.map(e => {
+      return {
+        tag: findNodeHandle(e),
+        title: e.getTitleText()
+      }
+    })
 
     navigator.push({
       component: TabManageScreen,
+      viewList: viewList,
       currentListIndex: this.findIndexByTabId(this.state.currentTabId),
       scene: Transitions.NONE,
     })
-
-    console.log('==== startTabManagerScreen tabRefList length: ' + this.tabRefList.length);
-
-    var promises = this.tabRefList.map(ref => {
-      console.log('########## takeSnapshot...');
-      return capture(ref, {
-        format: 'jpg',
-        quality: 1.0,
-      })
-    })
-    Promise.all(promises).then(
-      uris => {
-        this.props.updateTabThumbUris(uris)
-        console.log('uris: ' + uris.toString());
-      },
-      error => console.error("Oops, snapshot failed", error)
-    )
   }
 
   showCurrentTabAtFront() {
@@ -209,12 +162,13 @@ class TabController extends Component {
 
   appendTab() {
     var primaryId = this.state.tabCount;
+    this.props.createTab(primaryId);
     this.setState({
       tabList: [
         ...this.state.tabList,
         {
           id: primaryId,
-          view: this.renderTab(primaryId, primaryId)
+          view: this.renderTab(primaryId)
         }
       ],
       tabCount: this.state.tabCount + 1,
@@ -226,12 +180,14 @@ class TabController extends Component {
     this.setState({
       currentTabId: id
     })
+    this.props.setFrontTab(id)
   }
 
   closeTab(id: number) {
     if (this.state.tabList.length == 1) {
       return;
     }
+    this.props.removeTab(id);
 
     var tempList = this.state.tabList.slice();
     console.log('id: ' + id + ', tempList: ' + tempList.length);
@@ -250,8 +206,7 @@ class TabController extends Component {
     })
 
     console.log('==== _closeWeb switchTab: ' + nearest);
-    Emitter.emit('switch_tab', nearest);
-
+    this.switchTab(nearest);
 
     function findNearestElement(arr: Array<Object>, id: number) {
       var prevList = arr.filter(e => e.id <= id);
@@ -267,20 +222,17 @@ class TabController extends Component {
 
   }
 
-  renderTab(id: number, key: any) {
+  renderTab(id: number) {
     return (
-      <View key={key} style={styles.overlay}>
+      <View key={id} style={styles.overlay}>
         <TabNavigator
           id={id}
-          key={id}
-          ref={(tab) => {tab && this.tabRefList.push(tab)}}/>
+          ref={(tab) => tab && this.tabRefList.push(tab)}
+          menuPressFn={(isTabPage: bool) => this.menuPopup.open(isTabPage)}
+          tabPressFn={()=>this.startTabManagerScreen()}
+          />
       </View>
     )
-  }
-
-  goToHome(tabId: number) {
-    let index: number = this.findIndexByTabId(tabId);
-    this.tabRefList[index].popToMain();
   }
 
   handleBack = () => {
@@ -296,15 +248,9 @@ class TabController extends Component {
       return true;
     }
 
-    // 如果当前页面是tab首页, 则退出app
-    // 如果是web页面, 则执行返回操作
-    if (this.props.isCurrentTabPage) {
-      return false;
-    } else {
-      Emitter.emit('web_back', this.state.currentTabId);
-      return true;
-    }
-  };
+    let currentTab = this.tabRefList[this.state.currentTabId];
+    return currentTab.back();
+  }
 }
 
 const styles = StyleSheet.create({
@@ -315,27 +261,29 @@ const styles = StyleSheet.create({
   },
   overlay:{
     position: 'absolute',
-    top: NAV_BAR_HEIGHT,
+    top: 0,
     left: 0,
     width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT - NAV_BAR_HEIGHT - BOTTOM_BAR_HEIGHT,
+    height: SCREEN_HEIGHT,
   },
 })
 
 function mapStateToProps(state) {
   return {
-    isCurrentTabPage: state.tabinfo.isTabPageVisible,
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    showTabManager: (visible: bool) => {
-      dispatch(showTabManager(visible))
+    setFrontTab: (id: number) => {
+      dispatch(setFrontTab(id))
     },
-    updateTabThumbUris: (uris: Array<String>) => {
-      dispatch(updateTabThumbUris(uris))
-    }
+    createTab: (id: number) => {
+      dispatch(createTab(id))
+    },
+    removeTab: (id: number) => {
+      dispatch(removeTab(id))
+    },
   }
 }
 

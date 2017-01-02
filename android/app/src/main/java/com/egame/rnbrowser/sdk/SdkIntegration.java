@@ -27,7 +27,7 @@ public class SdkIntegration {
 
     private static List<SdkProvider> getProviders(Context context) {
         return Arrays.<SdkProvider>asList(
-                new X5TencentSdkProvider(context)
+//                new X5TencentSdkProvider(context)
         );
     }
 }

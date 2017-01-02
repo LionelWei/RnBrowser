@@ -226,6 +226,7 @@ class WebView extends React.Component {
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
+        onStartDownload={this.onStartDownload}
         testID={this.props.testID}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
       />;
@@ -310,6 +311,11 @@ class WebView extends React.Component {
       viewState: WebViewState.ERROR
     });
   };
+
+  onStartDownload = (event) => {
+    var onStartDownload = this.props.onStartDownload;
+    onStartDownload && onStartDownload(event);
+  }
 
   onLoadingFinish = (event) => {
     var {onLoad, onLoadEnd} = this.props;

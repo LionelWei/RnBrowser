@@ -49,7 +49,7 @@ import java.io.FilenameFilter;
 
     @ReactMethod
     public void capture(int tag, ReadableMap options, Promise promise) {
-        Log.e(TAG, "capture: start");
+        Log.e(TAG, "capture: tag: " + tag);
         ViewCaptureProps props = new ViewCaptureProps(mReactContext, options);
         UIManagerModule uiManager = mReactContext.getNativeModule(UIManagerModule.class);
         uiManager.addUIBlock(new ViewCapture(mReactContext, tag, props, promise));

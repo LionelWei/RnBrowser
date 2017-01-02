@@ -74,8 +74,7 @@ class SearchTitleBar extends Component {
           onChangeText={this.handleTextInputChange}
         />
         <View style={{
-          paddingLeft: 12,
-          paddingRight: 12}}>
+          paddingLeft: 12,}}>
           <TouchableButton
             pressFn = {this.search}
             normalBg = {IMG.ICON_SEARCH_NORMAL}
@@ -90,7 +89,7 @@ class SearchTitleBar extends Component {
   }
 
   search = () => {
-    var url: string = this.inputText;
+    let url: string = this.inputText;
     if (!url.startsWith("https://")
           && !url.startsWith("http://")) {
       alert('网址需以http://或者https://开头')
@@ -98,8 +97,13 @@ class SearchTitleBar extends Component {
     }
     console.log('inputUrl: ' + this.inputText + ', frontTabId: ' + this.props.frontTabId);
     this.props.append(this.inputText)
-    Emitter.emit('url_changed', this.props.frontTabId, this.inputText)
-    this.popNavi();
+
+    var routeStack = this.props.navigator.getCurrentRoutes();
+    var prevRoute = routeStack[routeStack.length - 1];
+    prevRoute.url = this.inputText;
+
+    this.props.onUrlChanged(url)
+    this.popNavi()
   }
 
   handleTextInputChange = (inputText) => {

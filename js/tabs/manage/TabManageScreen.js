@@ -10,14 +10,14 @@ import {
   StyleSheet,
   ListView,
   TouchableOpacity,
+  PixelRatio,
 } from 'react-native';
-import { takeSnapshot } from "react-native-view-shot";
-import {connect} from 'react-redux'
 
+import {connect} from 'react-redux'
 import TouchableButton from '../../components/TouchableButton'
 import * as IMG from '../../assets/imageAssets'
-import {showTabManager} from '../../reducers/tabmanage'
 import {Emitter} from '../../events/Emitter'
+import CaptureView from '../../nativemodules/CaptureView'
 
 import {
   NAV_BAR_HEIGHT,
@@ -37,13 +37,13 @@ class TabManageScreen extends Component {
   }
 
   static propTypes = {
-    uris: PropTypes.array.isRequired,
+    viewList: PropTypes.array,
     navigator: PropTypes.object.isRequired,
     currentListIndex: PropTypes.number.isRequired,
   }
 
   state = {
-    dataSource: this.props.uris
+    dataSource: this.props.viewList
   }
 
   ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
@@ -54,13 +54,6 @@ class TabManageScreen extends Component {
     super(props)
   }
 
-  componentWillReceiveProps(nextProps) {
-    console.log('TabManageScreen, next uris: ' + nextProps.uris);
-    this.setState({
-      dataSource: nextProps.uris
-    })
-  }
-
   shouldComponentUpdate(nextProps, nextState) {
     if (nextState.dataSource != this.state.dataSource) {
       return true;
@@ -69,6 +62,7 @@ class TabManageScreen extends Component {
   }
 
   componentDidMount() {
+    this.adjustPositionByCurrentIndex();
   }
 
   render() {
@@ -81,39 +75,60 @@ class TabManageScreen extends Component {
   }
 
   renderBody = () => {
+    let list = this.props.viewList;
+    console.log('==== list length: ' + list.length);
     return (
       <View style={styles.body}>
-        {
-          this.state.dataSource && this.state.dataSource.length > 0
-          ? <ListView
-              ref={(listview) => this.listView = listview}
-              contentContainerStyle={{
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-              horizontal={true}
-              dataSource={this.ds.cloneWithRows(this.state.dataSource)}
-              renderRow={(rowData, sectionID, rowID) => this.renderItem(rowData, sectionID, rowID)}
-            />
-          : null
-        }
+        <ListView
+          ref={(listview) => this.listView = listview}
+          contentContainerStyle={{
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          horizontal={true}
+          dataSource={this.ds.cloneWithRows(list)}
+          renderRow={(rowData, sectionID, rowID) => this.renderItem(rowData, sectionID, rowID)}
+        />
       </View>
     )
   }
 
   renderItem = (rowData, sectionID, rowID) => {
-    console.log('sectionId: ' + sectionID + ', rowId: ' + rowID + ', tabId:  ' + this.props.tabs[rowID].id)
-
+    console.log('sectionId: ' + sectionID + ', rowId: '
+                + rowID + ', tabId:  ' + this.props.tabs[rowID]
+                + ', count: ' + this.props.tabs.length
+                + ', viewTag: ' + this.props.viewList[rowID].tag)
+    let viewData = this.props.viewList[rowID];
+    let viewTag = viewData.tag;
+    console.log('=== viewTag: ' + viewTag + ', screenWidth: ' + SCREEN_WIDTH
+                + ', screenHeight: ' + SCREEN_HEIGHT);
     return (
-      <View style={{paddingLeft: 10, paddingRight: 10}}>
+      <View style={{
+        flexDirection: 'column',
+        paddingLeft: 10,
+        paddingRight: 10}}>
+        <Text style={{
+          fontSize: 16,
+          color: 'black',
+          marginLeft: 2,
+          marginBottom: 4,
+        }}>
+          {viewData.title}
+        </Text>
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={()=> this.switchTab(rowID)}>
-          <Image
+          <CaptureView
             style={{
-            width: scaleDimension.w,
-            height: scaleDimension.h}}
-            source={{uri: rowData}} />
+              width: scaleDimension.w,
+              height: scaleDimension.h}}
+            tagWithRect={{
+              tag: viewTag,
+              x: 0,
+              y: PixelRatio.getPixelSizeForLayoutSize(NAV_BAR_HEIGHT),
+              w: PixelRatio.getPixelSizeForLayoutSize(SCREEN_WIDTH),
+              h: PixelRatio.getPixelSizeForLayoutSize(SCREEN_HEIGHT-NAV_BAR_HEIGHT-BOTTOM_BAR_HEIGHT),
+            }}/>
         </TouchableOpacity>
 
         <View style={{
@@ -161,11 +176,13 @@ class TabManageScreen extends Component {
     )
   }
 
+  // TODO 不起作用
   // 让当前tab显示在中间
-  adjustPositionByCurrentWeb = () => {
+  adjustPositionByCurrentIndex = () => {
     if (this.listView) {
       let offset = this.props.currentListIndex * scaleDimension.w * 1.1;
-      this.listView.scrollTo(0, offset, false);
+      console.log('==== offset: ' + offset);
+      this.listView.scrollTo({x: offset, y: offset, animated: false});
     }
   }
 
@@ -176,16 +193,17 @@ class TabManageScreen extends Component {
 
   back = () => {
     this.props.navigator.pop();
-    // this.props.showTabManager(false);
   }
 
   switchTab = (rowId: number) => {
-    Emitter.emit('switch_tab', this.props.tabs[rowId].id)
-    setTimeout(() => this.back(), 100)
+    console.log('=== switch To tab: ' + this.props.tabs[rowId] + ', rowId: ' + rowId);
+    Emitter.emit('switch_tab', this.props.tabs[rowId])
+    this.back();
+    // setTimeout(() => this.back(), 100)
   }
 
   closeTab = (rowId: number) => {
-    let tabId = this.props.tabs[rowId].id;
+    let tabId = this.props.tabs[rowId];
     if (this.state.dataSource.length === 1) {
       this.back()
     } else {
@@ -226,16 +244,12 @@ const styles = StyleSheet.create({
 
 function mapStateToProps(state) {
   return {
-    tabs: state.tabinfo.tabs || [],
-    uris: state.tabmanage.tabThumbUris
+    tabs: state.tabinfo.tabIds || [],
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    showTabManager: (visible) => {
-      dispatch(showTabManager(visible))
-    },
   }
 }
 

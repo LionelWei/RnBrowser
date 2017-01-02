@@ -1,7 +1,13 @@
 package com.egame.reactnativeurldownload;
 
+import android.provider.Settings;
+import android.util.Log;
+
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 
 
 
@@ -24,6 +30,30 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
     @Override
     public String getName() {
-        return null;
+        return "UrlDownload";
+    }
+
+
+    @ReactMethod
+    public void foo(Callback callback) {
+        callback.invoke(1, 2);
+    }
+
+    @ReactMethod
+    public void barPromise(final Promise promise) {
+        Log.e("UrlDownloadModule", "barPromise: start ");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    promise.resolve("this is done");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
+        Log.e("UrlDownloadModule", "barPromise: end ");
     }
 }

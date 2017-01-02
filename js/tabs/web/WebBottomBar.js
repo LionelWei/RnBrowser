@@ -20,7 +20,6 @@ import {BOTTOM_BAR_HEIGHT} from '../../utils/Consts'
 import {Emitter} from '../../events/Emitter'
 import * as IMG from '../../assets/imageAssets'
 
-
 const style = StyleSheet.create({
   bottombar: {
     height: BOTTOM_BAR_HEIGHT,
@@ -31,38 +30,40 @@ const style = StyleSheet.create({
   }
 })
 
-
-const bg='bottombar_bg_with_shadow'
-
 class WebBottomBar extends Component {
   static propTypes = {
     navigator: PropTypes.object,
     tabPressFn: PropTypes.func,
     menuPressFn: PropTypes.func,
     homePressFn: PropTypes.func,
+    onBack: PropTypes.func,
+    onForward: PropTypes.func,
   };
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.tabCount !== this.props.tabCount
-      || nextProps.tabId !== this.props.tabId
-      || nextProps.canBack !== this.props.canBack
-      || nextProps.canForward !== this.props.canForward) {
-      return true
+  tabCount = 1
+  canGoForward = false
+  canGoBack = true
+
+  updateBottom(tabCount, navState) {
+    if (tabCount !== this.tabCount
+      || navState.canGoForward !== this.canGoForward) {
+      this.tabCount = tabCount;
+      this.canGoForward = navState.canGoForward;
+      this.forceUpdate()
     }
-    return false
   }
 
   render() {
     return (
       <View style={style.bottombar}>
         <TouchableButton
-          enabled = {this.props.canBack}
+          enabled = {this.canGoBack}
           pressFn = {this.back}
           normalBg = {IMG.ICON_BACK_NORMAL}
           pressBg = {IMG.ICON_BACK_PRESSED} />
 
         <TouchableButton
-          enabled = {this.props.canForward}
+          enabled = {this.canGoForward}
           pressFn = {this.forward}
           normalBg = {IMG.ICON_FORWARD_NORMAL}
           pressBg = {IMG.ICON_FORWARD_PRESSED} />
@@ -74,7 +75,7 @@ class WebBottomBar extends Component {
 
         <TabCount
           pressFn={this.props.tabPressFn}
-          tabCount={this.props.tabCount}
+          tabCount={this.tabCount}
         />
 
         <TouchableButton
@@ -86,21 +87,12 @@ class WebBottomBar extends Component {
   }
 
   back = () => {
-    Emitter.emit('web_back', this.props.tabId);
+    this.props.onBack && this.props.onBack()
   }
 
   forward = () => {
-    Emitter.emit('web_forward', this.props.tabId);
+    this.props.onForward && this.props.onForward();
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    tabCount: state.tabinfo.tabs.length,
-    tabId: state.tabinfo.tabId,
-    canBack: state.tabinfo.canBack || false,
-    canForward: state.tabinfo.canForward || false,
-  }
-}
-
-module.exports = connect(mapStateToProps, null)(WebBottomBar)
+module.exports = WebBottomBar

@@ -6,6 +6,8 @@ import {
 } from 'react-native';
 
 import {SCREEN_WIDTH} from '../utils/Consts'
+const buildStyleInterpolator = require('buildStyleInterpolator');
+
 var BaseConfigLeftToRight = Navigator.SceneConfigs.FloatFromRight;
 var BaseConfigBottomToTop = Navigator.SceneConfigs.FloatFromBottom;
 
@@ -32,9 +34,30 @@ var CustomSceneConfig = (base) => {
   )
 };
 
+var NoTransition = {
+    opacity: {
+        from: 1,
+        to: 1,
+        min: 1,
+        max: 1,
+        type: 'linear',
+        extrapolate: false,
+        round: 100
+    }
+};
 
+const Transitions = {
+    NONE: {
+        ...Navigator.SceneConfigs.FadeAndroid,
+        gestures: null,
+        defaultTransitionVelocity: 1000,
+        animationInterpolators: {
+            into: buildStyleInterpolator(NoTransition),
+            out: buildStyleInterpolator(NoTransition)
+        }
+    },
+    LeftToRight: CustomSceneConfig(BaseConfigLeftToRight),
+    BottomToTop: CustomSceneConfig(BaseConfigBottomToTop),
+};
 
-module.exports = {
-  LeftToRight: CustomSceneConfig(BaseConfigLeftToRight),
-  BottomToTop: CustomSceneConfig(BaseConfigBottomToTop)
-}
+module.exports = Transitions;

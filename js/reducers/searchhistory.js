@@ -1,7 +1,7 @@
 /* @flow */
 
-const APPEND = 'APPEND'
-const REMOVE = 'REMOVE'
+const SEARCH_HISTORY_APPEND = 'SEARCH_HISTORY_APPEND'
+const SEARCH_HISTORY_REMOVE = 'SEARCH_HISTORY_REMOVE'
 
 const initialState = {
   list: []
@@ -9,7 +9,7 @@ const initialState = {
 
 export default function reducer (state: any = initialState, action: any) {
   switch (action.type) {
-    case APPEND:
+    case SEARCH_HISTORY_APPEND:
       if (state.list && state.list.includes(action.id)) {
         var newState = {
           ...state
@@ -27,7 +27,7 @@ export default function reducer (state: any = initialState, action: any) {
           ]
         }
       }
-    case REMOVE:
+    case SEARCH_HISTORY_REMOVE:
       return {
         ...state,
         // value: state.list.remove(action.id)
@@ -39,14 +39,14 @@ export default function reducer (state: any = initialState, action: any) {
 
 export function append (id: number) {
   return {
-    type: APPEND,
+    type: SEARCH_HISTORY_APPEND,
     id
   }
 }
 
 export function remove (id: number) {
   return {
-    type: REMOVE,
+    type: SEARCH_HISTORY_REMOVE,
     id
   }
 }

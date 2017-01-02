@@ -53,7 +53,7 @@ class TabBottomBar extends Component {
     return (
       <View style={style.bottombar}>
         <TouchableButton
-          pressFn={() => this.props.menuPressFn()}
+          pressFn={() => this.props.menuPressFn(true)}
           normalBg = {IMG.ICON_MENU_NORMAL}
           pressBg = {IMG.ICON_MENU_PRESSED} />
         <TabCount
@@ -67,7 +67,7 @@ class TabBottomBar extends Component {
 
 function mapStateToProps(state) {
   return {
-    tabCount: state.tabinfo.tabs.length,
+    tabCount: state.tabinfo.tabIds.length,
   }
 }
 

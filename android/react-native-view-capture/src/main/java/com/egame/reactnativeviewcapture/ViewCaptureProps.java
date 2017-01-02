@@ -22,6 +22,8 @@ import com.facebook.react.bridge.ReadableMap;
     /*package*/ String format;
     /*package*/ CompressFormat compressFormat;
     /*package*/ double quality;
+    /*package*/ int top;
+    /*package*/ int left;
     /*package*/ Integer width;
     /*package*/ Integer height;
     /*package*/ String fileName;
@@ -57,6 +59,8 @@ import com.facebook.react.bridge.ReadableMap;
     }
 
     private void parseDimension() {
+        top = mPropMap.hasKey("top") ? (int)mPropMap.getDouble("top") : 0;
+        left = mPropMap.hasKey("left") ? (int)mPropMap.getDouble("left") : 0;
         DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
         width = mPropMap.hasKey("width")
                 ? (int)(displayMetrics.density * mPropMap.getDouble("width"))

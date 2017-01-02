@@ -23,7 +23,7 @@ export default class extends Component {
     showOverlay: false,
   }
 
-  open = () => {
+  show = () => {
     this.setVisible(true)
   }
 
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     height: 0,
   },
   menu_content: {
-    height: 220,
+    height: 150,
     backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-around'

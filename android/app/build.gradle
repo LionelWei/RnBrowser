@@ -5,6 +5,14 @@ repositories {
 }
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'Browser'
+            keyPassword '0n1y4you'
+            storeFile file('/Users/lionel/key/androidKeyStore.jks')
+            storePassword 'just4you'
+        }
+    }
     compileSdkVersion 24
     buildToolsVersion "25.0.0"
     defaultConfig {
@@ -30,15 +38,17 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
-
     configurations.all {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.0'
     }
 }
 
 dependencies {
+    compile project(':react-native-view-shot')
+    compile project(':react-native-fetch-blob')
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -46,12 +56,10 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     testCompile 'junit:junit:4.12'
     compile 'com.facebook.react:react-native:+'
-
     compile project(':react-native-view-capture')
     compile project(':react-native-url-download')
-    // 腾讯X5内核
-    compile files('libs/tbs_sdk_thirdapp_v2.6.0.1045.jar')
-
+    compile project(':react-native-webview')
+    compile project(':react-native-capture-view')
     compile 'com.github.hotchemi:permissionsdispatcher:2.3.0'
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.3.0'
 }

@@ -16,6 +16,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static com.egame.reactnativeviewcapture.ViewCaptureModule.TEMP_FILE_PREFIX;
 
@@ -33,11 +36,18 @@ import static com.egame.reactnativeviewcapture.ViewCaptureModule.TEMP_FILE_PREFI
 
     /*package*/ static final String ERROR_UNABLE_TO_SNAPSHOT = "E_UNABLE_TO_SNAPSHOT";
 
+    static ThreadPoolExecutor sThreadPool
+            = new ThreadPoolExecutor(5, 10, 5000,
+                                    TimeUnit.MILLISECONDS,
+                                    new LinkedBlockingQueue<Runnable>());
+
     private ReactApplicationContext context;
     private int tag;
     private String format;
     private Bitmap.CompressFormat compressFormat;
     private double quality;
+    private int top;
+    private int left;
     private Integer width;
     private Integer height;
     private String fileName;
@@ -52,6 +62,8 @@ import static com.egame.reactnativeviewcapture.ViewCaptureModule.TEMP_FILE_PREFI
         this.format = props.format;
         this.compressFormat = props.compressFormat;
         this.quality = props.quality;
+        this.top = props.top;
+        this.left = props.left;
         this.width = props.width;
         this.height = props.height;
         this.fileName = props.fileName;
@@ -75,7 +87,7 @@ import static com.egame.reactnativeviewcapture.ViewCaptureModule.TEMP_FILE_PREFI
     }
 
     private void saveBitmap(final View view, final Bitmap raw) {
-        new Thread(new Runnable() {
+        sThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 OutputStream os = null;
@@ -108,7 +120,7 @@ import static com.egame.reactnativeviewcapture.ViewCaptureModule.TEMP_FILE_PREFI
                     }
                 }
             }
-        }).start();
+        });
     }
 
     /**
@@ -120,9 +132,22 @@ import static com.egame.reactnativeviewcapture.ViewCaptureModule.TEMP_FILE_PREFI
         if (w <= 0 || h <= 0) {
             throw new RuntimeException("Impossible to snapshot the view: view is invalid");
         }
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.RGB_565);
+        Bitmap source = Bitmap.createBitmap(w, h, Bitmap.Config.RGB_565);
+        boolean crop = false;
+        Bitmap bitmap = source;
+        if (width != null
+                && height != null
+                && (width + left) <= w
+                && (height + top <= h)) {
+            crop = true;
+            bitmap = Bitmap.createBitmap(source, left, top, width, height);
+        }
         Canvas c = new Canvas(bitmap);
         view.draw(c);
+        if (crop) {
+            w = width;
+            h = height;
+        }
         bitmap = Bitmap.createScaledBitmap(bitmap, w / 2, h / 2, true);
 
 //        if (width != null && height != null && (width != w || height != h)) {

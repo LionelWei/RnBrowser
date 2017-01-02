@@ -44,6 +44,7 @@ export default class TouchableButton extends Component {
     let desc = this.props.description;
     return (
       <TouchableOpacity
+        disabled={!enabled}
         onPress={this.props.pressFn}>
         <View style={[styles.container, {
           width: imgWidth + 30,

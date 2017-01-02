@@ -22,26 +22,13 @@ export default class Home extends Component {
     navigator: PropTypes.object
   };
 
-  tabController = {}
-
   render() {
     const {navigator} = this.props
     return (
       <View style={{flex: 1}}>
         <TabController
-          ref={(tab) => this.tabController = tab}
           navigator={this.props.navigator}/>
       </View>
     )
-  }
-
-  static handleBack() {
-    console.log('home handleBack()');
-    this.tabController.handleBack();
-    return true
-  }
-
-  handleBack0() {
-
   }
 }

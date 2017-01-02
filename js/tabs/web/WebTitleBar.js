@@ -19,7 +19,7 @@ import {NAV_BAR_HEIGHT ,BOTTOM_BAR_HEIGHT} from '../../utils/Consts'
 import TouchableButton from '../../components/TouchableButton'
 import Search from '../../search/SearchScene'
 import {Emitter} from '../../events/Emitter'
-import Transition from '../../animation/NoTransition'
+import Transitions from '../../animation/NavigatorAnimation'
 import * as IMG from '../../assets/imageAssets'
 
 const style = StyleSheet.create({
@@ -33,68 +33,119 @@ const style = StyleSheet.create({
 
 class WebTitleBar extends Component {
   static defaultProps = {
+    onStopLoading: PropTypes.func,
+    onReload: PropTypes.func,
+  }
+
+  state = {
     url: '',
-    title: '请输入网址',
+    title: '',
+    loading: true,
   }
 
   constructor(props: any) {
     super(props);
   }
 
+  updateTitle = (navState) => {
+    this.setState({
+      url: navState.url,
+      title: navState.title,
+      loading: navState.loading,
+    })
+  }
+
+  getTitleText = () => {
+    return this.props.title
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState.url !== this.state.url
+      || nextState.title !== this.state.title
+      || nextState.loading !== this.state.loading) {
+      return true;
+    }
+    return false;
+  }
+
   render() {
-    console.log('==== WebTitleBar url: ' + this.props.url);
+    console.log('==== WebTitleBar url: ' + this.state.url);
     return (
       <View style={style.titlebar}>
-        <View style={{paddingLeft: 12}}>
-          <Image style={{
-              paddingLeft: 12,
-              width: 28,
-              height: 28
-            }}
-            source={IMG.REACT_LOGO}/>
-        </View>
-        <View style={{
-          flex: 1
-        }}>
-        <TouchableOpacity
-          style={{
-            flex: 1,
-            paddingLeft: 8,}}
-          onPress={()=>this.search()}>
-          <View style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-            <Text
-              style={{
-                color: 'black',
-                fontSize: 16}}
-              numberOfLines={1}>
-                {this.props.title}
-            </Text>
-          </View>
-        </TouchableOpacity>
-        </View>
-        <View style={{
-          paddingLeft: 12,
-          paddingRight: 12}}>
-          <TouchableButton
-            pressFn = {this.search}
-            normalBg = {IMG.ICON_SEARCH_NORMAL}
-            pressBg = {IMG.ICON_SEARCH_PRESSED} />
-        </View>
+        {this.renderSearchIcon()}
+        {this.renderText()}
+        {this.renderLoadingIcon()}
       </View>
     )
+  }
+
+  renderSearchIcon = () => {
+    return  <View>
+              <TouchableButton
+                pressFn = {this.search}
+                normalBg = {IMG.ICON_SEARCH_NORMAL}
+                pressBg = {IMG.ICON_SEARCH_PRESSED} />
+            </View>
+  }
+
+  renderText = () => {
+    return <View style={{
+              flex: 1
+            }}>
+            <TouchableOpacity
+              style={{
+                flex: 1,}}
+              onPress={()=>this.search()}>
+              <View style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+                <Text
+                  style={{
+                    color: 'black',
+                    fontSize: 16}}
+                  numberOfLines={1}>
+                    {this.state.title}
+                </Text>
+              </View>
+            </TouchableOpacity>
+            </View>
+  }
+
+  renderLoadingIcon = () => {
+    let icon = this.state.loading
+              ? IMG.ICON_WEB_STOP_LOADING
+              : IMG.ICON_WEB_REFRESH;
+    let pressFn = this.state.loading
+              ? this.onStopLoading
+              : this.onReload;
+    return  <View>
+              <TouchableButton
+                pressFn = {pressFn}
+                normalBg = {icon} />
+            </View>
+  }
+
+  onStopLoading = () => {
+    this.props.onStopLoading();
+    this.setState({
+      loading: false
+    })
+  }
+
+  onReload = () => {
+    this.props.onReload()
   }
 
   search = () => {
     if (this.props.navigator) {
       this.props.navigator.push({
         component: Search,
-        scene: Transition.NONE,
-        defaultUrl: this.props.url,
-        navigator: this.props.navigator
+        scene: Transitions.NONE,
+        defaultUrl: this.state.url,
+        navigator: this.props.navigator,
+        onUrlChanged: this.props.onUrlChanged,
       })
     } else {
       alert('no navigator')
@@ -102,11 +153,4 @@ class WebTitleBar extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    url: state.tabinfo.url,
-    title: state.tabinfo.title
-  }
-}
-
-module.exports = connect(mapStateToProps, null)(WebTitleBar)
+module.exports = WebTitleBar

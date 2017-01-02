@@ -67,7 +67,7 @@ class Overlay extends Component {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    top: 0,
+    top: -5,
     left: 0,
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,
