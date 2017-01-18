@@ -15,10 +15,10 @@ import {
   View,
   Navigator,
   Text,
-  ToastAndroid
+  ToastAndroid,
+  StatusBar,
 } from 'react-native'
 import Home from './home/HomeScene'
-import CustomStatusBar from './components/CustomStatusBar'
 
 const createStoreWithMiddleware = applyMiddleware(thunk)(createStore)
 const store = autoRehydrate()(createStoreWithMiddleware)(reducers)
@@ -31,21 +31,21 @@ console.disableYellowBox = true;
 
 export default class extends Component {
 
-  componentDidMount () {
-    // BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  componentWillMount() {
+    StatusBar.setHidden(false);
+    StatusBar.setBackgroundColor('white')
   }
 
   componentWillUnmount () {
-    // BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
   }
 
   render() {
     return (
       <Provider store={store}>
-        <View style={{
-          flex: 1,
-          flexDirection: 'column'}}>
-          <CustomStatusBar />
+        <View style={{flex: 1, backgroundColor: 'white'}}>
+          <StatusBar
+            hidden={false}
+            backgroundColor='white'/>
           <Navigator
             style={{
               flex: 1}}
@@ -56,10 +56,17 @@ export default class extends Component {
             }}
             configureScene={this.configureScene}
             renderScene={(route, navigator) => {
-              return <route.component
-                        navigator={navigator}
-                        {...route}
-                        {...route.passProps}/>
+              return (
+                <View style={{flex: 1}}>
+                  <StatusBar
+                    hidden={false}
+                    backgroundColor='white'/>
+                  <route.component
+                    navigator={navigator}
+                    {...route}
+                    {...route.passProps}/>
+                </View>
+              )
             }}
           />
         </View>
@@ -71,27 +78,4 @@ export default class extends Component {
     return route.scene || Navigator.SceneConfigs.FloatFromBottom
   }
 
-  lastBackPressed = Date.now();
-
-  handleBack = () => {
-    const navigator = this.refs.navigator
-
-    const routers = navigator.getCurrentRoutes();
-    if (routers.length >= 1) {
-      const top = routers[routers.length - 1];
-      const handleBack = top.handleBack || top.component.handleBack;
-      console.log('handleBack: ' + handleBack + ', component: ' + top.component + ', top: ' + top);
-      if (handleBack) {
-        // 路由或组件上决定这个界面自行处理back键
-        return handleBack();
-      }
-
-      if (routers.length > 1) {
-        // 默认行为： 退出当前界面。
-        navigator.pop();
-        return true;
-      }
-    }
-    return false;
-  };
 }

@@ -9,11 +9,12 @@ import {
   StyleSheet,
   TextInput,
   Platform,
+  AsyncStorage
 } from 'react-native'
-import DownloadManagerScreen from '../download/DownloadManagerScreen'
-import TabManageScreen from '../tabs/manage/TabManageScreen'
-import BookBarScreen from '../bookbar/BookBarScreen'
-import SettingScreen from '../setting/SettingScreen'
+import DownloadManagerPage from '../download/DownloadManagerPage'
+import TabManagePage from '../tabs/manage/TabManagePage'
+import BookBarPage from '../bookbar/BookBarPage'
+import SettingPage from '../setting/SettingPage'
 
 import {connect} from 'react-redux'
 import TouchableButton from '../components/TouchableButton'
@@ -23,8 +24,6 @@ import * as IMG from '../assets/imageAssets'
 import Transitions from '../animation/NavigatorAnimation'
 import {foo, bar} from '../nativemodules/UrlDownload'
 
-
-var isExitButtonVisible = Platform.OS !== 'ios'
 
 const style = StyleSheet.create({
   basic: {
@@ -48,15 +47,33 @@ const style = StyleSheet.create({
   }
 })
 
+const IS_FULLSCREEN = 'IS_FULLSCREEN'
+
 class BottomPopupMenu extends Component {
   static propTypes = {
     dismiss: PropTypes.func.isRequired,
     navigator: PropTypes.object.isRequired
   };
 
+  state = {
+    isFullScreen: false
+  }
+  componentDidMount() {
+    AsyncStorage.getItem(IS_FULLSCREEN, (err, result) => {
+      console.log('isFullScreen ' + result);
+      let isFullScreen = result === '1' ? true : false
+      this.setState({
+        isFullScreen: isFullScreen
+      })
+    })
+  }
+
   // 父组件更新是无需重新渲染
   shouldComponentUpdate(nextProps, nextState) {
     if (this.props.isTabPageVisible !== nextProps.isTabPageVisible) {
+      return true;
+    }
+    if (this.state.isFullScreen !== nextState.isFullScreen) {
       return true;
     }
     return false;
@@ -69,7 +86,6 @@ class BottomPopupMenu extends Component {
           <TouchableButton
             pressFn = {this.handleHistory}
             normalBg = {IMG.ICON_HISTORY_NORMAL}
-            pressBg = {IMG.ICON_HISTORY_PRESSED}
             description = '历史'
             width = {32}
             height = {32} />
@@ -77,7 +93,6 @@ class BottomPopupMenu extends Component {
           <TouchableButton
             pressFn = {this.handleDownload}
             normalBg = {IMG.ICON_DOWNLOAD_NORMAL}
-            pressBg = {IMG.ICON_DOWNLOAD_PRESSED}
             description = '下载管理'
             width = {32}
             height = {32} />
@@ -85,28 +100,22 @@ class BottomPopupMenu extends Component {
           <TouchableButton
             pressFn = {() => this.setting()}
             normalBg = {IMG.ICON_SETTING_NORMAL}
-            pressBg = {IMG.ICON_SETTING_PRESSED}
             description = '设置'
             width = {32}
             height = {32} />
 
-          {this.showRefreshButton()}
+          {this.showFullScreenButton()}
         </View>
         <View style={style.menu_bottom}>
           <TouchableButton
-            pressFn = {() => alert('关于')}
-            normalBg = {IMG.ICON_ABOUT_NORMAL}
-            pressBg = {IMG.ICON_ABOUT_PRESSED} />
+            enabled={false}/>
 
           <TouchableButton
             pressFn = {() => {this.props.dismiss()}}
-            normalBg = {IMG.ICON_FOLD_NORMAL}
-            pressBg = {IMG.ICON_FOLD_PRESSED} />
+            normalBg = {IMG.ICON_FOLD_NORMAL} />
 
           <TouchableButton
-            pressFn = {()=>alert('分享')}
-            normalBg = {IMG.ICON_SHARE_NORMAL}
-            pressBg = {IMG.ICON_SHARE_PRESSED} />
+            enabled={false}/>
         </View>
       </View>
     )
@@ -115,7 +124,7 @@ class BottomPopupMenu extends Component {
   setting = () => {
     this.props.dismiss()
     this.props.navigator.push({
-      component: SettingScreen,
+      component: SettingPage,
       scene: Transitions.LeftToRight,
     })
   }
@@ -123,7 +132,7 @@ class BottomPopupMenu extends Component {
   handleHistory = () => {
     this.props.dismiss()
     this.props.navigator.push({
-      component: BookBarScreen,
+      component: BookBarPage,
       scene: Transitions.LeftToRight,
     })
   }
@@ -131,47 +140,39 @@ class BottomPopupMenu extends Component {
   handleDownload = () => {
     this.props.dismiss()
     this.props.navigator.push({
-      component: DownloadManagerScreen,
+      component: DownloadManagerPage,
       scene: Transitions.LeftToRight,
     })
   }
 
-  showRefreshButton = () => {
+  showFullScreenButton = () => {
+    let isFullScreen = this.state.isFullScreen;
+    console.log('showFullScreenButton: ' + isFullScreen);
+    let source = isFullScreen ? IMG.ICON_FULLSCREEN_CLOSE_NORMAL : IMG.ICON_FULLSCREEN_OPEN_NORMAL;
+    let desc = isFullScreen ? '退出全屏' : '全屏'
     return !this.props.isTabPageVisible
       ? <TouchableButton
-          pressFn = {this.reload}
-          normalBg = {IMG.ICON_REFRESH_NORMAL}
-          pressBg = {IMG.ICON_REFRESH_PRESSED}
-          description = '刷新'
+          pressFn = {this.toggleFullScreen}
+          normalBg = {source}
+          description = {desc}
           width = {32}
           height = {32} />
       : null
   }
 
-  showExitButton = () => {
-    return isExitButtonVisible
-      ? <TouchableButton
-        pressFn = {()=>alert('退出')}
-        normalBg = {IMG.ICON_EXIT_NORMAL}
-        pressBg = {IMG.ICON_EXIT_PRESSED}
-        description = '退出'
-        width = {32}
-        height = {32} />
-      : <TouchableButton
-        width = {32}
-        height = {32} />
+  toggleFullScreen = () => {
+    let isFullScreen = !this.state.isFullScreen;
+    this.setState({
+      isFullScreen: isFullScreen
+    })
+    AsyncStorage.setItem(IS_FULLSCREEN, isFullScreen ? '1' : '0');
+    Emitter.emit('is_fullscreen', isFullScreen);
+    this.props.dismiss()
   }
-
-  reload = () => {
-    Emitter.emit('web_reload', true);
-    this.props.dismiss();
-  }
-
 }
 
 function mapStateToProps(state) {
   return {
-    tabId: state.tabinfo.tabId,
   }
 }
 

@@ -2,6 +2,7 @@
 
 const BROWSE_HISOTRY_APPEND = 'BROWSE_HISOTRY_APPEND'
 const BROWSE_HISOTRY_REMOVE = 'BROWSE_HISOTRY_REMOVE'
+const BROWSE_HISOTRY_REMOVE_ALL = 'BROWSE_HISOTRY_REMOVE_ALL'
 
 /*
 {
@@ -52,6 +53,11 @@ export default function reducer (state: any = initialState, action: any) {
         ...state,
         // value: state.list.remove(action.id)
       }
+    case BROWSE_HISOTRY_REMOVE_ALL:
+      return {
+        ...state,
+        list: []
+      }
     default:
       return state
   }
@@ -69,5 +75,11 @@ export function remove (id: number) {
   return {
     type: BROWSE_HISOTRY_REMOVE,
     id
+  }
+}
+
+export function removeAll () {
+  return {
+    type: BROWSE_HISOTRY_REMOVE_ALL,
   }
 }

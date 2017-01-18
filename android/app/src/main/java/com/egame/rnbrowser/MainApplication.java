@@ -1,6 +1,7 @@
 package com.egame.rnbrowser;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import com.RNFetchBlob.RNFetchBlobPackage;
@@ -41,6 +42,8 @@ public class MainApplication extends Application implements ReactApplication {
         }
     };
 
+    private static Context sContext;
+
     @Override
     public ReactNativeHost getReactNativeHost() {
         return mReactNativeHost;
@@ -49,7 +52,12 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        sContext = this;
         Log.e("MainApplication", "onCreate: main thread");
         SdkIntegration.integrate(this);
+    }
+
+    public static Context getContext() {
+        return sContext;
     }
 }

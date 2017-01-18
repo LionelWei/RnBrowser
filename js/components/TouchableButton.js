@@ -10,8 +10,6 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
 } from 'react-native'
-import * as img from '../assets/imageAssets'
-
 
 export default class TouchableButton extends Component {
 
@@ -19,8 +17,6 @@ export default class TouchableButton extends Component {
     enabled: PropTypes.bool,
     pressFn: PropTypes.func,
     normalBg: PropTypes.number,
-    pressBg: PropTypes.number,
-    disabledBg: PropTypes.number,
     width: PropTypes.number,
     height: PropTypes.number,
     description: PropTypes.string
@@ -35,10 +31,10 @@ export default class TouchableButton extends Component {
   }
 
   render() {
-    console.log('button render....');
+    console.log('button render.... source: ' + this.props.normalBg);
     let enabled = this.props.enabled;
-    let disabledBg = this.props.disabledBg || this.props.pressBg;
-    let settingBg = !enabled ? disabledBg : this.props.normalBg;
+    let settingBg = this.props.normalBg;
+    let opacity = enabled ? 1 : 0.5;
     let imgWidth = this.props.width || 20;
     let imgHeight = this.props.height || 20;
     let desc = this.props.description;
@@ -47,15 +43,16 @@ export default class TouchableButton extends Component {
         disabled={!enabled}
         onPress={this.props.pressFn}>
         <View style={[styles.container, {
-          width: imgWidth + 30,
-          height: imgHeight + 30,
+          width: imgWidth + 20,
+          height: imgHeight + 20,
           backgroundColor: 'white'}]}>
           <Image
             style={{
               width: imgWidth,
               height: imgHeight
             }}
-            source={settingBg}/>
+            source={settingBg}
+            opacity={opacity}/>
           {desc
             ? <Text style={styles.descText}>{desc}</Text>
             : null}

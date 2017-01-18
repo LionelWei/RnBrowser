@@ -16,7 +16,6 @@ import {
 } from 'react-native'
 
 import {connect} from 'react-redux'
-import EventEmitter from 'EventEmitter'
 
 import TouchableButton from '../../components/TouchableButton'
 import TabCount from '../../components/TabCount'
@@ -48,14 +47,20 @@ class TabBottomBar extends Component {
     super()
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.tabCount !== this.props.tabCount) {
+      return true;
+    }
+    return false;
+  }
+
   render() {
     const {navigator} = this.props
     return (
       <View style={style.bottombar}>
         <TouchableButton
           pressFn={() => this.props.menuPressFn(true)}
-          normalBg = {IMG.ICON_MENU_NORMAL}
-          pressBg = {IMG.ICON_MENU_PRESSED} />
+          normalBg = {IMG.ICON_MENU_NORMAL} />
         <TabCount
           pressFn={() => this.props.tabPressFn()}
           tabCount={this.props.tabCount}

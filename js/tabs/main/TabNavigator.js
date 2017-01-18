@@ -9,13 +9,14 @@ import {
   Navigator,
   StyleSheet,
   Platform,
-  WebView
+  WebView,
+  StatusBar
 } from 'react-native';
 import {
   STATUS_BAR_HEIGHT,
   NAV_BAR_HEIGHT,
-  BOTTOM_BAR_HEIGHT}
-from '../../utils/Consts'
+  BOTTOM_BAR_HEIGHT
+} from '../../utils/Consts'
 
 import {connect} from 'react-redux'
 import {Emitter} from '../../events/Emitter'
@@ -46,9 +47,15 @@ class TabNavigator extends Component {
     return false
   }
 
+  reloadUrl = (url: string) => {
+    const navigator = this.navigator
+    const routers = navigator.getCurrentRoutes();
+    this.currentPage.getWrappedInstance().onHistoryUrlChanged(url)
+  }
+
   getTitleText = () => {
-    return this.currentPage.getWrappedInstance().getTitleText
-      && this.currentPage.getWrappedInstance().getTitleText() || ''
+    console.log('getTitleText: ' + this.currentPage.getWrappedInstance().getTitleText());
+    return this.currentPage.getWrappedInstance().getTitleText() || ''
   }
 
   render() {
@@ -56,7 +63,9 @@ class TabNavigator extends Component {
       <View style={{
         flex: 1,
         backgroundColor: 'white'}}>
-        <View style={styles.statusbar_padding}/>
+        <StatusBar
+          hidden={false}
+          backgroundColor='white'/>
         <Navigator
           style={styles.container}
           ref={(navigator) => this.navigator = navigator}
@@ -68,11 +77,18 @@ class TabNavigator extends Component {
           }}
           configureScene={this.configureScene}
           renderScene={(route, navigator) => {
-            return <route.component
-                      ref={(component) => this.currentPage = component}
-                      navigator={navigator}
-                      {...route}
-                      {...route.passProps}/>
+            return (
+              <View style={{flex: 1}}>
+                <StatusBar
+                  hidden={false}
+                  backgroundColor='white'/>
+                <route.component
+                  ref={(component) => this.currentPage = component}
+                  navigator={navigator}
+                  {...route}
+                  {...route.passProps}/>
+              </View>
+            )
           }}
         />
       </View>

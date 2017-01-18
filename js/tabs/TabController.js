@@ -17,22 +17,23 @@ import {connect} from 'react-redux'
 import {capture} from "../nativemodules/ViewCapture";
 
 import {
+  isIOS,
   NAV_BAR_HEIGHT,
   BOTTOM_BAR_HEIGHT,
   SCREEN_WIDTH,
   SCREEN_HEIGHT,
+  TOP_OFFSET,
 } from '../utils/Consts'
 
 import {Emitter} from '../events/Emitter'
-import {printObj} from '../utils/Common'
 
 import TabNavigator from './main/TabNavigator'
-import TabManageScreen from './manage/TabManageScreen'
+import TabManagePage from './manage/TabManagePage'
 import TabBottomBar from './main/TabBottomBar'
 import WebTitleBar from './web/WebTitleBar'
 import WebBottomBar from './web/WebBottomBar'
 import BottomMenuPopup from '../bottompopup/BottomMenuPopup'
-import {createTab, removeTab, setFrontTab} from '../reducers/tabinfo'
+import {createTab, removeTab, setFrontTab, resetTab} from '../reducers/tabinfo'
 import Transitions from '../animation/NavigatorAnimation'
 
 class TabController extends Component {
@@ -55,6 +56,7 @@ class TabController extends Component {
   menuPopup = {};
   tabRefList = []
   uris = []
+  subscriptionUrlChanged = {}
 
   constructor(props: any) {
     super(props);
@@ -67,6 +69,9 @@ class TabController extends Component {
   }
 
   componentWillUnmount () {
+    // 重置tab 防止计数错误
+    this.props.resetTab()
+    this.unRegisterEvent()
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -98,7 +103,7 @@ class TabController extends Component {
            />
   }
 
-  startTabManagerScreen = () => {
+  startTabManagerPage = () => {
     let navigator = this.props.navigator
     let viewList = this.tabRefList.map(e => {
       return {
@@ -108,10 +113,13 @@ class TabController extends Component {
     })
 
     navigator.push({
-      component: TabManageScreen,
+      component: TabManagePage,
       viewList: viewList,
       currentListIndex: this.findIndexByTabId(this.state.currentTabId),
       scene: Transitions.NONE,
+      onAppendTab: this.appendTab,
+      onSwitchTab: this.switchTab,
+      onCloseTab: this.closeTab,
     })
   }
 
@@ -145,23 +153,26 @@ class TabController extends Component {
   }
 
   initEvent() {
-    Emitter.addListener('add_tab', (...args) => {
-      this.appendTab();
-    })
-
-    Emitter.addListener('switch_tab', (...args) => {
-      var id = args[0];
-      this.switchTab(id);
-    })
-
-    Emitter.addListener('close_tab', (...args) => {
-      var id = args[0];
-      this.closeTab(id);
-    })
+    this.subscriptionUrlChanged = Emitter.addListener('url_changed', (...args) => {
+      let url = args[0]
+      this.onUrlChanged(url)
+    });
   }
 
-  appendTab() {
+  unRegisterEvent() {
+    this.subscriptionUrlChanged.remove()
+  }
+
+  onUrlChanged = (url: string) => {
+    let currentId = this.state.currentTabId;
+    let currentTab = this.tabRefList[currentId];
+    currentTab.reloadUrl(url);
+  }
+
+
+  appendTab = () => {
     var primaryId = this.state.tabCount;
+    console.log('appendTab, tabCount: ' + this.state.tabCount);
     this.props.createTab(primaryId);
     this.setState({
       tabList: [
@@ -176,14 +187,14 @@ class TabController extends Component {
     })
   }
 
-  switchTab(id: number) {
+  switchTab = (id: number) => {
     this.setState({
       currentTabId: id
     })
     this.props.setFrontTab(id)
   }
 
-  closeTab(id: number) {
+  closeTab = (id: number) => {
     if (this.state.tabList.length == 1) {
       return;
     }
@@ -229,7 +240,7 @@ class TabController extends Component {
           id={id}
           ref={(tab) => tab && this.tabRefList.push(tab)}
           menuPressFn={(isTabPage: bool) => this.menuPopup.open(isTabPage)}
-          tabPressFn={()=>this.startTabManagerScreen()}
+          tabPressFn={()=>this.startTabManagerPage()}
           />
       </View>
     )
@@ -261,7 +272,7 @@ const styles = StyleSheet.create({
   },
   overlay:{
     position: 'absolute',
-    top: 0,
+    top: TOP_OFFSET,
     left: 0,
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,
@@ -283,6 +294,9 @@ function mapDispatchToProps(dispatch) {
     },
     removeTab: (id: number) => {
       dispatch(removeTab(id))
+    },
+    resetTab: () => {
+      dispatch(resetTab())
     },
   }
 }

@@ -11,7 +11,6 @@ package com.egame.reactnativecaptureview;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -99,10 +98,10 @@ public class ReactCaptureViewManager extends SimpleViewManager<ImageView> {
             mImageView = imageView;
             mContext = context;
             tag = viewTag;
-            this.x = x;
-            this.y = y;
-            this.w = w;
-            this.h = h;
+            this.x = dp2px(x);
+            this.y = dp2px(y);
+            this.w = dp2px(w);
+            this.h = dp2px(h);
             hasSizeSpec = true;
         }
 
@@ -141,6 +140,11 @@ public class ReactCaptureViewManager extends SimpleViewManager<ImageView> {
             }
 
             return bitmap;
+        }
+
+        private int dp2px(float dpValue) {
+            final float scale = mContext.getResources().getDisplayMetrics().density;
+            return (int) (dpValue * scale + 0.5f);
         }
 
     }

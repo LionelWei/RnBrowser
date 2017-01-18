@@ -6,7 +6,8 @@ import {
   Text,
   Image,
   StyleSheet,
-  ListView
+  ListView,
+  TouchableOpacity
 } from 'react-native';
 
 import {connect} from 'react-redux'
@@ -37,13 +38,50 @@ class DownloadedPage extends Component {
     return (
       <ListView
         dataSource={this.props.dataSource}
-        renderRow={(rowData) =>
-            <Text>{rowData.title}</Text>
-        }
+        renderRow={rowData => this.renderItem(rowData)}
       />
     )
   }
+
+  renderItem = (itemData) => {
+    return (
+      <TouchableOpacity
+        style={{flex: 1, height: 56}}
+        onPress={() => alert(itemData.title)}>
+        <View style={styles.item_container}>
+          <Text
+            style={styles.title}
+            numberOfLines={1}>
+            {itemData.title}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    )
+  }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white'
+  },
+  item_container: {
+    flex:1,
+    flexDirection: 'column',
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingTop: 8,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f2f3',
+    alignItems: 'flex-start',
+  },
+  title: {
+    flex: 1,
+    fontSize: 16,
+    color: 'black',
+  },
+})
 
 function mapStateToProps(state) {
   return {

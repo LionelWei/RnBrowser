@@ -13,6 +13,8 @@ import {
   Platform
 } from 'react-native'
 
+import * as IMG from '../assets/imageAssets'
+
 type Props = {
   tabCount: number,
   pressFn: Function,
@@ -27,7 +29,7 @@ export default class TabCount extends Component {
     }
     return false;
   }
-  
+
   render() {
     return (
       <TouchableOpacity onPress={this.props.pressFn}>
@@ -37,18 +39,18 @@ export default class TabCount extends Component {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-          <View style={{
-            width: 22,
-            height: 22,
-            borderWidth: 2,
-            borderColor: 'black',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
-            <Text style={{color: 'black'}}>
+          <Image
+            style={{
+              width: 20,
+              height: 20,
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+            source={IMG.ICON_BOTTOM_TABS}>
+            <Text style={{color: 'black', fontSize: 11}}>
               {this.props.tabCount}
             </Text>
-          </View>
+          </Image>
         </View>
       </TouchableOpacity>
     )

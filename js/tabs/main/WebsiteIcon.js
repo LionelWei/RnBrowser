@@ -4,12 +4,10 @@ import React, {PropTypes, Component } from 'react';
 import {
   View,
   Image,
-  Dimensions,
-  Navigator,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Animated,
+  Text,
   TouchableWithoutFeedback
 } from 'react-native';
 
@@ -20,16 +18,23 @@ export default class WebsiteIcon extends Component {
   static propTypes = {
     pressFn: PropTypes.func.isRequired,
     icon: PropTypes.number,
-    width: PropTypes.number,
-    height: PropTypes.number,
+    desc: PropTypes.string,
   }
   render() {
     return (
-      <View style={styles.icon_container}>
-        <TouchableOpacity onPress={() => this.props.pressFn()}>
-          <Image style={styles.web_icon} source={this.props.icon}/>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        style={styles.icon_container}
+        onPress={() => this.props.pressFn()}>
+        <View style={{flexDirection: 'column', alignItems: 'center'}}>
+          <Image
+            style={styles.web_icon}
+            source={this.props.icon}
+            resizeMode={Image.resizeMode.contain}/>
+          <Text style={{paddingTop: 4, fontSize: 12}}>
+            {this.props.desc}
+          </Text>
+        </View>
+      </TouchableOpacity>
     )
   }
 }
@@ -37,10 +42,11 @@ export default class WebsiteIcon extends Component {
 const styles = StyleSheet.create({
   icon_container: {
     width: ICON_WIDTH,
+    height: 100,
     alignItems: 'center'
   },
   web_icon: {
-    height: 40,
-    width: 40,
+    height: 50,
+    width: 50,
   }
 })

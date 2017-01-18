@@ -22,14 +22,7 @@ import {Emitter} from '../../events/Emitter'
 import Transitions from '../../animation/NavigatorAnimation'
 import * as IMG from '../../assets/imageAssets'
 
-const style = StyleSheet.create({
-  titlebar: {
-    flexDirection: 'row',
-    height: NAV_BAR_HEIGHT,
-    backgroundColor: 'white',
-    alignItems: 'center'
-  }
-})
+const TITLE_BAR_HEIGHT = NAV_BAR_HEIGHT - 2; // 减去进度条高度
 
 class WebTitleBar extends Component {
   static defaultProps = {
@@ -41,6 +34,7 @@ class WebTitleBar extends Component {
     url: '',
     title: '',
     loading: true,
+    visible: true,
   }
 
   constructor(props: any) {
@@ -55,14 +49,27 @@ class WebTitleBar extends Component {
     })
   }
 
+  show = () => {
+    this.setState({
+      visible: true
+    })
+  }
+
+  hide = () => {
+    this.setState({
+      visible: false
+    })
+  }
+
   getTitleText = () => {
-    return this.props.title
+    return this.state.title
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     if (nextState.url !== this.state.url
       || nextState.title !== this.state.title
-      || nextState.loading !== this.state.loading) {
+      || nextState.loading !== this.state.loading
+      || nextState.visible !== this.state.visible) {
       return true;
     }
     return false;
@@ -71,11 +78,13 @@ class WebTitleBar extends Component {
   render() {
     console.log('==== WebTitleBar url: ' + this.state.url);
     return (
-      <View style={style.titlebar}>
-        {this.renderSearchIcon()}
-        {this.renderText()}
-        {this.renderLoadingIcon()}
-      </View>
+      this.state.visible
+      ? <View style={[styles.titlebar]}>
+          {this.renderSearchIcon()}
+          {this.renderText()}
+          {this.renderLoadingIcon()}
+        </View>
+      : null
     )
   }
 
@@ -83,8 +92,7 @@ class WebTitleBar extends Component {
     return  <View>
               <TouchableButton
                 pressFn = {this.search}
-                normalBg = {IMG.ICON_SEARCH_NORMAL}
-                pressBg = {IMG.ICON_SEARCH_PRESSED} />
+                normalBg = {IMG.ICON_SEARCH_NORMAL}/>
             </View>
   }
 
@@ -152,5 +160,23 @@ class WebTitleBar extends Component {
     }
   }
 }
+
+const styles = StyleSheet.create({
+  titlebar: {
+    flexDirection: 'row',
+    height: TITLE_BAR_HEIGHT,
+    backgroundColor: 'white',
+    alignItems: 'center'
+  },
+  shadow: {
+    elevation: 4,
+    shadowColor: 'black',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: {
+      height: 2,
+    },
+  },
+})
 
 module.exports = WebTitleBar

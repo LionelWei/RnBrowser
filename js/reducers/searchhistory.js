@@ -2,6 +2,7 @@
 
 const SEARCH_HISTORY_APPEND = 'SEARCH_HISTORY_APPEND'
 const SEARCH_HISTORY_REMOVE = 'SEARCH_HISTORY_REMOVE'
+const SEARCH_HISTORY_REMOVE_ALL = 'SEARCH_HISTORY_REMOVE_ALL'
 
 const initialState = {
   list: []
@@ -10,43 +11,63 @@ const initialState = {
 export default function reducer (state: any = initialState, action: any) {
   switch (action.type) {
     case SEARCH_HISTORY_APPEND:
-      if (state.list && state.list.includes(action.id)) {
+      console.log('search state: ');
+      console.log(JSON.stringify(state, null, 2));
+      var i = state.list.findIndex(e => e.url === action.url)
+      if (i !== -1) {
         var newState = {
           ...state
         }
-        var i = newState.list.indexOf(action.id);
         newState.list.splice(i, 1)
-        newState.list.splice(0, 0, action.id)
+        newState.list.splice(0, 0, {
+          url: action.url,
+          isWebUrl: action.isWebUrl
+        })
         return newState
       } else {
         return {
           ...state,
           list: [
+            {
+              url: action.url,
+              isWebUrl: action.isWebUrl
+            },
             ...state.list,
-            action.id
           ]
         }
       }
     case SEARCH_HISTORY_REMOVE:
       return {
         ...state,
-        // value: state.list.remove(action.id)
+        // value: state.list.remove(action.url)
+      }
+    case SEARCH_HISTORY_REMOVE_ALL:
+      return {
+        ...state,
+        list: []
       }
     default:
       return state
   }
 }
 
-export function append (id: number) {
+export function append (url: string, isWebUrl: bool) {
   return {
     type: SEARCH_HISTORY_APPEND,
-    id
+    url,
+    isWebUrl,
   }
 }
 
-export function remove (id: number) {
+export function remove (url: string) {
   return {
     type: SEARCH_HISTORY_REMOVE,
-    id
+    url
+  }
+}
+
+export function removeAll () {
+  return {
+    type: SEARCH_HISTORY_REMOVE_ALL,
   }
 }

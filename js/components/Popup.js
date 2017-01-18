@@ -58,7 +58,11 @@ export default class extends Component {
   }
 
   shouldComponentUpdate(nextProps: any, nextState: any) {
-    return true;
+    if (nextState.visible !== this.state.visible
+        || nextState.showOverlay !== this.state.showOverlay) {
+      return true;
+    }
+    return false;
   }
 
   render() {

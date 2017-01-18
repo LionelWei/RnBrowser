@@ -22,15 +22,6 @@ import {Emitter} from '../../events/Emitter'
 import Transitions from '../../animation/NavigatorAnimation'
 import * as IMG from '../../assets/imageAssets'
 
-const style = StyleSheet.create({
-  titlebar: {
-    flexDirection: 'row',
-    height: NAV_BAR_HEIGHT,
-    backgroundColor: 'white',
-    alignItems: 'center'
-  }
-})
-
 class TabTitleBar extends Component {
   static propTypes = {
     url: PropTypes.string,
@@ -54,7 +45,7 @@ class TabTitleBar extends Component {
 
   render() {
     return (
-      <View style={style.titlebar}>
+      <View style={[styles.titlebar]}>
         {this.renderButton()}
         {this.renderText()}
       </View>
@@ -91,8 +82,7 @@ class TabTitleBar extends Component {
     return  <View>
               <TouchableButton
                 pressFn = {this.search}
-                normalBg = {IMG.ICON_SEARCH_NORMAL}
-                pressBg = {IMG.ICON_SEARCH_PRESSED} />
+                normalBg = {IMG.ICON_SEARCH_NORMAL}/>
             </View>
   }
 
@@ -110,5 +100,23 @@ class TabTitleBar extends Component {
     }
   }
 }
+
+const styles = StyleSheet.create({
+  titlebar: {
+    flexDirection: 'row',
+    height: NAV_BAR_HEIGHT,
+    backgroundColor: 'white',
+    alignItems: 'center'
+  },
+  shadow: {
+    elevation: 4,
+    shadowColor: 'black',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: {
+      height: 2,
+    },
+  },
+})
 
 module.exports = TabTitleBar

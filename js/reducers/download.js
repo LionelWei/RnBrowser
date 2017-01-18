@@ -33,8 +33,8 @@ export default function reducer (state: any = initialState, action: any) {
 
 function handleDownloadStart(state, action) {
   let url: string = action.url;
-  if (state.downloading.filter(e => e.url && e.url === url).length > 0) {
-    return;
+  if (state.downloading.findIndex(e => e.url && e.url === url) != -1) {
+    return state;
   }
   return {
     ...state,
@@ -50,8 +50,8 @@ function handleDownloadStart(state, action) {
 
 function handleDownloadFinish(state, action) {
   let url: string = action.url;
-  if (state.downloaded.filter(e => e.url && e.url === url).length > 0) {
-    // return;
+  if (state.downloaded.findIndex(e => e.url && e.url === url) != -1) {
+    return state;
   }
   var newState = {
     ...state,
