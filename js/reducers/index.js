@@ -1,10 +1,12 @@
 import { combineReducers } from 'redux'
 import searchhistory from './searchhistory'
-import webnavigator from './webnavigator'
-import webtabs from './webtabs'
+import tabinfo from './tabinfo'
+import download from './download'
+import browsehistory from './browsehistory'
 
 export default combineReducers({
   searchhistory,
-  webnavigator,
-  webtabs
+  tabinfo,
+  download,
+  browsehistory,
 })

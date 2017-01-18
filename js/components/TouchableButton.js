@@ -7,18 +7,16 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  TouchableOpacity,
 } from 'react-native'
-
 
 export default class TouchableButton extends Component {
 
   static propTypes = {
     enabled: PropTypes.bool,
     pressFn: PropTypes.func,
-    normalBg: PropTypes.string.isRequired,
-    pressBg: PropTypes.string,
-    disabledBg: PropTypes.string,
+    normalBg: PropTypes.number,
     width: PropTypes.number,
     height: PropTypes.number,
     description: PropTypes.string
@@ -28,65 +26,47 @@ export default class TouchableButton extends Component {
     enabled: true
   }
 
-  state = {
-    isButtonPressing: false
-  }
-
   constructor() {
     super()
   }
 
   render() {
+    console.log('button render.... source: ' + this.props.normalBg);
     let enabled = this.props.enabled;
-    let isPressing = this.state.isButtonPressing;
-    let disabledBg = this.props.disabledBg
-                    ? this.props.disabledBg
-                    : this.props.pressBg;
-    let settingBg = !enabled
-                    ? this.props.pressBg
-                    : (isPressing ? this.props.pressBg : this.props.normalBg)
-    let imgWidth = this.props.width ? this.props.width : 20;
-    let imgHeight = this.props.height ? this.props.height : 20;
+    let settingBg = this.props.normalBg;
+    let opacity = enabled ? 1 : 0.5;
+    let imgWidth = this.props.width || 20;
+    let imgHeight = this.props.height || 20;
     let desc = this.props.description;
     return (
-      <TouchableWithoutFeedback
-        disabled = {!this.props.enabled}
-        onPress={this.props.pressFn}
-        onPressIn = {() => this.onTouchDown()}
-        onPressOut = {() => this.onTouchUp()}>
-        <View style={styles.container}>
+      <TouchableOpacity
+        disabled={!enabled}
+        onPress={this.props.pressFn}>
+        <View style={[styles.container, {
+          width: imgWidth + 20,
+          height: imgHeight + 20,
+          backgroundColor: 'white'}]}>
           <Image
             style={{
               width: imgWidth,
               height: imgHeight
             }}
-            source={{uri: settingBg}}/>
+            source={settingBg}
+            opacity={opacity}/>
           {desc
             ? <Text style={styles.descText}>{desc}</Text>
             : null}
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
     )
-  }
-
-  onTouchDown() {
-    this.setState({
-      isButtonPressing: true
-    })
-
-  }
-
-  onTouchUp() {
-    this.setState({
-      isButtonPressing: false
-    })
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   descText: {
     paddingTop: 4,

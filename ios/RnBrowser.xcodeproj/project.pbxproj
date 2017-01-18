@@ -12,7 +12,6 @@
 		00C302E81ABCBA2D00DB3ED1 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302C01ABCB91800DB3ED1 /* libRCTImage.a */; };
 		00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302DC1ABCB9D200DB3ED1 /* libRCTNetwork.a */; };
 		00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302E41ABCB9EE00DB3ED1 /* libRCTVibration.a */; };
-		00E356F31AD99517003FC87E /* RnBrowserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* RnBrowserTests.m */; };
 		133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C398B91ACF4ADC00677621 /* libRCTLinking.a */; };
 		139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139105C11AF99BAD00B5F7CC /* libRCTSettings.a */; };
 		139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDEF41B06529B00C62182 /* libRCTWebSocket.a */; };
@@ -20,9 +19,59 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
+		1C1FBECF1E2C6CB70049A3C5 /* PhoneMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C1FBECE1E2C6CB70049A3C5 /* PhoneMode.m */; };
+		1C1FBEE61E2C6E1D0049A3C5 /* AFNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C1FBEE51E2C6E1D0049A3C5 /* AFNetworkReachabilityManager.m */; };
+		1C1FBEE91E2C71520049A3C5 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C1FBEE81E2C71520049A3C5 /* CoreTelephony.framework */; };
+		1C6E014D1E272C2100EB78AC /* IHTWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E014A1E272C2100EB78AC /* IHTWebView.m */; };
+		1C6E015D1E2732E700EB78AC /* BlankWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E015C1E2732E700EB78AC /* BlankWebView.m */; };
+		1C7597AC1E1F4441006249D2 /* CaptureView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C7597AB1E1F4441006249D2 /* CaptureView.m */; };
+		1C7597C91E1F7ED4006249D2 /* WebViewProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C7597C81E1F7ED4006249D2 /* WebViewProtocol.m */; };
+		1C7E9D881E28BEDC0022A25A /* icon_about_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D591E28BEDC0022A25A /* icon_about_normal.png */; };
+		1C7E9D891E28BEDC0022A25A /* icon_add_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D5A1E28BEDC0022A25A /* icon_add_normal.png */; };
+		1C7E9D8A1E28BEDC0022A25A /* icon_back_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D5B1E28BEDC0022A25A /* icon_back_normal.png */; };
+		1C7E9D8B1E28BEDC0022A25A /* icon_bottom_tabs.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D5C1E28BEDC0022A25A /* icon_bottom_tabs.png */; };
+		1C7E9D8C1E28BEDC0022A25A /* icon_close_light_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D5D1E28BEDC0022A25A /* icon_close_light_normal.png */; };
+		1C7E9D8D1E28BEDC0022A25A /* icon_close_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D5E1E28BEDC0022A25A /* icon_close_normal.png */; };
+		1C7E9D8E1E28BEDC0022A25A /* icon_download_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D5F1E28BEDC0022A25A /* icon_download_normal.png */; };
+		1C7E9D8F1E28BEDC0022A25A /* icon_exit_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D601E28BEDC0022A25A /* icon_exit_normal.png */; };
+		1C7E9D901E28BEDC0022A25A /* icon_fold_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D611E28BEDC0022A25A /* icon_fold_normal.png */; };
+		1C7E9D911E28BEDC0022A25A /* icon_forward_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D621E28BEDC0022A25A /* icon_forward_normal.png */; };
+		1C7E9D921E28BEDC0022A25A /* icon_history_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D631E28BEDC0022A25A /* icon_history_normal.png */; };
+		1C7E9D931E28BEDC0022A25A /* icon_home_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D641E28BEDC0022A25A /* icon_home_normal.png */; };
+		1C7E9D941E28BEDC0022A25A /* icon_menu_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D651E28BEDC0022A25A /* icon_menu_normal.png */; };
+		1C7E9D951E28BEDC0022A25A /* icon_refresh_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D661E28BEDC0022A25A /* icon_refresh_normal.png */; };
+		1C7E9D961E28BEDC0022A25A /* icon_search_engine.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D671E28BEDC0022A25A /* icon_search_engine.png */; };
+		1C7E9D971E28BEDC0022A25A /* icon_search_go.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D681E28BEDC0022A25A /* icon_search_go.png */; };
+		1C7E9D981E28BEDC0022A25A /* icon_search_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D691E28BEDC0022A25A /* icon_search_normal.png */; };
+		1C7E9D991E28BEDC0022A25A /* icon_search_website.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D6A1E28BEDC0022A25A /* icon_search_website.png */; };
+		1C7E9D9A1E28BEDC0022A25A /* icon_setting_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D6B1E28BEDC0022A25A /* icon_setting_normal.png */; };
+		1C7E9D9B1E28BEDC0022A25A /* icon_share_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D6C1E28BEDC0022A25A /* icon_share_normal.png */; };
+		1C7E9D9C1E28BEDC0022A25A /* icon_web_refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D6D1E28BEDC0022A25A /* icon_web_refresh.png */; };
+		1C7E9D9D1E28BEDC0022A25A /* icon_web_stop_loading.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D6E1E28BEDC0022A25A /* icon_web_stop_loading.png */; };
+		1C7E9D9E1E28BEDC0022A25A /* web_icon_bilibili.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D6F1E28BEDC0022A25A /* web_icon_bilibili.png */; };
+		1C7E9D9F1E28BEDC0022A25A /* web_icon_egame.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D701E28BEDC0022A25A /* web_icon_egame.png */; };
+		1C7E9DA01E28BEDC0022A25A /* web_icon_iqiyi.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D711E28BEDC0022A25A /* web_icon_iqiyi.png */; };
+		1C7E9DA11E28BEDC0022A25A /* web_icon_jingdong.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D721E28BEDC0022A25A /* web_icon_jingdong.png */; };
+		1C7E9DA21E28BEDC0022A25A /* web_icon_kuaidi100.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D731E28BEDC0022A25A /* web_icon_kuaidi100.png */; };
+		1C7E9DA31E28BEDC0022A25A /* web_icon_netease.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D741E28BEDC0022A25A /* web_icon_netease.png */; };
+		1C7E9DA41E28BEDC0022A25A /* web_icon_suning.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D751E28BEDC0022A25A /* web_icon_suning.png */; };
+		1C7E9DA51E28BEDC0022A25A /* web_icon_taobao.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D761E28BEDC0022A25A /* web_icon_taobao.png */; };
+		1C7E9DA61E28BEDC0022A25A /* web_icon_tencent_portal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D771E28BEDC0022A25A /* web_icon_tencent_portal.png */; };
+		1C7E9DA71E28BEDC0022A25A /* web_icon_tencent_video.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D781E28BEDC0022A25A /* web_icon_tencent_video.png */; };
+		1C7E9DA81E28BEDC0022A25A /* web_icon_weibo.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D791E28BEDC0022A25A /* web_icon_weibo.png */; };
+		1C7E9DA91E28BEDC0022A25A /* web_icon_youku.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D7A1E28BEDC0022A25A /* web_icon_youku.png */; };
+		1C7E9DAA1E28BEDC0022A25A /* back-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D811E28BEDC0022A25A /* back-icon.png */; };
+		1C7E9DAB1E28BEDC0022A25A /* back-icon@1.5x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D821E28BEDC0022A25A /* back-icon@1.5x.png */; };
+		1C7E9DAC1E28BEDC0022A25A /* back-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D831E28BEDC0022A25A /* back-icon@2x.png */; };
+		1C7E9DAD1E28BEDC0022A25A /* back-icon@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D841E28BEDC0022A25A /* back-icon@3x.png */; };
+		1C7E9DAE1E28BEDC0022A25A /* back-icon@4x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D851E28BEDC0022A25A /* back-icon@4x.png */; };
+		1C7E9DAF1E28BEDC0022A25A /* index.ios.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D861E28BEDC0022A25A /* index.ios.jsbundle */; };
+		1C7E9DB01E28BEDC0022A25A /* index.ios.jsbundle.meta in Resources */ = {isa = PBXBuildFile; fileRef = 1C7E9D871E28BEDC0022A25A /* index.ios.jsbundle.meta */; };
+		1C8C21381E26134100794FFE /* WebViewProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C21371E26134100794FFE /* WebViewProxy.m */; };
+		768358DFB3684C658E3C4D1A /* libRNViewShot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F2689D3A4E642318EE2083B /* libRNViewShot.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		E884812B64484261BFB11117 /* libRNFetchBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CDAF6BB14424AAA9CE54EAF /* libRNFetchBlob.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,13 +109,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 832C81801AAF6DEF007FA2F7;
 			remoteInfo = RCTVibration;
-		};
-		00E356F41AD99517003FC87E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
-			remoteInfo = RnBrowser;
 		};
 		139105C01AF99BAD00B5F7CC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -152,6 +194,20 @@
 			remoteGlobalIDString = 2D2A28131D9B038B00D4039D;
 			remoteInfo = "React-tvOS";
 		};
+		E22785641DFE758E001B7FA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F7BFF8F2B5249AA83FE2F7D /* RNViewShot.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNViewShot;
+		};
+		E227FBC41E13ACF80042C247 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BCB9601BBBCD490595ED024B /* RNFetchBlob.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A15C300E1CD25C330074CB35;
+			remoteInfo = RNFetchBlob;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -161,7 +217,6 @@
 		00C302BB1ABCB91800DB3ED1 /* RCTImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTImage.xcodeproj; path = "../node_modules/react-native/Libraries/Image/RCTImage.xcodeproj"; sourceTree = "<group>"; };
 		00C302D31ABCB9D200DB3ED1 /* RCTNetwork.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTNetwork.xcodeproj; path = "../node_modules/react-native/Libraries/Network/RCTNetwork.xcodeproj"; sourceTree = "<group>"; };
 		00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTVibration.xcodeproj; path = "../node_modules/react-native/Libraries/Vibration/RCTVibration.xcodeproj"; sourceTree = "<group>"; };
-		00E356EE1AD99517003FC87E /* RnBrowserTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RnBrowserTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* RnBrowserTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RnBrowserTests.m; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
@@ -174,23 +229,76 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RnBrowser/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RnBrowser/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		1C1FBECD1E2C6CB70049A3C5 /* PhoneMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneMode.h; sourceTree = "<group>"; };
+		1C1FBECE1E2C6CB70049A3C5 /* PhoneMode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneMode.m; sourceTree = "<group>"; };
+		1C1FBEE41E2C6E1D0049A3C5 /* AFNetworkReachabilityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworkReachabilityManager.h; sourceTree = "<group>"; };
+		1C1FBEE51E2C6E1D0049A3C5 /* AFNetworkReachabilityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFNetworkReachabilityManager.m; sourceTree = "<group>"; };
+		1C1FBEE81E2C71520049A3C5 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		1C6E01491E272C2100EB78AC /* IHTWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IHTWebView.h; sourceTree = "<group>"; };
+		1C6E014A1E272C2100EB78AC /* IHTWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IHTWebView.m; sourceTree = "<group>"; };
+		1C6E015B1E2732E700EB78AC /* BlankWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlankWebView.h; sourceTree = "<group>"; };
+		1C6E015C1E2732E700EB78AC /* BlankWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlankWebView.m; sourceTree = "<group>"; };
+		1C7597AA1E1F4441006249D2 /* CaptureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureView.h; sourceTree = "<group>"; };
+		1C7597AB1E1F4441006249D2 /* CaptureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptureView.m; sourceTree = "<group>"; };
+		1C7597C71E1F7ED4006249D2 /* WebViewProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewProtocol.h; sourceTree = "<group>"; };
+		1C7597C81E1F7ED4006249D2 /* WebViewProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewProtocol.m; sourceTree = "<group>"; };
+		1C7E9D591E28BEDC0022A25A /* icon_about_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_about_normal.png; sourceTree = "<group>"; };
+		1C7E9D5A1E28BEDC0022A25A /* icon_add_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_add_normal.png; sourceTree = "<group>"; };
+		1C7E9D5B1E28BEDC0022A25A /* icon_back_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_back_normal.png; sourceTree = "<group>"; };
+		1C7E9D5C1E28BEDC0022A25A /* icon_bottom_tabs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_bottom_tabs.png; sourceTree = "<group>"; };
+		1C7E9D5D1E28BEDC0022A25A /* icon_close_light_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_close_light_normal.png; sourceTree = "<group>"; };
+		1C7E9D5E1E28BEDC0022A25A /* icon_close_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_close_normal.png; sourceTree = "<group>"; };
+		1C7E9D5F1E28BEDC0022A25A /* icon_download_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_download_normal.png; sourceTree = "<group>"; };
+		1C7E9D601E28BEDC0022A25A /* icon_exit_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_exit_normal.png; sourceTree = "<group>"; };
+		1C7E9D611E28BEDC0022A25A /* icon_fold_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_fold_normal.png; sourceTree = "<group>"; };
+		1C7E9D621E28BEDC0022A25A /* icon_forward_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_forward_normal.png; sourceTree = "<group>"; };
+		1C7E9D631E28BEDC0022A25A /* icon_history_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_history_normal.png; sourceTree = "<group>"; };
+		1C7E9D641E28BEDC0022A25A /* icon_home_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_home_normal.png; sourceTree = "<group>"; };
+		1C7E9D651E28BEDC0022A25A /* icon_menu_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_menu_normal.png; sourceTree = "<group>"; };
+		1C7E9D661E28BEDC0022A25A /* icon_refresh_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_refresh_normal.png; sourceTree = "<group>"; };
+		1C7E9D671E28BEDC0022A25A /* icon_search_engine.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_search_engine.png; sourceTree = "<group>"; };
+		1C7E9D681E28BEDC0022A25A /* icon_search_go.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_search_go.png; sourceTree = "<group>"; };
+		1C7E9D691E28BEDC0022A25A /* icon_search_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_search_normal.png; sourceTree = "<group>"; };
+		1C7E9D6A1E28BEDC0022A25A /* icon_search_website.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_search_website.png; sourceTree = "<group>"; };
+		1C7E9D6B1E28BEDC0022A25A /* icon_setting_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_setting_normal.png; sourceTree = "<group>"; };
+		1C7E9D6C1E28BEDC0022A25A /* icon_share_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_share_normal.png; sourceTree = "<group>"; };
+		1C7E9D6D1E28BEDC0022A25A /* icon_web_refresh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_web_refresh.png; sourceTree = "<group>"; };
+		1C7E9D6E1E28BEDC0022A25A /* icon_web_stop_loading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_web_stop_loading.png; sourceTree = "<group>"; };
+		1C7E9D6F1E28BEDC0022A25A /* web_icon_bilibili.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = web_icon_bilibili.png; sourceTree = "<group>"; };
+		1C7E9D701E28BEDC0022A25A /* web_icon_egame.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = web_icon_egame.png; sourceTree = "<group>"; };
+		1C7E9D711E28BEDC0022A25A /* web_icon_iqiyi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = web_icon_iqiyi.png; sourceTree = "<group>"; };
+		1C7E9D721E28BEDC0022A25A /* web_icon_jingdong.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = web_icon_jingdong.png; sourceTree = "<group>"; };
+		1C7E9D731E28BEDC0022A25A /* web_icon_kuaidi100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = web_icon_kuaidi100.png; sourceTree = "<group>"; };
+		1C7E9D741E28BEDC0022A25A /* web_icon_netease.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = web_icon_netease.png; sourceTree = "<group>"; };
+		1C7E9D751E28BEDC0022A25A /* web_icon_suning.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = web_icon_suning.png; sourceTree = "<group>"; };
+		1C7E9D761E28BEDC0022A25A /* web_icon_taobao.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = web_icon_taobao.png; sourceTree = "<group>"; };
+		1C7E9D771E28BEDC0022A25A /* web_icon_tencent_portal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = web_icon_tencent_portal.png; sourceTree = "<group>"; };
+		1C7E9D781E28BEDC0022A25A /* web_icon_tencent_video.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = web_icon_tencent_video.png; sourceTree = "<group>"; };
+		1C7E9D791E28BEDC0022A25A /* web_icon_weibo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = web_icon_weibo.png; sourceTree = "<group>"; };
+		1C7E9D7A1E28BEDC0022A25A /* web_icon_youku.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = web_icon_youku.png; sourceTree = "<group>"; };
+		1C7E9D811E28BEDC0022A25A /* back-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-icon.png"; sourceTree = "<group>"; };
+		1C7E9D821E28BEDC0022A25A /* back-icon@1.5x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-icon@1.5x.png"; sourceTree = "<group>"; };
+		1C7E9D831E28BEDC0022A25A /* back-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-icon@2x.png"; sourceTree = "<group>"; };
+		1C7E9D841E28BEDC0022A25A /* back-icon@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-icon@3x.png"; sourceTree = "<group>"; };
+		1C7E9D851E28BEDC0022A25A /* back-icon@4x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-icon@4x.png"; sourceTree = "<group>"; };
+		1C7E9D861E28BEDC0022A25A /* index.ios.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = index.ios.jsbundle; sourceTree = "<group>"; };
+		1C7E9D871E28BEDC0022A25A /* index.ios.jsbundle.meta */ = {isa = PBXFileReference; lastKnownFileType = file; path = index.ios.jsbundle.meta; sourceTree = "<group>"; };
+		1C8C21361E26134100794FFE /* WebViewProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewProxy.h; sourceTree = "<group>"; };
+		1C8C21371E26134100794FFE /* WebViewProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewProxy.m; sourceTree = "<group>"; };
+		1CDAF6BB14424AAA9CE54EAF /* libRNFetchBlob.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFetchBlob.a; sourceTree = "<group>"; };
+		2F2689D3A4E642318EE2083B /* libRNViewShot.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNViewShot.a; sourceTree = "<group>"; };
+		3F7BFF8F2B5249AA83FE2F7D /* RNViewShot.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNViewShot.xcodeproj; path = "../node_modules/react-native-view-shot/ios/RNViewShot.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
+		BCB9601BBBCD490595ED024B /* RNFetchBlob.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFetchBlob.xcodeproj; path = "../node_modules/react-native-fetch-blob/ios/RNFetchBlob.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		00E356EB1AD99517003FC87E /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C1FBEE91E2C71520049A3C5 /* CoreTelephony.framework in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
@@ -201,6 +309,8 @@
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
+				768358DFB3684C658E3C4D1A /* libRNViewShot.a in Frameworks */,
+				E884812B64484261BFB11117 /* libRNFetchBlob.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,9 +397,12 @@
 		13B07FAE1A68108700A75B9A /* RnBrowser */ = {
 			isa = PBXGroup;
 			children = (
+				1C7E9D551E28BEDC0022A25A /* bundle */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
+				1C1FBEE31E2C6E1D0049A3C5 /* AFReachability */,
+				1C85205E1E1DDFF9001187E0 /* react-native-components */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
@@ -305,6 +418,180 @@
 				E20F55741DE5759E007AB19F /* libReact-tvOS.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1C1FBEE31E2C6E1D0049A3C5 /* AFReachability */ = {
+			isa = PBXGroup;
+			children = (
+				1C1FBEE41E2C6E1D0049A3C5 /* AFNetworkReachabilityManager.h */,
+				1C1FBEE51E2C6E1D0049A3C5 /* AFNetworkReachabilityManager.m */,
+			);
+			name = AFReachability;
+			path = RnBrowser/AFReachability;
+			sourceTree = "<group>";
+		};
+		1C1FBEE71E2C71520049A3C5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1C1FBEE81E2C71520049A3C5 /* CoreTelephony.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		1C7597C01E1F45EA006249D2 /* react-native-webview-proxy */ = {
+			isa = PBXGroup;
+			children = (
+				1C7597C71E1F7ED4006249D2 /* WebViewProtocol.h */,
+				1C7597C81E1F7ED4006249D2 /* WebViewProtocol.m */,
+				1C1FBECD1E2C6CB70049A3C5 /* PhoneMode.h */,
+				1C1FBECE1E2C6CB70049A3C5 /* PhoneMode.m */,
+				1C8C21361E26134100794FFE /* WebViewProxy.h */,
+				1C8C21371E26134100794FFE /* WebViewProxy.m */,
+				1C6E01491E272C2100EB78AC /* IHTWebView.h */,
+				1C6E014A1E272C2100EB78AC /* IHTWebView.m */,
+				1C6E015B1E2732E700EB78AC /* BlankWebView.h */,
+				1C6E015C1E2732E700EB78AC /* BlankWebView.m */,
+			);
+			path = "react-native-webview-proxy";
+			sourceTree = "<group>";
+		};
+		1C7E9D551E28BEDC0022A25A /* bundle */ = {
+			isa = PBXGroup;
+			children = (
+				1C7E9D561E28BEDC0022A25A /* assets */,
+				1C7E9D861E28BEDC0022A25A /* index.ios.jsbundle */,
+				1C7E9D871E28BEDC0022A25A /* index.ios.jsbundle.meta */,
+			);
+			path = bundle;
+			sourceTree = "<group>";
+		};
+		1C7E9D561E28BEDC0022A25A /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				1C7E9D571E28BEDC0022A25A /* js */,
+				1C7E9D7B1E28BEDC0022A25A /* node_modules */,
+			);
+			path = assets;
+			sourceTree = "<group>";
+		};
+		1C7E9D571E28BEDC0022A25A /* js */ = {
+			isa = PBXGroup;
+			children = (
+				1C7E9D581E28BEDC0022A25A /* assets */,
+			);
+			path = js;
+			sourceTree = "<group>";
+		};
+		1C7E9D581E28BEDC0022A25A /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				1C7E9D591E28BEDC0022A25A /* icon_about_normal.png */,
+				1C7E9D5A1E28BEDC0022A25A /* icon_add_normal.png */,
+				1C7E9D5B1E28BEDC0022A25A /* icon_back_normal.png */,
+				1C7E9D5C1E28BEDC0022A25A /* icon_bottom_tabs.png */,
+				1C7E9D5D1E28BEDC0022A25A /* icon_close_light_normal.png */,
+				1C7E9D5E1E28BEDC0022A25A /* icon_close_normal.png */,
+				1C7E9D5F1E28BEDC0022A25A /* icon_download_normal.png */,
+				1C7E9D601E28BEDC0022A25A /* icon_exit_normal.png */,
+				1C7E9D611E28BEDC0022A25A /* icon_fold_normal.png */,
+				1C7E9D621E28BEDC0022A25A /* icon_forward_normal.png */,
+				1C7E9D631E28BEDC0022A25A /* icon_history_normal.png */,
+				1C7E9D641E28BEDC0022A25A /* icon_home_normal.png */,
+				1C7E9D651E28BEDC0022A25A /* icon_menu_normal.png */,
+				1C7E9D661E28BEDC0022A25A /* icon_refresh_normal.png */,
+				1C7E9D671E28BEDC0022A25A /* icon_search_engine.png */,
+				1C7E9D681E28BEDC0022A25A /* icon_search_go.png */,
+				1C7E9D691E28BEDC0022A25A /* icon_search_normal.png */,
+				1C7E9D6A1E28BEDC0022A25A /* icon_search_website.png */,
+				1C7E9D6B1E28BEDC0022A25A /* icon_setting_normal.png */,
+				1C7E9D6C1E28BEDC0022A25A /* icon_share_normal.png */,
+				1C7E9D6D1E28BEDC0022A25A /* icon_web_refresh.png */,
+				1C7E9D6E1E28BEDC0022A25A /* icon_web_stop_loading.png */,
+				1C7E9D6F1E28BEDC0022A25A /* web_icon_bilibili.png */,
+				1C7E9D701E28BEDC0022A25A /* web_icon_egame.png */,
+				1C7E9D711E28BEDC0022A25A /* web_icon_iqiyi.png */,
+				1C7E9D721E28BEDC0022A25A /* web_icon_jingdong.png */,
+				1C7E9D731E28BEDC0022A25A /* web_icon_kuaidi100.png */,
+				1C7E9D741E28BEDC0022A25A /* web_icon_netease.png */,
+				1C7E9D751E28BEDC0022A25A /* web_icon_suning.png */,
+				1C7E9D761E28BEDC0022A25A /* web_icon_taobao.png */,
+				1C7E9D771E28BEDC0022A25A /* web_icon_tencent_portal.png */,
+				1C7E9D781E28BEDC0022A25A /* web_icon_tencent_video.png */,
+				1C7E9D791E28BEDC0022A25A /* web_icon_weibo.png */,
+				1C7E9D7A1E28BEDC0022A25A /* web_icon_youku.png */,
+			);
+			path = assets;
+			sourceTree = "<group>";
+		};
+		1C7E9D7B1E28BEDC0022A25A /* node_modules */ = {
+			isa = PBXGroup;
+			children = (
+				1C7E9D7C1E28BEDC0022A25A /* react-native */,
+			);
+			path = node_modules;
+			sourceTree = "<group>";
+		};
+		1C7E9D7C1E28BEDC0022A25A /* react-native */ = {
+			isa = PBXGroup;
+			children = (
+				1C7E9D7D1E28BEDC0022A25A /* Libraries */,
+			);
+			path = "react-native";
+			sourceTree = "<group>";
+		};
+		1C7E9D7D1E28BEDC0022A25A /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				1C7E9D7E1E28BEDC0022A25A /* CustomComponents */,
+			);
+			path = Libraries;
+			sourceTree = "<group>";
+		};
+		1C7E9D7E1E28BEDC0022A25A /* CustomComponents */ = {
+			isa = PBXGroup;
+			children = (
+				1C7E9D7F1E28BEDC0022A25A /* NavigationExperimental */,
+			);
+			path = CustomComponents;
+			sourceTree = "<group>";
+		};
+		1C7E9D7F1E28BEDC0022A25A /* NavigationExperimental */ = {
+			isa = PBXGroup;
+			children = (
+				1C7E9D801E28BEDC0022A25A /* assets */,
+			);
+			path = NavigationExperimental;
+			sourceTree = "<group>";
+		};
+		1C7E9D801E28BEDC0022A25A /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				1C7E9D811E28BEDC0022A25A /* back-icon.png */,
+				1C7E9D821E28BEDC0022A25A /* back-icon@1.5x.png */,
+				1C7E9D831E28BEDC0022A25A /* back-icon@2x.png */,
+				1C7E9D841E28BEDC0022A25A /* back-icon@3x.png */,
+				1C7E9D851E28BEDC0022A25A /* back-icon@4x.png */,
+			);
+			path = assets;
+			sourceTree = "<group>";
+		};
+		1C85205E1E1DDFF9001187E0 /* react-native-components */ = {
+			isa = PBXGroup;
+			children = (
+				1C7597C01E1F45EA006249D2 /* react-native-webview-proxy */,
+				1C85205F1E1DDFF9001187E0 /* react-native-capture-view */,
+			);
+			name = "react-native-components";
+			path = "RnBrowser/react-native-components";
+			sourceTree = "<group>";
+		};
+		1C85205F1E1DDFF9001187E0 /* react-native-capture-view */ = {
+			isa = PBXGroup;
+			children = (
+				1C7597AA1E1F4441006249D2 /* CaptureView.h */,
+				1C7597AB1E1F4441006249D2 /* CaptureView.m */,
+			);
+			path = "react-native-capture-view";
 			sourceTree = "<group>";
 		};
 		78C398B11ACF4ADC00677621 /* Products */ = {
@@ -329,6 +616,8 @@
 				832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */,
 				00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */,
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
+				3F7BFF8F2B5249AA83FE2F7D /* RNViewShot.xcodeproj */,
+				BCB9601BBBCD490595ED024B /* RNFetchBlob.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -349,6 +638,7 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* RnBrowserTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
+				1C1FBEE71E2C71520049A3C5 /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -358,7 +648,22 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* RnBrowser.app */,
-				00E356EE1AD99517003FC87E /* RnBrowserTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E22785501DFE758A001B7FA9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E22785651DFE758E001B7FA9 /* libRNViewShot.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E227FBB01E13ACF40042C247 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E227FBC51E13ACF80042C247 /* libRNFetchBlob.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -366,24 +671,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		00E356ED1AD99517003FC87E /* RnBrowserTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "RnBrowserTests" */;
-			buildPhases = (
-				00E356EA1AD99517003FC87E /* Sources */,
-				00E356EB1AD99517003FC87E /* Frameworks */,
-				00E356EC1AD99517003FC87E /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				00E356F51AD99517003FC87E /* PBXTargetDependency */,
-			);
-			name = RnBrowserTests;
-			productName = RnBrowserTests;
-			productReference = 00E356EE1AD99517003FC87E /* RnBrowserTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		13B07F861A680F5B00A75B9A /* RnBrowser */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "RnBrowser" */;
@@ -408,12 +695,11 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 610;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
-					00E356ED1AD99517003FC87E = {
-						CreatedOnToolsVersion = 6.2;
-						TestTargetID = 13B07F861A680F5B00A75B9A;
+					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = EG932Q8VJF;
 					};
 				};
 			};
@@ -469,11 +755,18 @@
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
 				},
+				{
+					ProductGroup = E227FBB01E13ACF40042C247 /* Products */;
+					ProjectRef = BCB9601BBBCD490595ED024B /* RNFetchBlob.xcodeproj */;
+				},
+				{
+					ProductGroup = E22785501DFE758A001B7FA9 /* Products */;
+					ProjectRef = 3F7BFF8F2B5249AA83FE2F7D /* RNViewShot.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* RnBrowser */,
-				00E356ED1AD99517003FC87E /* RnBrowserTests */,
 			);
 		};
 /* End PBXProject section */
@@ -598,22 +891,70 @@
 			remoteRef = E20F55731DE5759E007AB19F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		E22785651DFE758E001B7FA9 /* libRNViewShot.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNViewShot.a;
+			remoteRef = E22785641DFE758E001B7FA9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E227FBC51E13ACF80042C247 /* libRNFetchBlob.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNFetchBlob.a;
+			remoteRef = E227FBC41E13ACF80042C247 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
-		00E356EC1AD99517003FC87E /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		13B07F8E1A680F5B00A75B9A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C7E9D8A1E28BEDC0022A25A /* icon_back_normal.png in Resources */,
+				1C7E9DA51E28BEDC0022A25A /* web_icon_taobao.png in Resources */,
+				1C7E9D901E28BEDC0022A25A /* icon_fold_normal.png in Resources */,
+				1C7E9D881E28BEDC0022A25A /* icon_about_normal.png in Resources */,
+				1C7E9D961E28BEDC0022A25A /* icon_search_engine.png in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				1C7E9D9B1E28BEDC0022A25A /* icon_share_normal.png in Resources */,
+				1C7E9D8E1E28BEDC0022A25A /* icon_download_normal.png in Resources */,
+				1C7E9D991E28BEDC0022A25A /* icon_search_website.png in Resources */,
+				1C7E9DA21E28BEDC0022A25A /* web_icon_kuaidi100.png in Resources */,
+				1C7E9D971E28BEDC0022A25A /* icon_search_go.png in Resources */,
+				1C7E9D9F1E28BEDC0022A25A /* web_icon_egame.png in Resources */,
+				1C7E9DAF1E28BEDC0022A25A /* index.ios.jsbundle in Resources */,
+				1C7E9D9A1E28BEDC0022A25A /* icon_setting_normal.png in Resources */,
+				1C7E9D8C1E28BEDC0022A25A /* icon_close_light_normal.png in Resources */,
+				1C7E9D8B1E28BEDC0022A25A /* icon_bottom_tabs.png in Resources */,
+				1C7E9DAA1E28BEDC0022A25A /* back-icon.png in Resources */,
+				1C7E9DA91E28BEDC0022A25A /* web_icon_youku.png in Resources */,
+				1C7E9DA71E28BEDC0022A25A /* web_icon_tencent_video.png in Resources */,
+				1C7E9DB01E28BEDC0022A25A /* index.ios.jsbundle.meta in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				1C7E9D941E28BEDC0022A25A /* icon_menu_normal.png in Resources */,
+				1C7E9D951E28BEDC0022A25A /* icon_refresh_normal.png in Resources */,
+				1C7E9DA01E28BEDC0022A25A /* web_icon_iqiyi.png in Resources */,
+				1C7E9DAB1E28BEDC0022A25A /* back-icon@1.5x.png in Resources */,
+				1C7E9D9E1E28BEDC0022A25A /* web_icon_bilibili.png in Resources */,
+				1C7E9DAE1E28BEDC0022A25A /* back-icon@4x.png in Resources */,
+				1C7E9DA31E28BEDC0022A25A /* web_icon_netease.png in Resources */,
+				1C7E9D931E28BEDC0022A25A /* icon_home_normal.png in Resources */,
+				1C7E9D9C1E28BEDC0022A25A /* icon_web_refresh.png in Resources */,
+				1C7E9D981E28BEDC0022A25A /* icon_search_normal.png in Resources */,
+				1C7E9D8F1E28BEDC0022A25A /* icon_exit_normal.png in Resources */,
+				1C7E9DAD1E28BEDC0022A25A /* back-icon@3x.png in Resources */,
+				1C7E9D921E28BEDC0022A25A /* icon_history_normal.png in Resources */,
+				1C7E9DA61E28BEDC0022A25A /* web_icon_tencent_portal.png in Resources */,
+				1C7E9DA41E28BEDC0022A25A /* web_icon_suning.png in Resources */,
+				1C7E9DAC1E28BEDC0022A25A /* back-icon@2x.png in Resources */,
+				1C7E9D9D1E28BEDC0022A25A /* icon_web_stop_loading.png in Resources */,
+				1C7E9DA81E28BEDC0022A25A /* web_icon_weibo.png in Resources */,
+				1C7E9D8D1E28BEDC0022A25A /* icon_close_normal.png in Resources */,
+				1C7E9DA11E28BEDC0022A25A /* web_icon_jingdong.png in Resources */,
+				1C7E9D891E28BEDC0022A25A /* icon_add_normal.png in Resources */,
+				1C7E9D911E28BEDC0022A25A /* icon_forward_normal.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -637,32 +978,23 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		00E356EA1AD99517003FC87E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				00E356F31AD99517003FC87E /* RnBrowserTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		13B07F871A680F5B00A75B9A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C6E015D1E2732E700EB78AC /* BlankWebView.m in Sources */,
+				1C1FBEE61E2C6E1D0049A3C5 /* AFNetworkReachabilityManager.m in Sources */,
+				1C7597C91E1F7ED4006249D2 /* WebViewProtocol.m in Sources */,
+				1C6E014D1E272C2100EB78AC /* IHTWebView.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				1C8C21381E26134100794FFE /* WebViewProxy.m in Sources */,
+				1C1FBECF1E2C6CB70049A3C5 /* PhoneMode.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				1C7597AC1E1F4441006249D2 /* CaptureView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 13B07F861A680F5B00A75B9A /* RnBrowser */;
-			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		13B07FB11A68108700A75B9A /* LaunchScreen.xib */ = {
@@ -677,48 +1009,28 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		00E356F61AD99517003FC87E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = RnBrowserTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RnBrowser.app/RnBrowser";
-			};
-			name = Debug;
-		};
-		00E356F71AD99517003FC87E /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				COPY_PHASE_STRIP = NO;
-				INFOPLIST_FILE = RnBrowserTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RnBrowser.app/RnBrowser";
-			};
-			name = Release;
-		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = EG932Q8VJF;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native-view-shot/ios",
+					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
 				);
 				INFOPLIST_FILE = RnBrowser/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/RnBrowser\"",
+					"\"$(SRCROOT)/RnBrowser\"",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -733,14 +1045,23 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = EG932Q8VJF;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native-view-shot/ios",
+					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
 				);
 				INFOPLIST_FILE = RnBrowser/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/RnBrowser\"",
+					"\"$(SRCROOT)/RnBrowser\"",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -768,6 +1089,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -789,6 +1111,8 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native-view-shot/ios",
+					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -814,6 +1138,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -829,6 +1154,8 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native-view-shot/ios",
+					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -840,15 +1167,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "RnBrowserTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				00E356F61AD99517003FC87E /* Debug */,
-				00E356F71AD99517003FC87E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "RnBrowser" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
