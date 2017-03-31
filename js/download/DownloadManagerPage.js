@@ -7,7 +7,10 @@ import {
   Image,
   StyleSheet,
 } from 'react-native';
-import { TabViewAnimated, TabBarTop } from 'react-native-tab-view';
+import { TabViewAnimated, TabBar } from 'react-native-tab-view';
+import {
+  SCREEN_WIDTH,
+} from '../utils/Consts'
 
 import NavBar from '../components/NavBar';
 import DownloadingPage from './DownloadingPage'
@@ -31,6 +34,10 @@ class DownloadManagerPage extends Component {
     ],
   };
 
+  componentWillUnmount() {
+    this.props.onNavigatorPop && this.props.onNavigatorPop();
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -38,13 +45,7 @@ class DownloadManagerPage extends Component {
           title={'下载管理'}
           onBack={() => this.props.navigator.pop()}
         />
-        <TabViewAnimated
-          style={styles.container}
-          navigationState={this.state}
-          renderScene={this.renderScene}
-          renderHeader={this.renderHeader}
-          onRequestChangeTab={this.handleChangeTab}
-        />
+        {this.renderBody()}
       </View>
     );
   }
@@ -54,21 +55,53 @@ class DownloadManagerPage extends Component {
   };
 
   renderHeader = (props: Object) => {
-    return <TabBarTop
+    return <TabBar
             style={{
-              backgroundColor: 'white'
+              backgroundColor: 'white',
             }}
             labelStyle={{
               color: 'black'
             }}
             indicatorStyle={{
-              backgroundColor: 'rgba(0, 122, 255, 1)'
+              backgroundColor: '#00b4ff',
+              position: 'absolute',
+              justifyContent: 'center',
+              alignItems: 'center',
+              left: SCREEN_WIDTH / 4 - 24,
+              width: 40,
+              bottom: 0,
+              height: 2,
             }}
             {...props} />
   };
 
-  renderScene = ({ route }) => {
-    switch (route.key) {
+  renderBody = () => {
+    return this.renderDownloadedOnly();
+    //  return this.renderDownloadedAndDownloading();
+  }
+
+  // 只显示已下载
+  renderDownloadedOnly = () => {
+    return (
+      <DownloadedPage />
+    );
+  }
+
+  // 显示正在下载和已下载两个tab
+  renderDownloadedAndDownloading = () => {
+    return (
+      <TabViewAnimated
+        style={styles.container}
+        navigationState={this.state}
+        renderScene={this.renderScene}
+        renderHeader={this.renderHeader}
+        onRequestChangeTab={this.handleChangeTab}
+      />
+    );
+  }
+
+  renderScene = (scene: Object) => {
+    switch (scene.route.key) {
     case '1':
       return <DownloadedPage />;
     case '2':

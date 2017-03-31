@@ -17,6 +17,10 @@ public class ProxyConfigUpdateEvent {
     public String authPwd;
     public boolean isProxyEnabled;
 
+    public ProxyConfigUpdateEvent(boolean isProxyEnabled) {
+        this.isProxyEnabled = isProxyEnabled;
+    }
+
     public ProxyConfigUpdateEvent(
             boolean isProxyEnabled,
             String proxyIp,

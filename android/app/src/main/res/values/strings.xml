@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">RnBrowser</string>
+    <string moduleConfig="true" name="reactNativeCodePush_androidDeploymentKey">O1H5OK3QxEIhYzffqWdlKM0-V1bOE1Xxw51YM</string>
+    <string name="app_name">青蜂浏览器</string>
 </resources>

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.webkit.WebView;
 
 import com.egame.reactnativewebview.util.NetworkUtil;
+import com.egame.reactnativewebview.util.TrafficStatsUtil;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -29,15 +30,21 @@ public class NativeWebViewProxySetting {
 
     private static final String APPLICATION_NAME = "android.app.Application";
 
+    private static boolean proxyEnabled = false;
+
     // 注意这里applicationClassName 传递的是 application 的类名
     public static boolean setProxy(WebView webview,
                                    String proxyHost,
                                    int proxyPort) {
-        if (!NetworkUtil.canTurnOnProxy(webview.getContext())) {
-            revertBackProxy(webview);
+        if (!NetworkUtil.canTurnOnProxy(webview.getContext())
+                || TrafficStatsUtil.isExceedFreeLimit()) {
+            if (proxyEnabled) {
+                revertBackProxy(webview);
+            }
             return false;
         }
 
+        proxyEnabled = true;
         String applicationClassName = APPLICATION_NAME;
         String host = proxyHost;
         int port = proxyPort;
@@ -55,6 +62,10 @@ public class NativeWebViewProxySetting {
 
     public static boolean revertBackProxy(WebView webview) {
         Log.e(TAG, "revertBackProxy");
+        if (!proxyEnabled) {
+            return true;
+        }
+        proxyEnabled = false;
         // 4.1-4.3 (JB)
         if (Build.VERSION.SDK_INT <= 18) {
             return revertProxyJB(webview);

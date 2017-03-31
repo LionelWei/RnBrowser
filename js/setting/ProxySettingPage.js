@@ -19,12 +19,16 @@ import {connect} from 'react-redux'
 import * as IMG from '../assets/imageAssets'
 import {Emitter} from '../events/Emitter'
 import {configProxy} from '../nativemodules/WebProxySetting'
-
-const PROXY_IP = 'PROXY_IP'
-const PROXY_PORT = 'PROXY_PORT'
-const PROXY_UN = 'PROXY_USER_NAME'
-const PROXY_PWD = 'PROXY_PASSWORD'
-const PROXY_ENABLED = 'PROXY_ENABLED'
+import {
+  PROXY_IP,
+  PROXY_PORT,
+  PROXY_UN,
+  PROXY_PWD,
+  PROXY_ENABLED,
+  DEFAULT_IP,
+  DEFAULT_PORT,
+} from '../utils/ProxyConsts'
+import * as Consts from '../utils/Consts'
 
 class ProxySettingPage extends Component {
   state = {
@@ -117,7 +121,7 @@ class ProxySettingPage extends Component {
           <TextInput
             ref='1'
             style={styles.config_input}
-            placeholder='代理IP地址'
+            placeholder='默认 180.96.49.56'
             keyboardType="numeric"
             defaultValue={this.localStore.ip}
             onChangeText={(text) => this.updateIp(text)}
@@ -130,7 +134,7 @@ class ProxySettingPage extends Component {
           <TextInput
             ref='2'
             style={styles.config_input}
-            placeholder='代理端口号'
+            placeholder='默认 8313'
             keyboardType="numeric"
             defaultValue={this.localStore.port}
             onChangeText={(text) => this.updatePort(text)}
@@ -143,7 +147,7 @@ class ProxySettingPage extends Component {
           <TextInput
             ref='3'
             style={styles.config_input}
-            placeholder='代理用户名'
+            placeholder='默认为空'
             defaultValue={this.localStore.userName}
             onChangeText={(text) => this.updateUserName(text)}
             onSubmitEditing={() => this.focusNextField('4')}
@@ -155,7 +159,7 @@ class ProxySettingPage extends Component {
           <TextInput
             ref='4'
             style={styles.config_input}
-            placeholder='代理密码'
+            placeholder='默认为空'
             onChangeText={(text) => this.updatePwd(text)}
             defaultValue={this.localStore.password}
             underlineColorAndroid='transparent'
@@ -176,8 +180,8 @@ class ProxySettingPage extends Component {
 
     console.log('back: data: ip: ' + data.ip + ', port: ' + data.port)
     AsyncStorage.multiSet([
-      [PROXY_IP, data.ip],
-      [PROXY_PORT, data.port],
+      [PROXY_IP, data.ip || DEFAULT_IP],
+      [PROXY_PORT, data.port || DEFAULT_PORT],
       [PROXY_UN, data.userName || ''],
       [PROXY_PWD, data.password || ''],
       [PROXY_ENABLED, enabled ? '1' : '0']
@@ -217,26 +221,29 @@ class ProxySettingPage extends Component {
       return false
     }
 
-    let data = this.localStore
-    let prefix: string = ''
-    let empty = true
-    if (isEmpty(data.ip)) {
-      prefix = 'IP'
-    } else if (isEmpty(data.port)) {
-      prefix = '端口号'
-    } /* else if (isEmpty(data.userName)) {
-      prefix = '用户名'
-    } else if (isEmpty(data.password)) {
-      prefix = '密码'
-    }*/ else {
-      empty = false
-    }
+    return false;
 
-    return empty
-
-    function isEmpty(s: string) {
-      return !s || s.length === 0
-    }
+    // 如果ip和端口号为空, 则使用默认值
+    // let data = this.localStore
+    // let prefix: string = ''
+    // let empty = true
+    // if (isEmpty(data.ip)) {
+    //   prefix = 'IP'
+    // } else if (isEmpty(data.port)) {
+    //   prefix = '端口号'
+    // } /* else if (isEmpty(data.userName)) {
+    //   prefix = '用户名'
+    // } else if (isEmpty(data.password)) {
+    //   prefix = '密码'
+    // }*/ else {
+    //   empty = false
+    // }
+    //
+    // return empty
+    //
+    // function isEmpty(s: string) {
+    //   return !s || s.length === 0
+    // }
 
   }
 
@@ -259,19 +266,19 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    fontSize: 16,
+    fontSize: Consts.spFont(16),
     color: 'black',
     alignSelf: 'center'
   },
   config_desc: {
     marginLeft: 12,
-    fontSize: 16,
+    fontSize: Consts.spFont(16),
     width: 60,
     color: 'black',
   },
   config_input: {
     flex: 1,
-    fontSize: 16,
+    fontSize: Consts.spFont(16),
     color: 'black',
     borderBottomWidth: 1,
     borderBottomColor: '#f1f2f3',

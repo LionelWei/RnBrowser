@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import {connect} from 'react-redux'
+import * as Consts from '../utils/Consts'
 
 const dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
@@ -31,7 +32,9 @@ class DownloadingPage extends Component {
     if (dataSource.getRowCount() === 0) {
       console.log('dataList 0');
       return (
-        <Text>当前没有下载内容</Text>
+        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+          <Text>当前没有下载内容</Text>
+        </View>
       )
     }
     console.log('dataList 不为0: ' + dataSource.getRowCount());
@@ -79,7 +82,7 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    fontSize: 16,
+    fontSize: Consts.spFont(16),
     color: 'black',
   },
 })

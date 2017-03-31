@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
 } from 'react-native'
+import * as Consts from '../utils/Consts'
 
 export default class TouchableButton extends Component {
 
@@ -31,21 +32,28 @@ export default class TouchableButton extends Component {
   }
 
   render() {
-    console.log('button render.... source: ' + this.props.normalBg);
     let enabled = this.props.enabled;
     let settingBg = this.props.normalBg;
     let opacity = enabled ? 1 : 0.5;
     let imgWidth = this.props.width || 20;
     let imgHeight = this.props.height || 20;
     let desc = this.props.description;
+
+    let containerWidth = imgWidth + 28;
+    let containerHeight = imgHeight + 20;
+    if (desc && desc.length > 0) {
+      containerWidth += 20;
+      containerHeight += 10;
+    }
     return (
       <TouchableOpacity
         disabled={!enabled}
-        onPress={this.props.pressFn}>
+        onPress={this.props.pressFn}
+        onLongPress={this.props.longPressFn}>
         <View style={[styles.container, {
-          width: imgWidth + 20,
-          height: imgHeight + 20,
-          backgroundColor: 'white'}]}>
+          width: containerWidth,
+          height: containerHeight,
+          backgroundColor: 'transparent'}]}>
           <Image
             style={{
               width: imgWidth,
@@ -54,7 +62,9 @@ export default class TouchableButton extends Component {
             source={settingBg}
             opacity={opacity}/>
           {desc
-            ? <Text style={styles.descText}>{desc}</Text>
+            ? <Text style={[styles.descText, {
+                opacity: opacity
+              }]}>{desc}</Text>
             : null}
         </View>
       </TouchableOpacity>
@@ -70,7 +80,7 @@ const styles = StyleSheet.create({
   },
   descText: {
     paddingTop: 4,
-    fontSize: 12,
+    fontSize: Consts.spFont(12),
     color: 'black',
     textAlign: 'center'
   }

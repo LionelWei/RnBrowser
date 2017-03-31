@@ -425,6 +425,11 @@ class PBWebView extends React.Component {
 
   onProgressChange = (event) => {
     let progress = event.nativeEvent.progress;
+    if (progress > 0) {
+      if (progress <= 1) {
+        progress = Math.round(100 * progress)
+      }
+    }
     let onProgressChange = this.props.onProgressChange;
     onProgressChange && onProgressChange(progress)
   };
@@ -491,6 +496,14 @@ class PBWebView extends React.Component {
       [String(data)]
     );
   };
+
+  resume = () => {
+    // nop
+  }
+
+  pause = () => {
+    // nop
+  }
 
   /**
    * We return an event with a bunch of fields including:

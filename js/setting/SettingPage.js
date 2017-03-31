@@ -12,20 +12,27 @@ import {
   Platform,
   Switch,
   AsyncStorage,
+  Alert
 } from 'react-native';
 
 import NavBar from '../components/NavBar';
 import ProxySettingPage from './ProxySettingPage'
+import TrafficUsagePage from './TrafficUsagePage'
+import AboutPage from './AboutPage'
 import Transitions from '../animation/NavigatorAnimation'
 import {connect} from 'react-redux'
 import * as IMG from '../assets/imageAssets'
 
 import {removeAll as removeSearchHistory} from '../reducers/searchhistory'
 import {removeAll as removeBrowseHistory} from '../reducers/browsehistory'
-import {isIOS} from '../utils/Consts'
+import {removeAllDownload as removeDownload} from '../reducers/download'
+import * as Consts from '../utils/Consts'
 import {chooseWebKit} from '../nativemodules/WebkitChoose'
 
-const IS_X5 = 'IS_X5'
+const IS_X5 = 'IS_X5';
+
+const CANCEL_TEXT = '取消';
+const CONFIRM_TEXT = Consts.isIOS ? '好' : '确认';
 class SettingPage extends Component {
   static propTypes = {
     navigator: PropTypes.object.isRequired,
@@ -43,6 +50,10 @@ class SettingPage extends Component {
     })
   }
 
+  componentWillUnmount() {
+    this.props.onNavigatorPop && this.props.onNavigatorPop();
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -50,16 +61,18 @@ class SettingPage extends Component {
           title={'设置'}
           onBack={() => this.props.navigator.pop()}
         />
-        {this.renderWebkitChoose()}
-        {this.renderProxy()}
+        {this.renderTrafficUsage()}
         {this.renderClear()}
+        {this.renderDeleteDownload()}
+        {this.renderAbout()}
         {this.renderExit()}
       </View>
     );
   }
 
+  // 暂时隐藏
   renderWebkitChoose = () => {
-    if (isIOS) {
+    if (Consts.isIOS) {
       return null
     }
     return (
@@ -74,9 +87,9 @@ class SettingPage extends Component {
           value={this.state.isX5} />
       </View>
     )
-
   }
 
+  // 暂时隐藏
   renderProxy = () => {
     return (
       <TouchableOpacity
@@ -87,6 +100,23 @@ class SettingPage extends Component {
             style={styles.title}
             numberOfLines={1}>
             免流量代理
+          </Text>
+          <View style={styles.rightArrow}/>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
+  renderTrafficUsage = () => {
+    return (
+      <TouchableOpacity
+        style={{height: 56}}
+        onPress={this.pushTrafficUsage}>
+        <View style={styles.item_container}>
+          <Text
+            style={styles.title}
+            numberOfLines={1}>
+            流量统计
           </Text>
           <View style={styles.rightArrow}/>
         </View>
@@ -110,9 +140,41 @@ class SettingPage extends Component {
     )
   }
 
+  renderDeleteDownload = () => {
+    return (
+      <TouchableOpacity
+        style={{height: 56}}
+        onPress={this.deleteDownload}>
+        <View style={styles.item_container}>
+          <Text
+            style={styles.title}
+            numberOfLines={1}>
+            清空下载
+          </Text>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
+  renderAbout = () => {
+    return (
+      <TouchableOpacity
+        style={{height: 56}}
+        onPress={this.about}>
+        <View style={styles.item_container}>
+          <Text
+            style={styles.title}
+            numberOfLines={1}>
+            关于
+          </Text>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
   renderExit = () => {
     return (
-      isIOS
+      Consts.isIOS
       ? null
       : <TouchableOpacity
           style={{height: 56}}
@@ -135,6 +197,13 @@ class SettingPage extends Component {
     setTimeout(() => alert('必须重启APP, 才能生效'), 300)
   }
 
+  pushTrafficUsage = () => {
+    this.props.navigator.push({
+      component: TrafficUsagePage,
+      scene: Transitions.LeftToRight,
+    })
+  }
+
   pushProxySetting = () => {
     this.props.navigator.push({
       component: ProxySettingPage,
@@ -142,14 +211,49 @@ class SettingPage extends Component {
     })
   }
 
+  deleteDownload = () => {
+    this.confirmWithPrompt('确定清空下载内容吗?', () => {
+      this.props.removeDownload();
+    })
+  }
+
   clearHistory = () => {
-    this.props.removeSearchHistory()
-    this.props.removeBrowseHistory()
-    alert('历史记录已清除')
+    this.confirmWithPrompt('确定清除历史记录吗?', () => {
+      this.props.removeSearchHistory();
+      this.props.removeBrowseHistory();
+    });
+  }
+
+  about = () => {
+    this.props.navigator.push({
+      component: AboutPage,
+      scene: Transitions.LeftToRight,
+    })
   }
 
   exit = () => {
-    BackAndroid.exitApp();
+    this.confirmWithPrompt('确定退出吗?', () => {
+      BackAndroid.exitApp();
+    });
+  }
+
+  confirmWithPrompt = (description: string, confirmFn: Function) => {
+    Alert.alert(
+      '',
+      description,
+      [
+        {
+          text: CANCEL_TEXT,
+          onPress: () => {}
+        },
+        {
+          text: CONFIRM_TEXT,
+          onPress: () => {
+            confirmFn && confirmFn();
+          }
+        }
+      ]
+    );
   }
 
 }
@@ -174,7 +278,7 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    fontSize: 16,
+    fontSize: Consts.spFont(16),
     paddingLeft: 12,
     color: 'black',
     alignSelf: 'center'
@@ -185,8 +289,8 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     transform: [{rotate: '45deg'}],
-    borderColor: 'black',
-    marginRight: 12,
+    borderColor: '#888888',
+    marginRight: 20,
     alignSelf: 'center',
   }
 })
@@ -199,7 +303,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     removeSearchHistory: () => dispatch(removeSearchHistory()),
-    removeBrowseHistory: () => dispatch(removeBrowseHistory())
+    removeBrowseHistory: () => dispatch(removeBrowseHistory()),
+    removeDownload: () => dispatch(removeDownload()),
   }
 }
 

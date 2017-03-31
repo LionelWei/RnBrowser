@@ -13,4 +13,14 @@
 
 @property (nonatomic, strong) UIWindow *window;
 
++ (NSString *)local_server;
+
++ (void)add4gFlow:(double)fg freeFlow:(double)free;
+
++ (long long)get4GFlow;
+
++ (long long)getFreeFlow;
+
++ (BOOL)reachability;
+
 @end

@@ -6,7 +6,7 @@
 //  Copyright © 2017 Facebook. All rights reserved.
 //
 
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 
 @interface WebViewProxy : NSObject<RCTBridgeModule>
 

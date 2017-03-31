@@ -29,15 +29,20 @@ public class X5WebViewProxySetting {
 
     private static final String APPLICATION_NAME = "android.app.Application";
 
+    private static boolean proxyEnabled = false;
+
     // 注意这里applicationClassName 传递的是 application 的类名
     public static boolean setProxy(WebView webview,
                                    String proxyHost,
                                    int proxyPort) {
         if (!NetworkUtil.canTurnOnProxy(webview.getContext())) {
-            revertBackProxy(webview);
+            if (proxyEnabled) {
+                revertBackProxy(webview);
+            }
             return false;
         }
 
+        proxyEnabled = true;
         String applicationClassName = APPLICATION_NAME;
         String host = proxyHost;
         int port = proxyPort;
@@ -55,6 +60,7 @@ public class X5WebViewProxySetting {
 
     public static boolean revertBackProxy(WebView webview) {
         Log.e(TAG, "revertBackProxy");
+        proxyEnabled = false;
         // 4.1-4.3 (JB)
         if (Build.VERSION.SDK_INT <= 18) {
             return revertProxyJB(webview);

@@ -20,7 +20,8 @@ public class WebViewPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         return Arrays.<NativeModule>asList(
                 new WebViewProxyModule(reactContext)
-                , new WebkitChooseModule(reactContext));
+                , new WebkitChooseModule(reactContext)
+                , new TrafficStatsModule(reactContext));
     }
 
     @Override

@@ -7,7 +7,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Navigator,
   TouchableWithoutFeedback,
   TouchableNativeFeedback,
   Modal,
@@ -29,7 +28,6 @@ const style = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: 'white',
     paddingLeft: 40,
     paddingRight: 40,
   }
@@ -38,7 +36,6 @@ const style = StyleSheet.create({
 
 class TabBottomBar extends Component {
   static propTypes = {
-    navigator: PropTypes.object,
     menuPressFn: PropTypes.func.isRequired,
     tabPressFn: PropTypes.func.isRequired,
   };
@@ -47,15 +44,7 @@ class TabBottomBar extends Component {
     super()
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.tabCount !== this.props.tabCount) {
-      return true;
-    }
-    return false;
-  }
-
   render() {
-    const {navigator} = this.props
     return (
       <View style={style.bottombar}>
         <TouchableButton
@@ -63,17 +52,10 @@ class TabBottomBar extends Component {
           normalBg = {IMG.ICON_MENU_NORMAL} />
         <TabCount
           pressFn={() => this.props.tabPressFn()}
-          tabCount={this.props.tabCount}
         />
       </View>
     )
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    tabCount: state.tabinfo.tabIds.length,
-  }
-}
-
-module.exports = connect(mapStateToProps, null)(TabBottomBar)
+module.exports = TabBottomBar;

@@ -4,27 +4,32 @@ repositories {
     jcenter()
 }
 
+apply from: "../../node_modules/react-native/react.gradle"
+apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
+
 android {
     signingConfigs {
-        config {
-            keyAlias 'Browser'
-            keyPassword '0n1y4you'
-            storeFile file('/Users/lionel/key/androidKeyStore.jks')
-            storePassword 'just4you'
+        release {
+            storeFile file(EGAME_BROWSER_RELEASE_STORE_FILE)
+            storePassword EGAME_BROWSER_RELEASE_STORE_PASSWORD
+            keyAlias EGAME_BROWSER_RELEASE_KEY_ALIAS
+            keyPassword EGAME_BROWSER_RELEASE_KEY_PASSWORD
         }
     }
-    compileSdkVersion 24
-    buildToolsVersion "25.0.0"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId "com.egame.rnbrowser"
-        minSdkVersion 19
-        targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
+        applicationId "cn.egame.browser"
+        minSdkVersion 16
+        targetSdkVersion 25
+        versionCode 6
+        versionName "0.0.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
-            abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
+            abiFilters "armeabi-v7a"
         }
+        // 防止在4.4以下机型crash
+        vectorDrawables.useSupportLibrary true
         packagingOptions {
             // The project react-native does not provide 64-bit binaries at the
             // time of this writing. Unfortunately, packaging any 64-bit
@@ -36,9 +41,22 @@ android {
     }
     buildTypes {
         release {
+            debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
+            signingConfig signingConfigs.release
+            buildConfigField "boolean", "RN_DEBUG", "false"
+        }
+        debug {
+            debuggable true
+            jniDebuggable true
+            minifyEnabled false
+            zipAlignEnabled true
+            buildConfigField "boolean", "RN_DEBUG", "true"
+            ndk {
+                abiFilters "armeabi-v7a", "x86"
+            }
+            applicationIdSuffix ".debug"
         }
     }
     configurations.all {
@@ -47,19 +65,21 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-view-shot')
-    compile project(':react-native-fetch-blob')
+    compile project(':react-native-code-push')
+    compile project(':react-native-fs')
+    compile project(':react-native-file-opener')
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:appcompat-v7:25.2.0'
     testCompile 'junit:junit:4.12'
     compile 'com.facebook.react:react-native:+'
-    compile project(':react-native-view-capture')
-    compile project(':react-native-url-download')
+    compile project(':react-native-fetch-blob')
     compile project(':react-native-webview')
     compile project(':react-native-capture-view')
+    compile project(':react-native-check-update')
+    compile project(':react-native-file-launcher')
     compile 'com.github.hotchemi:permissionsdispatcher:2.3.0'
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.3.0'
 }

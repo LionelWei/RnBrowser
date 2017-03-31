@@ -7,10 +7,10 @@
 //
 
 #import "CaptureView.h"
-#import "UIView+React.h"
-#import "RCTUIManager.h"
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
+#import <React/UIView+React.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTBridge.h>
+#import <React/RCTEventDispatcher.h>
 
 @implementation CaptureView
 RCT_EXPORT_MODULE()

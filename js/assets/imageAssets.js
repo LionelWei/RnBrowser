@@ -1,8 +1,13 @@
 /* @flow */
 
 module.exports = {
+  BROWSER_LOGO: require('./browser_logo.png'),
+  HOME_LOGO: require('./home_logo.png'),
+  REACT_LOGO: require('./react_logo.png'),
   ICON_ABOUT_NORMAL: require('./icon_about_normal.png'),
   ICON_ADD_NORMAL: require('./icon_add_normal.png'),
+  ICON_APK: require('./icon_apk.png'),
+  ICON_DOCUMENT: require('./icon_document.png'),
   ICON_BACK_NORMAL: require('./icon_back_normal.png'),
   ICON_BACK_LIGHT: require('./icon_back_light.png'),
   ICON_BOTTOM_TABS: require('./icon_bottom_tabs.png'),
@@ -28,7 +33,11 @@ module.exports = {
   ICON_SHARE_NORMAL: require('./icon_share_normal.png'),
   ICON_WEB_REFRESH: require('./icon_web_refresh.png'),
   ICON_WEB_STOP_LOADING: require('./icon_web_stop_loading.png'),
+  ICON_WEBSITE_DEFAULT: require('./icon_website_default.png'),
   WEB_ICON_BILIBILI: require('./web_icon_bilibili.png'),
+  WEB_ICON_C114: require('./web_icon_c114.png'),
+  WEB_ICON_CNBETA: require('./web_icon_cnbeta.png'),
+  WEB_ICON_DOUBAN: require('./web_icon_douban.png'),
   WEB_ICON_EGAME: require('./web_icon_egame.png'),
   WEB_ICON_IQIYI: require('./web_icon_iqiyi.png'),
   WEB_ICON_JINGDONG: require('./web_icon_jingdong.png'),

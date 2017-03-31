@@ -12,15 +12,17 @@ import {
   TouchableOpacity,
   Platform
 } from 'react-native'
+import {connect} from 'react-redux'
 
 import * as IMG from '../assets/imageAssets'
+import * as Consts from '../utils/Consts'
 
 type Props = {
   tabCount: number,
   pressFn: Function,
 }
 
-export default class TabCount extends Component {
+class TabCount extends Component {
   static propTypes: Props
 
   shouldComponentUpdate(nextProps: Props, nextState: any) {
@@ -32,12 +34,15 @@ export default class TabCount extends Component {
 
   render() {
     return (
-      <TouchableOpacity onPress={this.props.pressFn}>
+      <TouchableOpacity
+        onPress={this.props.pressFn}
+        onLongPress={this.props.longPressFn}>
         <View style={{
-          width: 50,
-          height: 50,
+          width: 40,
+          height: 40,
           justifyContent: 'center',
           alignItems: 'center',
+          backgroundColor: 'white'
         }}>
           <Image
             style={{
@@ -47,7 +52,7 @@ export default class TabCount extends Component {
               alignItems: 'center'
             }}
             source={IMG.ICON_BOTTOM_TABS}>
-            <Text style={{color: 'black', fontSize: 11}}>
+            <Text style={{color: 'black', fontSize: Consts.spFont(11)}}>
               {this.props.tabCount}
             </Text>
           </Image>
@@ -56,3 +61,11 @@ export default class TabCount extends Component {
     )
   }
 }
+
+function mapStateToProps(state) {
+  return {
+    tabCount: state.tabinfo.tabIds.length || 1,
+  }
+}
+
+module.exports = connect(mapStateToProps, null)(TabCount)
