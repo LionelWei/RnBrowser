@@ -10,19 +10,25 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTAutoInsetsProtocol.h"
-#import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
-#import "RCTView.h"
-#import "UIView+React.h"
+#import <React/RCTAutoInsetsProtocol.h>
+#import <React/RCTConvert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
+#import <React/RCTView.h>
+#import <React/UIView+React.h>
 
+#import <JavaScriptCore/JavaScriptCore.h> 
+
+#import "M3U8ParseDomain.h"
+#import "TBPlayer.h"
 
 NSString *completeRPCURLPath = @"/njkwebviewprogressproxy/complete";
 
 NSString *const IHTJSNavigationScheme = @"react-js-navigation";
 NSString *const IHTJSPostMessageHost = @"postMessage";
+
+NSString *const VideoHandlerScheme = @"videohandler://";
 
 const float NJKInitialProgressValue = 0.1f;
 const float NJKInteractiveProgressValue = 0.5f;
@@ -37,6 +43,9 @@ const float NJKFinalProgressValue = 0.9f;
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
 @property (nonatomic, copy) RCTDirectEventBlock onProgressChange;
 
+@property (nonatomic, strong) NSMutableArray *TXPlayLists;
+@property (nonatomic, strong) NSTimer *txtimer;
+@property (nonatomic, strong) M3U8ParseDomain *m3u8_parse_domain;
 
 @end
 
@@ -54,11 +63,14 @@ const float NJKFinalProgressValue = 0.9f;
 - (void)dealloc
 {
   _webView.delegate = nil;
+//  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
+    
+    _TXPlayLists = [NSMutableArray new];
     
     _maxLoadCount = _loadingCount = 0;
     _interactive = NO;
@@ -68,11 +80,29 @@ const float NJKFinalProgressValue = 0.9f;
     _contentInset = UIEdgeInsetsZero;
     _webView = [[UIWebView alloc] initWithFrame:self.bounds];
     _webView.delegate = self;
+    _webView.allowsInlineMediaPlayback = YES;
     [self addSubview:_webView];
+    
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowBecameHidden:) name:UIWindowDidBecomeVisibleNotification object:nil];
+    
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(playbackDidEnd:)
+//                                                 name:@"MPAVControllerPlaybackStateChangedNotification"
+//                                                      //@"MPAVControllerItemPlaybackDidEndNotification"
+//                                                      //@"MPAVControllerPlaybackStateChangedNotification"
+//                                               object:nil];
     
   }
   return self;
 }
+
+//- (void)playbackDidEnd:(NSNotification *)note
+//{
+//  //do your stuff here
+//  if (note) {
+//    
+//  }
+//}
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
@@ -259,7 +289,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (BOOL)webView:(__unused UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType
 {
+//  if ([request.URL.absoluteString hasPrefix:@"wvjbscheme://"]) {
+//    return NO;
+//  }
   
+  if ([request.URL.absoluteString hasPrefix:@"https://itunes.apple.com/cn/app/"]) {
+    [[UIApplication sharedApplication] openURL:request.URL];
+    return NO;
+  }
+  
+  if (![request.URL.absoluteString hasPrefix:@"http"]) {
+    return NO;
+  }
+
+  
+  NSLog(@"------>%@", request.URL);
+//  if ([request.URL.scheme isEqualToString:VideoHandlerScheme]) {
+//    NSLog(@"------>%@", request.URL);//在这里可以获得事件
+//    return NO;
+//  }
+  
+#pragma mark - zjbpha
   if ([request.URL.path isEqualToString:completeRPCURLPath]) {
     [self completeProgress];
     return NO;
@@ -341,6 +391,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)webViewDidStartLoad:(UIWebView *)webView
 {
+  
+//  JSContext *context = [_webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+//  context[@"userPlayVideo"] = ^() {
+//    NSArray *args = [JSContext currentArguments];
+//    for (JSValue *jsVal in args) {
+//      NSLog(@"%@", jsVal);
+//    }
+//    JSValue *this = [JSContext currentThis];
+//    NSLog(@"this: %@",this);
+//  };
+  
   _loadingCount++;
   _maxLoadCount = fmax(_maxLoadCount, _loadingCount);
   
@@ -440,8 +501,169 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     [self completeProgress];
   }
   
+  [self videoCatchFromWeb:webView];
   
 }
 
+
+- (void)windowBecameHidden:(NSNotification *)notification {
+  
+  UIWindow *window = notification.object;
+  NSString *windowclass = [NSString stringWithFormat:@"%@",window.class];
+  if (window != [UIApplication sharedApplication].keyWindow&&
+      ![windowclass isEqualToString:@"UITextEffectsWindow"]&&
+      ![windowclass isEqualToString:@"UIRemoteKeyboardWindow"]) {
+    NSLog(@"Online video on full screen.");
+
+    NSString *videoHandlerString =
+    [[NSBundle mainBundle] pathForResource:@"videopause" ofType:@"js"];
+    if (videoHandlerString) {
+      [_webView stringByEvaluatingJavaScriptFromString:videoHandlerString];
+    }
+    
+    
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"iOS版本视频暂不支持免流量，是否继续?" preferredStyle:UIAlertControllerStyleAlert];
+      UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//        dispatch_semaphore_signal(sema);
+      }];
+      UIAlertAction *confirmAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//        dispatch_semaphore_signal(sema);
+      }];
+      [alert addAction:cancelAction];
+      [alert addAction:confirmAction];
+      
+      [window.rootViewController presentViewController:alert animated:YES completion:nil];
+      
+      
+      
+    });
+    
+//    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    
+  }
+}
+
+- (void)videoCatchFromWeb:(UIWebView *)webView{
+  JSContext *context=[webView valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+  
+  context[@"logNative"] = ^(){
+    NSArray *args = [JSContext currentArguments];
+    for (id obj in args) {
+      NSLog(@"-------->%@",obj);
+    }
+  };
+  
+  context[@"video_url"] = ^(){
+    NSArray *args = [JSContext currentArguments];
+    for (id obj in args) {
+      NSLog(@"-------->%@",obj);
+      //ba
+      NSString *urlString = [NSString stringWithFormat:@"%@",obj];
+      if ([urlString rangeOfString:@"qq.com"].location != NSNotFound) {
+        [_TXPlayLists addObject:urlString];
+        if ([self.txtimer isValid]) {
+          [self.txtimer invalidate];
+          self.txtimer = nil;
+        }
+        [self.txtimer isValid];
+      } else {
+        [self anotherMethod_download_m3u8:urlString];
+      }
+      
+      break;
+    }
+  };
+  
+  
+  
+  NSString *js = @"(function(){\
+  var videos = document.getElementsByTagName('video');\
+  for (var num = 0; num < videos.length; num ++){\
+  let element = videos[num];\
+  if (element.betaged == 1) continue;\
+  element.betaged = 1;\
+  element.addEventListener('loadstart',function(){\
+  video_action(element);\
+  },false);\
+  }\
+  function video_action(element) {\
+  if (element.src.indexOf('null') >= 0) return;\
+  logNative('****************');\
+  video_url(element.src);\
+  element.preload = 'none';\
+  element.pause();\
+  element.src = null;\
+  element.autoplay = 'none';\
+  element.style.display = 'none';\
+  }\
+  })();";
+  
+  
+  [webView stringByEvaluatingJavaScriptFromString:js];
+}
+
+- (void)anotherMethod_download_m3u8:(NSString *)urlString{
+  
+  
+  NSURLSession *session = [NSURLSession sharedSession];
+  NSURL *url = [NSURL URLWithString:urlString];
+  
+  NSURLSessionTask *task = [session downloadTaskWithURL:url
+                                      completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+                                        BOOL res = [self.m3u8_parse_domain parse_m3u8_by_add_local_domain_with_v2_Path:location.path];
+                                        if (res) {
+                                          NSString *path = nil;
+                                          path = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true) firstObject] stringByAppendingPathComponent:new_file_name];
+                                          NSString *domain = @"http://127.0.0.1:12345/";
+                                          domain = [domain stringByAppendingString:new_file_name];
+                                          
+                                          [self callvideoInUrl:domain];
+                                          
+                                          
+                                        }
+                                      }];
+  
+  [task resume];
+  
+}
+
+- (void)callvideoInUrl:(NSString *)urlString{
+  
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSURL *url = [NSURL URLWithString:urlString];
+    UIView *view = [UIApplication sharedApplication].keyWindow.rootViewController.view;
+    [[TBPlayer sharedInstance] playWithUrl:url showView:view];
+  });
+
+}
+
+- (M3U8ParseDomain *)m3u8_parse_domain{
+  if (!_m3u8_parse_domain) {
+    _m3u8_parse_domain = [[M3U8ParseDomain alloc]init];
+  }
+  return _m3u8_parse_domain;
+}
+
+- (NSTimer *)txtimer{
+  if (!_txtimer) {
+    _txtimer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(timeSelector) userInfo:nil repeats:NO];
+    [[NSRunLoop currentRunLoop] addTimer:_txtimer forMode:NSRunLoopCommonModes];
+    
+  }
+  return _txtimer;
+}
+
+- (void)timeSelector{
+  NSLog(@"fire*****************");
+  NSLog(@"__________%@",_TXPlayLists);
+  NSString *remote_url = [_TXPlayLists.lastObject copy];
+  [self callvideoInUrl:remote_url];
+  [_TXPlayLists removeAllObjects];
+  [_txtimer invalidate];
+  _txtimer = nil;
+}
 
 @end

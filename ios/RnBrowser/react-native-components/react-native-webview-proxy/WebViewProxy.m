@@ -7,7 +7,7 @@
 //
 
 #import "WebViewProxy.h"
-#import "WebViewProtocol.h"
+#import "MySessionURLProtocol.h"
 
 @implementation WebViewProxy
 RCT_EXPORT_MODULE();
@@ -20,7 +20,7 @@ RCT_EXPORT_METHOD(save:(NSDictionary *)options)
 //  port ?: number;
 //  userName ?: string;
 //  password ?: string;
-  [WebViewProtocol setProxySwitchConfig:options];
+  [MySessionURLProtocol setProxySwitchConfig:options];
   
   
 }

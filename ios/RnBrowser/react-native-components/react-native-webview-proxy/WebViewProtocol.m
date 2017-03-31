@@ -7,7 +7,8 @@
 //
 
 #import "WebViewProtocol.h"
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
+#import "AppDelegate.h"
 
 static NSString *protocolKey = @"SessionProtocolKey";
 static NSURLSession *session;
@@ -29,7 +30,14 @@ static NSString *proxy_password = @"proxy_password";
 @implementation WebViewProtocol
 
 + (void)setProxyEnvironmentSwitch:(BOOL)enable{
+#ifdef DEBUG
+  proxyEnviroment = YES;
+#else
   proxyEnviroment = enable;
+#endif
+//  proxyEnviroment = NO;
+  
+  
 }
 
 + (void)setProxySwitchConfig:(NSDictionary *)option{
@@ -55,9 +63,20 @@ static NSString *proxy_password = @"proxy_password";
 }
 
 + (BOOL)canInitWithRequest:(NSURLRequest *)request {
+  return NO;
   if ([NSURLProtocol propertyForKey:protocolKey inRequest:request]) {
     return NO;
   }
+  /// 本地 文件 不走 代理
+  if ([request.URL.host isEqualToString:@"127.0.0.1"]) {
+    return NO;
+  }
+  
+  NSString *local = [AppDelegate local_server];
+  if ([request.URL.absoluteString containsString:local]) {
+    return NO;
+  }
+  
   return proxySwitch&&proxyEnviroment;
 }
 

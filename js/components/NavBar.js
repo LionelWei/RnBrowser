@@ -40,14 +40,21 @@ class NavBar extends Component {
   static propTypes = {
     title: PropTypes.string,
     onBack: PropTypes.func,
+    rightButtonConfig: PropTypes.object,
   }
 
   render() {
-    const leftButtonConfig =
-      <BackButton
-        style={{ marginLeft: 8 }}
-        pressFn={() => this.props.onBack()}
-        />
+    let leftButtonConfig;
+    let rightButtonConfig = this.props.rightButtonConfig;
+    if (this.props.onBack) {
+      leftButtonConfig =
+        <BackButton
+          style={{ marginLeft: 8 }}
+          pressFn={() => this.props.onBack()}
+          />
+    } else {
+      leftButtonConfig = {}
+    }
 
     const titleConfig = {
       title: this.props.title,
@@ -58,7 +65,8 @@ class NavBar extends Component {
         statusBar={{hidden: false}}
         style={styles.navBorder}
         title={titleConfig}
-        leftButton={leftButtonConfig}/>
+        leftButton={leftButtonConfig}
+        rightButton={rightButtonConfig}/>
     );
   }
 }

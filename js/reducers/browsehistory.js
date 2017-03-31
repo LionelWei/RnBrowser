@@ -27,6 +27,7 @@ export default function reducer (state: any = initialState, action: any) {
       let browseInfo = {
         url: action.url,
         title: action.title,
+        favIcon: action.favIcon,
         time: Date.now()
       }
 
@@ -63,11 +64,13 @@ export default function reducer (state: any = initialState, action: any) {
   }
 }
 
-export function append (url: string, title: string) {
+export function append (webInfo: Object) {
+  console.log('webInfo: ' + JSON.stringify(webInfo, null, 2));
   return {
     type: BROWSE_HISOTRY_APPEND,
-    url: url,
-    title: title,
+    url: webInfo.url,
+    title: webInfo.title,
+    favIcon: webInfo.favIcon,
   }
 }
 

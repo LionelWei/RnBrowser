@@ -65,11 +65,11 @@ public class WebViewProxyModule extends ReactContextBaseJavaModule {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(mReactContext);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(X5WebViewProxySetting.PREF_PROXY_ENABLED, isProxyEnabled);
-        editor.putString(X5WebViewProxySetting.PREF_PROXY_IP, proxyIp);
-        editor.putInt(X5WebViewProxySetting.PREF_PROXY_PORT, proxyPort);
-        editor.putString(X5WebViewProxySetting.PREF_PROXY_USER_NAME, authName);
-        editor.putString(X5WebViewProxySetting.PREF_PROXY_PASSWORD, authPwd);
+        editor.putBoolean(NativeWebViewProxySetting.PREF_PROXY_ENABLED, isProxyEnabled);
+        editor.putString(NativeWebViewProxySetting.PREF_PROXY_IP, proxyIp);
+        editor.putInt(NativeWebViewProxySetting.PREF_PROXY_PORT, proxyPort);
+        editor.putString(NativeWebViewProxySetting.PREF_PROXY_USER_NAME, authName);
+        editor.putString(NativeWebViewProxySetting.PREF_PROXY_PASSWORD, authPwd);
         editor.apply();
 
         EventBus.getDefault().post(new ProxyConfigUpdateEvent(

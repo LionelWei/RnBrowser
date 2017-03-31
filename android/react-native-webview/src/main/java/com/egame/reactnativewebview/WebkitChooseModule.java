@@ -22,7 +22,7 @@ import com.facebook.react.bridge.ReadableMap;
 
 public class WebkitChooseModule extends ReactContextBaseJavaModule {
     public static final String TAG = "WebKitChooseModule";
-    /*package*/ static final String PREF_IS_X5_WEBKIT = "PREF_IS_X5_WEBKIT";
+    public static final String PREF_IS_X5_WEBKIT = "PREF_IS_X5_WEBKIT";
     private Context mContext;
 
     public WebkitChooseModule(ReactApplicationContext reactContext) {
@@ -48,4 +48,5 @@ public class WebkitChooseModule extends ReactContextBaseJavaModule {
         editor.putBoolean(PREF_IS_X5_WEBKIT, isX5);
         editor.apply();
     }
+
 }

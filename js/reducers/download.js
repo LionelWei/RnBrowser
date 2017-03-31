@@ -1,7 +1,8 @@
 // @flow
 
-const DOWNLOAD_START = "DOWNLOAD_START"
-const DOWNLOAD_FINISH = "DOWNLOAD_FINISH"
+const DOWNLOAD_START = "DOWNLOAD_START";
+const DOWNLOAD_FINISH = "DOWNLOAD_FINISH";
+const DOWNLOAD_REMOVE_ALL = "DOWNLOAD_REMOVE_ALL";;
 
 
 /* 数据格式:
@@ -26,6 +27,8 @@ export default function reducer (state: any = initialState, action: any) {
       return handleDownloadStart(state, action);
     case DOWNLOAD_FINISH:
       return handleDownloadFinish(state, action);
+    case DOWNLOAD_REMOVE_ALL:
+      return handleDownloadRemoveAll(state, action);
     default:
       return state;
   }
@@ -33,7 +36,7 @@ export default function reducer (state: any = initialState, action: any) {
 
 function handleDownloadStart(state, action) {
   let url: string = action.url;
-  if (state.downloading.findIndex(e => e.url && e.url === url) != -1) {
+  if (~state.downloading.findIndex(e => e.url && e.url === url)) {
     return state;
   }
   return {
@@ -43,6 +46,7 @@ function handleDownloadStart(state, action) {
       {
         url: action.url,
         title: action.title,
+        path: action.path,
       }
     ]
   }
@@ -50,7 +54,7 @@ function handleDownloadStart(state, action) {
 
 function handleDownloadFinish(state, action) {
   let url: string = action.url;
-  if (state.downloaded.findIndex(e => e.url && e.url === url) != -1) {
+  if (~state.downloaded.findIndex(e => e.url && e.url === url)) {
     return state;
   }
   var newState = {
@@ -64,34 +68,50 @@ function handleDownloadFinish(state, action) {
       index = id;
     }
   });
-  if (index !== -1) {
+  if (~index) {
     newState.downloading.splice(index, 1);
   }
 
+  var newDownloaded = newState.downloaded.unshift({
+    url: action.url,
+    title: action.title,
+    path: action.path,
+  })
+
   return {
     ...newState,
-    downloaded: [
-      ...state.downloaded,
-      {
-        url: action.url,
-        title: action.title,
-      }
-    ]
+    newDownloaded,
   }
 }
 
-export function startDownload(url: string, title: string) {
+function handleDownloadRemoveAll(state, action) {
+  return {
+    ...state,
+    downloading: [],
+    downloaded: [],
+  }
+}
+
+export function startDownload(url: string, title: string, path: string) {
   return {
     type: DOWNLOAD_START,
     url: url,
     title: title,
+    path: path,
   }
 }
 
-export function finishDownload(url: string, title: string) {
+export function finishDownload(url: string, title: string, path: string) {
   return {
     type: DOWNLOAD_FINISH,
     url: url,
     title: title,
+    path: path,
+  }
+}
+
+export function removeAllDownload () {
+  return {
+    type: DOWNLOAD_REMOVE_ALL,
   }
 }

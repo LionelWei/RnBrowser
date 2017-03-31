@@ -2,18 +2,14 @@
 
 const CREATE_TAB = 'CREATE_TAB'
 const REMOVE_TAB = 'REMOVE_TAB'
-const SET_FRONT_TAB = 'SET_FRONT_TAB'
 const RESET_TAB = 'RESET_TAB'
 
 const initialState = {
-  currentTabId: 0,
   tabIds: [], // tab index集合
 }
 
 export default function reducer (state: any = initialState, action: any) {
   switch (action.type) {
-    case SET_FRONT_TAB:
-      return handleSetFrontTab(state, action);
     case CREATE_TAB:
       return handleCreateTab(state, action);
     case REMOVE_TAB:
@@ -25,18 +21,10 @@ export default function reducer (state: any = initialState, action: any) {
   }
 }
 
-function handleSetFrontTab(state: any = initialState, action: any) {
-  return {
-    ...state,
-    currentTabId: action.id
-  }
-}
-
 function handleCreateTab(state: any = initialState, action: any) {
   console.log('==== createTab: actionId: ' + action.id);
   return {
     ...state,
-    currentTabId: action.id,
     tabIds: [
       ...state.tabIds,
       action.id
@@ -56,13 +44,6 @@ function handleResetTab(state: any = initialState, action: any) {
   return {
     ...state,
     tabIds: []
-  }
-}
-
-export function setFrontTab(id: number) {
-  return {
-    type: SET_FRONT_TAB,
-    id: id,
   }
 }
 

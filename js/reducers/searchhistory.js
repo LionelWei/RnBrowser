@@ -14,7 +14,7 @@ export default function reducer (state: any = initialState, action: any) {
       console.log('search state: ');
       console.log(JSON.stringify(state, null, 2));
       var i = state.list.findIndex(e => e.url === action.url)
-      if (i !== -1) {
+      if (~i) {
         var newState = {
           ...state
         }

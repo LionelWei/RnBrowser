@@ -1,25 +1,40 @@
 package com.egame.reactnativewebview;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Picture;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.SparseArray;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
+import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.URLUtil;
 
 import com.egame.reactnativewebview.eventbus.ProxyAsPerNetworkEvent;
 import com.egame.reactnativewebview.eventbus.ProxyConfigUpdateEvent;
+import com.egame.reactnativewebview.events.LongPressEvent;
+import com.egame.reactnativewebview.events.OverrideUrlEvent;
 import com.egame.reactnativewebview.events.StartDownloadEvent;
 import com.egame.reactnativewebview.events.TopLoadingErrorEvent;
 import com.egame.reactnativewebview.events.TopLoadingFinishEvent;
 import com.egame.reactnativewebview.events.TopLoadingStartEvent;
 import com.egame.reactnativewebview.events.TopMessageEvent;
 import com.egame.reactnativewebview.events.UpdateLoadingProgressEvent;
+import com.egame.reactnativewebview.util.TrafficStatsUtil;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -60,6 +75,12 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
+import static com.tencent.smtt.sdk.WebView.HitTestResult.EMAIL_TYPE;
+import static com.tencent.smtt.sdk.WebView.HitTestResult.IMAGE_TYPE;
+import static com.tencent.smtt.sdk.WebView.HitTestResult.PHONE_TYPE;
+import static com.tencent.smtt.sdk.WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE;
+
 /**
  * Manages instances of {@link WebView}
  *
@@ -99,15 +120,27 @@ public class X5WebViewManager extends SimpleViewManager<WebView> {
     public static final int COMMAND_RELOAD = 3;
     public static final int COMMAND_STOP_LOADING = 4;
     public static final int COMMAND_POST_MESSAGE = 5;
+    public static final int COMMAND_RESUME = 6;
+    public static final int COMMAND_PAUSE = 7;
 
     // Use `webView.loadUrl("about:blank")` to reliably reset the view
     // state and release page resources (including any running JavaScript).
     private static final String BLANK_URL = "about:blank";
+    private static SparseArray<String> sHitTypeArray = new SparseArray<>();
+
+    static {
+        sHitTypeArray.put(PHONE_TYPE, "phone");
+        sHitTypeArray.put(EMAIL_TYPE, "email");
+        sHitTypeArray.put(IMAGE_TYPE, "image");
+        sHitTypeArray.put(SRC_IMAGE_ANCHOR_TYPE, "image");
+    }
 
     private ReactContext mReactContext;
     private WebViewConfig mWebViewConfig;
     private WebView mWebView;
     private @Nullable WebView.PictureListener mPictureListener;
+
+    private int mProgress;
 
     private class ReactWebViewClient extends WebViewClient {
 
@@ -119,8 +152,8 @@ public class X5WebViewManager extends SimpleViewManager<WebView> {
 
             if (!mLastLoadFailed) {
                 X5WebViewManager.ReactWebView reactWebView = (X5WebViewManager.ReactWebView) webView;
-                reactWebView.callInjectedJavaScript();
                 reactWebView.linkBridge();
+                reactWebView.callInjectedJavaScript();
                 emitFinishEvent(webView, url);
             }
         }
@@ -136,22 +169,54 @@ public class X5WebViewManager extends SimpleViewManager<WebView> {
                             createWebViewEvent(webView, url)));
         }
 
+//        @Override
+//        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+//            return false;
+//        }
+
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             Log.e(REACT_CLASS, "shouldOverrideUrlLoading: " + url);
-            return false;
-            // Url of taobao is prefixed with 'taobao://', which cannot match rules as below.
-/*
+
             if (url.startsWith("http://") || url.startsWith("https://") ||
                     url.startsWith("file://")) {
-                return false;
+                // 统计流量消耗
+                TrafficStatsUtil.updateTrafficStats(mReactContext);
+
+                // 修复部分页面跳转时软键盘不隐藏的问题
+                InputMethodManager imm = (InputMethodManager)mReactContext.getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                WebView.HitTestResult result = view.getHitTestResult();
+                int type = result.getType();
+                if (type > 0) {
+                    String resultUrl = result.getExtra();
+                    Log.e(TAG, "shouldOverrideUrlLoading: type: " + type + ", url: " + resultUrl);
+                    String typeString = sHitTypeArray.get(type);
+                    if (typeString == null) {
+                        typeString = "";
+                    }
+                    // 每个链接都由上层自行处理 (如新建webview打开)
+                    dispatchEvent(
+                            view,
+                            new OverrideUrlEvent(
+                                    view.getId(),
+                                    createOverrideUrlEvent(url, typeString)));
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                view.getContext().startActivity(intent);
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    view.getContext().startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    Log.e(TAG, "activity not found to handle uri scheme for: " + url, e);
+                    return false;
+                }
                 return true;
             }
-*/
         }
 
         @Override
@@ -216,22 +281,55 @@ public class X5WebViewManager extends SimpleViewManager<WebView> {
             return event;
         }
 
+        private WritableMap createOverrideUrlEvent(String url, String hitType) {
+            WritableMap event = Arguments.createMap();
+            event.putString("newUrl", url);
+            event.putString("type", hitType);
+            return event;
+        }
     }
 
     private class ReactWebChromeClient extends WebChromeClient {
         @Override
         public void onProgressChanged(WebView webView, int progress) {
-            Log.e(TAG, "onProgressChanged: " + progress);
-            dispatchEvent(
-                    webView,
-                    new UpdateLoadingProgressEvent(
-                            webView.getId(),
-                            createProgressEvent(progress)));
+            if (progress >= mProgress) {
+                mProgress = progress;
+                dispatchEvent(
+                        webView,
+                        new UpdateLoadingProgressEvent(
+                                webView.getId(),
+                                createProgressEvent(progress)));
+            }
         }
 
         @Override
-        public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissionsCallback callback) {
-            callback.invoke(origin, true, false);
+        public void onGeolocationPermissionsShowPrompt(final String s, final GeolocationPermissionsCallback callback) {
+            Log.e(TAG, "onGeolocationPermissionsShowPrompt: " + s);
+            final boolean remember = true;
+            AlertDialog.Builder builder = new AlertDialog.Builder(mReactContext);
+            builder.setTitle("定位");
+            builder.setMessage("当前网页想要获取您的位置")
+                    .setCancelable(true)
+                    .setPositiveButton("允许",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int id) {
+                                    // origin, allow, remember
+                                    callback.invoke(s, true, remember);
+                                }
+                            })
+                    .setNegativeButton("拒绝",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int id) {
+                                    // origin, allow, remember
+                                    callback.invoke(s, false, remember);
+                                }
+                            });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
 
         private WritableMap createProgressEvent(int progress) {
@@ -251,6 +349,8 @@ public class X5WebViewManager extends SimpleViewManager<WebView> {
         private boolean mIsProxyEnabled;
         private String mProxyIp;
         private int mProxyPort;
+        private GestureDetector mGestureDetector;
+        private int downX, downY;
 
         private class ReactWebViewBridge {
             X5WebViewManager.ReactWebView mContext;
@@ -274,6 +374,30 @@ public class X5WebViewManager extends SimpleViewManager<WebView> {
          */
         public ReactWebView(ThemedReactContext reactContext) {
             super(reactContext.getCurrentActivity());
+            mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    downX = (int) e.getX();
+                    downY = (int) e.getY();
+                    Log.e(TAG, "onLongPress: (x,y): " + downX + ", " + downY);
+
+                    WebView.HitTestResult result = ReactWebView.this.getHitTestResult();
+                    int type = result.getType();
+                    if (type > 0) {
+                        String typeString = sHitTypeArray.get(type);
+                        String extra = result.getExtra();
+                        if (typeString == null) {
+                            typeString = "";
+                        }
+
+                        Log.e(TAG, "webview: type: " + type + ", typeString: " + typeString);
+                        dispatchEvent(ReactWebView.this,
+                                new LongPressEvent(
+                                        getId(),
+                                        createLongPressEvent(extra, typeString, downX, downY)));
+                    }
+                }
+            });
         }
 
         @Override
@@ -304,9 +428,12 @@ public class X5WebViewManager extends SimpleViewManager<WebView> {
         @Subscribe
         public void onProxyConfigUpdate(ProxyConfigUpdateEvent event) {
             mIsProxyEnabled = event.isProxyEnabled;
-            mProxyIp = event.proxyIp;
-            mProxyPort = event.proxyPort;
             if (mIsProxyEnabled) {
+                if (TrafficStatsUtil.isExceedFreeLimit()) {
+                    X5WebViewProxySetting.revertBackProxy(this);
+                }
+                mProxyIp = event.proxyIp;
+                mProxyPort = event.proxyPort;
                 X5WebViewProxySetting.setProxy(this, mProxyIp, mProxyPort);
             } else {
                 X5WebViewProxySetting.revertBackProxy(this);
@@ -325,6 +452,12 @@ public class X5WebViewManager extends SimpleViewManager<WebView> {
         @Override
         public void onHostDestroy() {
             cleanupCallbacksAndDestroy();
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            mGestureDetector.onTouchEvent(event);
+            return super.onTouchEvent(event);
         }
 
         public void setInjectedJavaScript(@Nullable String js) {
@@ -384,6 +517,20 @@ public class X5WebViewManager extends SimpleViewManager<WebView> {
         private void cleanupCallbacksAndDestroy() {
             setWebViewClient(null);
             destroy();
+        }
+
+        private WritableMap createLongPressEvent(String url, String hitType, int x, int y) {
+            WritableMap event = Arguments.createMap();
+            event.putString("newUrl", url);
+            event.putString("type", hitType);
+            event.putInt("x", px2dx(x));
+            event.putInt("y", px2dx(y));
+            return event;
+        }
+
+        private int px2dx(float pxValue) {
+            final float scale = getContext().getResources().getDisplayMetrics().density;
+            return (int) (pxValue / scale + 0.5f);
         }
     }
 
@@ -590,7 +737,9 @@ public class X5WebViewManager extends SimpleViewManager<WebView> {
                 "goForward", COMMAND_GO_FORWARD,
                 "reload", COMMAND_RELOAD,
                 "stopLoading", COMMAND_STOP_LOADING,
-                "postMessage", COMMAND_POST_MESSAGE);
+                "postMessage", COMMAND_POST_MESSAGE,
+                "resume", COMMAND_RESUME,
+                "pause", COMMAND_PAUSE);
     }
 
     @Override
@@ -617,6 +766,14 @@ public class X5WebViewManager extends SimpleViewManager<WebView> {
                     throw new RuntimeException(e);
                 }
                 break;
+            case COMMAND_RESUME:
+                root.onResume();
+                root.resumeTimers();
+                break;
+            case COMMAND_PAUSE:
+                root.pauseTimers();
+                root.onPause();
+                break;
         }
     }
 
@@ -633,11 +790,33 @@ public class X5WebViewManager extends SimpleViewManager<WebView> {
         Map<String, Object> map = new HashMap<>();
         map.put("startDownloadEvent", MapBuilder.of("registrationName", "onStartDownload"));
         map.put("updateLoadingProgress", MapBuilder.of("registrationName", "onProgressChange"));
+        map.put("overrideUrl", MapBuilder.of("registrationName", "onOverrideUrlLoading"));
+        map.put("longPress", MapBuilder.of("registrationName", "onLongPress"));
         return map;
     }
 
     private void initWebSettings(WebView webView) {
         WebSettings settings = webView.getSettings();
+
+        mWebView.setDrawingCacheBackgroundColor(Color.WHITE);
+        mWebView.setFocusableInTouchMode(true);
+        mWebView.setFocusable(true);
+        mWebView.setDrawingCacheEnabled(false);
+        mWebView.setWillNotCacheDrawing(true);
+
+        // 改善滑动性能
+        if (API < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            //noinspection deprecation
+            settings.setAppCacheMaxSize(Long.MAX_VALUE);
+        }
+        if (API < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            //noinspection deprecation
+            settings.setEnableSmoothTransition(true);
+        }
+        if (API > Build.VERSION_CODES.JELLY_BEAN) {
+            settings.setMediaPlaybackRequiresUserGesture(true);
+        }
+
         settings.setAllowFileAccess(true);
         settings.setTextSize(WebSettings.TextSize.NORMAL);
         settings.setSupportMultipleWindows(false);
@@ -698,5 +877,10 @@ public class X5WebViewManager extends SimpleViewManager<WebView> {
         EventDispatcher eventDispatcher =
                 reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
         eventDispatcher.dispatchEvent(event);
+    }
+
+    private int dp2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
     }
 }

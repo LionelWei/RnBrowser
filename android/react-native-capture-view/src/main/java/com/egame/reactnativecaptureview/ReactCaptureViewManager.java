@@ -34,6 +34,12 @@ public class ReactCaptureViewManager extends SimpleViewManager<ImageView> {
     protected static final String REACT_CLASS = "CaptureView";
     private static final String TAG = REACT_CLASS;
     private ReactContext mReactContext;
+    private boolean mIsDirty = false;
+    private int mTag;
+    private int mStartX;
+    private int mStartY;
+    private int mWidth;
+    private int mHeight;
 
     @Override
     public String getName() {
@@ -49,8 +55,8 @@ public class ReactCaptureViewManager extends SimpleViewManager<ImageView> {
     @ReactProp(name = "tag")
     public void setViewTag(ImageView view, int tag) {
         Log.e(TAG, "setViewTag: " + tag);
-        UIManagerModule uiManager = mReactContext.getNativeModule(UIManagerModule.class);
-        uiManager.addUIBlock(new CaptureViewUIBlock(view, mReactContext, tag));
+        mTag = tag;
+        mIsDirty = true;
     }
 
     @ReactProp(name = "tagWithRect")
@@ -66,13 +72,12 @@ public class ReactCaptureViewManager extends SimpleViewManager<ImageView> {
             return;
         }
 
-        int tag = source.getInt("tag");
-        int x = source.getInt("x");
-        int y = source.getInt("y");
-        int w = source.getInt("w");
-        int h = source.getInt("h");
-        UIManagerModule uiManager = mReactContext.getNativeModule(UIManagerModule.class);
-        uiManager.addUIBlock(new CaptureViewUIBlock(view, mReactContext, tag, x, y, w, h));
+        mIsDirty = true;
+        mTag = source.getInt("tag");
+        mStartX = (int) source.getDouble("x");
+        mStartY = (int) source.getDouble("y");
+        mWidth = (int) source.getDouble("w");
+        mHeight = (int) source.getDouble("h");
     }
 
     private static class CaptureViewUIBlock implements UIBlock {
@@ -147,5 +152,24 @@ public class ReactCaptureViewManager extends SimpleViewManager<ImageView> {
             return (int) (dpValue * scale + 0.5f);
         }
 
+    }
+
+    @Override
+    protected void onAfterUpdateTransaction(ImageView view) {
+        if (!mIsDirty) {
+            return;
+        }
+        if (mWidth == 0 || mHeight == 0) {
+            return;
+        }
+        UIManagerModule uiManager = mReactContext.getNativeModule(UIManagerModule.class);
+        uiManager.addUIBlock(new CaptureViewUIBlock(view,
+                mReactContext,
+                mTag,
+                mStartX,
+                mStartY,
+                mWidth,
+                mHeight));
+        mIsDirty = false;
     }
 }

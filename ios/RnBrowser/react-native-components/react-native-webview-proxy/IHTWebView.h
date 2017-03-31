@@ -6,7 +6,7 @@
 //  Copyright © 2017 Facebook. All rights reserved.
 //
 
-#import "RCTView.h"
+#import <React/RCTView.h>
 
 @class IHTWebView;
 extern NSString *const RCTJSNavigationScheme;

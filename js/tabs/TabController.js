@@ -11,15 +11,12 @@ import {
   Navigator,
   InteractionManager,
   BackAndroid,
-  findNodeHandle
+  findNodeHandle,
 } from 'react-native';
 import {connect} from 'react-redux'
-import {capture} from "../nativemodules/ViewCapture";
 
 import {
   isIOS,
-  NAV_BAR_HEIGHT,
-  BOTTOM_BAR_HEIGHT,
   SCREEN_WIDTH,
   SCREEN_HEIGHT,
   TOP_OFFSET,
@@ -27,14 +24,15 @@ import {
 
 import {Emitter} from '../events/Emitter'
 
-import TabNavigator from './main/TabNavigator'
-import TabManagePage from './manage/TabManagePage'
-import TabBottomBar from './main/TabBottomBar'
-import WebTitleBar from './web/WebTitleBar'
-import WebBottomBar from './web/WebBottomBar'
-import BottomMenuPopup from '../bottompopup/BottomMenuPopup'
-import {createTab, removeTab, setFrontTab, resetTab} from '../reducers/tabinfo'
+import TabNavigator from './TabNavigator'
+import TabManager from './manage/TabManager'
+import BottomMenuPopup from '../components/BottomMenuPopup'
+import {createTab, removeTab, resetTab} from '../reducers/tabinfo'
 import Transitions from '../animation/NavigatorAnimation'
+import DownloadManagerPage from '../download/DownloadManagerPage'
+import HistoryPage from '../history/HistoryPage'
+import SettingPage from '../setting/SettingPage'
+import ProxySettingPage from '../setting/ProxySettingPage'
 
 class TabController extends Component {
   static propTypes = {
@@ -48,31 +46,34 @@ class TabController extends Component {
         view: this.renderTab(0)
       }
     ],
-    /*记录tab的个数, 目前是单调递增的, 即使删除一个tab再创建也会加1*/
-    tabCount: 1,
     currentTabId: 0,
   }
-
+  /*记录tab的个数, 目前是单调递增的, 即使删除一个tab再创建也会加1*/
+  tabIncreaseIndex = 1;
   menuPopup = {};
-  tabRefList = []
-  uris = []
-  subscriptionUrlChanged = {}
+  tabRefList = [];
+  uris = [];
+  subscriptionUrlChanged = {};
+  subscriptionAppUpdate = {};
+  tabManager = {};
 
-  constructor(props: any) {
-    super(props);
-    this.props.createTab(0)
+  componentWillMount() {
+    this.props.createTab(0);
     this.initEvent();
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack);
   }
 
-  componentDidMount () {
-    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  componentDidMount() {
+    setTimeout(() => {
+      this.appendPreservedTab();
+    }, 500)
   }
 
   componentWillUnmount () {
     // 重置tab 防止计数错误
-    this.props.resetTab()
-    this.unRegisterEvent()
-    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+    this.props.resetTab();
+    this.unRegisterEvent();
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -83,6 +84,7 @@ class TabController extends Component {
       <View style={styles.container} >
         {this.renderOverlayBody()}
         {this.renderMenuPopup()}
+        {this.renderTabManager()}
       </View>
     )
   }
@@ -100,80 +102,171 @@ class TabController extends Component {
     return <BottomMenuPopup
             ref={(popup) => { this.menuPopup = popup;}}
             navigator={this.props.navigator}
+            homePressFn={this.goHome}
+            forwardPressFn={this.forwardWeb}
+            refreshPressFn={this.refreshWeb}
+            pushHistory={this.pushHistory}
+            pushSetting={this.pushSetting}
+            pushDownload={this.pushDownload}
            />
   }
 
-  startTabManagerPage = () => {
-    let navigator = this.props.navigator
-    let viewList = this.tabRefList.map(e => {
-      return {
-        tag: findNodeHandle(e),
-        title: e.getTitleText()
-      }
-    })
+  renderTabManager = () => {
+    return <TabManager
+            ref={(view) => {this.tabManager = view}}
+            viewList={[]}
+            currentListIndex={0}
+            onAppendTab={this.appendTab}
+            onSwitchTab={this.switchTab}
+            onCloseTab={this.closeTab}
+            onHide={this.onNavigatorPop}
+           />;
+  }
 
-    navigator.push({
-      component: TabManagePage,
-      viewList: viewList,
-      currentListIndex: this.findIndexByTabId(this.state.currentTabId),
-      scene: Transitions.NONE,
-      onAppendTab: this.appendTab,
-      onSwitchTab: this.switchTab,
-      onCloseTab: this.closeTab,
+  startTabManagerPage = () => {
+    this.pauseWebThen(() => {
+      let refTempList = this.tabRefList.slice();
+      refTempList.pop();
+      console.log('startTabManagerPage: refTempList length: ' + refTempList.length);
+      let viewList = refTempList.map((e, i) => {
+        console.log('startTabManagerPage: index: ' + i + ' tabId: ' + e.id);
+        return {
+          tag: findNodeHandle(e.tab),
+          title: e.tab.getTitleText()
+        }
+      });
+      this.tabManager.showWithNewData({
+        viewList: viewList,
+        currentListIndex: this.findViewByTabId(this.state.currentTabId),
+        tabs: this.props.tabs,
+      })
+    });
+  }
+
+  goHome = () => {
+    let currentTabRef = this.tabRefList.find(e => e.id === this.state.currentTabId);
+    currentTabRef && currentTabRef.tab && currentTabRef.tab.goHome();
+  }
+
+  forwardWeb = () => {
+    let currentTabRef = this.tabRefList.find(e => e.id === this.state.currentTabId);
+    currentTabRef && currentTabRef.tab && currentTabRef.tab.forwardWeb();
+  }
+
+  refreshWeb = () => {
+    let currentTabRef = this.tabRefList.find(e => e.id === this.state.currentTabId);
+    currentTabRef && currentTabRef.tab && currentTabRef.tab.refreshWeb();
+  }
+
+  pushDownload = () => {
+    this.pauseWebThen(() => {
+      this.props.navigator.push({
+        component: DownloadManagerPage,
+        scene: Transitions.LeftToRight,
+        onNavigatorPop: this.onNavigatorPop
+      });
+    });
+  }
+
+  pushHistory = () => {
+    this.pauseWebThen(() => {
+      console.log('push history');
+      this.props.navigator.push({
+        component: HistoryPage,
+        scene: Transitions.LeftToRight,
+        onNavigatorPop: this.onNavigatorPop
+      });
     })
+  }
+
+  pushSetting = () => {
+    this.pauseWebThen(() => {
+      this.props.navigator.push({
+        component: SettingPage,
+        scene: Transitions.LeftToRight,
+        onNavigatorPop: this.onNavigatorPop
+      });
+    });
+  }
+
+  pauseWebThen = (fn: Function) => {
+    console.log('pauseWebThen pauseWeb');
+    let currentTabRef = this.tabRefList.find(e => e.id === this.state.currentTabId);
+    currentTabRef && currentTabRef.tab && currentTabRef.tab.pauseWeb();
+    fn && fn();
+  }
+
+  onNavigatorPop = () => {
+    console.log('onNavigatorPop resumeWeb');
+    let currentTabRef = this.tabRefList.find(e => e.id === this.state.currentTabId);
+    currentTabRef && currentTabRef.tab && currentTabRef.tab.resumeWeb();
   }
 
   showCurrentTabAtFront() {
     var currentId: number = this.state.currentTabId;
+    console.log('showCurrentTabAtFront: currentId: ' + currentId);
     var excludeCurrentTabList =
-      this.state.tabList.filter(e => {return e.id != currentId});
+      this.state.tabList.filter(e => e.id != currentId);
     return [...excludeCurrentTabList, this.findViewByTabId(currentId)];
   }
 
   findViewByTabId(tabId): any {
     let tab = null;
-    this.state.tabList
-        .forEach(e => {
-          if (tabId === e.id) {
-            tab = e;
-          }
-        })
+    this.state.tabList.forEach(e => tabId === e.id && (tab = e));
     return tab;
   }
 
   findIndexByTabId(tabId: number): number {
     let findId = 0;
-    this.state.tabList
-          .forEach((e, i) => {
-            if (tabId === e.id) {
-              findId = i;
-            }
-          })
+    this.state.tabList.forEach((e, i) => tabId === e.id && (findId = i));
     return findId;
   }
 
   initEvent() {
     this.subscriptionUrlChanged = Emitter.addListener('url_changed', (...args) => {
-      let url = args[0]
-      this.onUrlChanged(url)
+      let url = args[0];
+      this.onUrlChanged(url);
     });
+    this.subscriptionAppUpdate = Emitter.addListener('app_update', (...args) => {
+      this.props.navigator.popToTop();
+      let url = args[0];
+      console.log('url: ' + url);
+      if (url) {
+        this.onUrlChanged(url)
+      }
+    })
   }
 
   unRegisterEvent() {
-    this.subscriptionUrlChanged.remove()
+    this.subscriptionUrlChanged.remove();
+    this.subscriptionAppUpdate.remove();
   }
 
   onUrlChanged = (url: string) => {
-    let currentId = this.state.currentTabId;
-    let currentTab = this.tabRefList[currentId];
-    currentTab.reloadUrl(url);
+    let currentTabRef = this.tabRefList.find(e => e.id === this.state.currentTabId);
+    currentTabRef && currentTabRef.tab && currentTabRef.tab.reloadUrl(url);
   }
 
-
   appendTab = () => {
-    var primaryId = this.state.tabCount;
-    console.log('appendTab, tabCount: ' + this.state.tabCount);
-    this.props.createTab(primaryId);
+    var primaryId = this.tabIncreaseIndex;
+    console.log('appendTab, tabIncreaseIndex: ' + this.tabIncreaseIndex);
+    this.tabIncreaseIndex++;
+    this.setState({
+      currentTabId: primaryId
+    });
+    setTimeout(() => {
+      this.props.createTab(primaryId);
+    }, 50)
+    setTimeout(() => {
+      this.appendPreservedTab();
+    }, 300);
+  }
+
+  // 预加载tab, 为了加快创建tab的速度
+  appendPreservedTab = () => {
+    var primaryId = this.tabIncreaseIndex;
+    console.log('appendPreservedTab, tabIncreaseIndex: ' + this.tabIncreaseIndex);
+    // this.tabIncreaseIndex++;
     this.setState({
       tabList: [
         ...this.state.tabList,
@@ -182,8 +275,7 @@ class TabController extends Component {
           view: this.renderTab(primaryId)
         }
       ],
-      tabCount: this.state.tabCount + 1,
-      currentTabId: primaryId
+      // currentTabId: currentTabCount // tabID依然是当前tab
     })
   }
 
@@ -191,33 +283,34 @@ class TabController extends Component {
     this.setState({
       currentTabId: id
     })
-    this.props.setFrontTab(id)
   }
 
   closeTab = (id: number) => {
-    if (this.state.tabList.length == 1) {
+    console.log('closeTab: ' + id + ', tabLength: ' + this.state.tabList.length);
+    // 默认两个页面: 一个显式 一个preserved
+    if (this.state.tabList.length == 2) {
+      this.goHome();
       return;
     }
+
     this.props.removeTab(id);
 
     var tempList = this.state.tabList.slice();
-    console.log('id: ' + id + ', tempList: ' + tempList.length);
+    console.log('before: id: ' + id + ', tempList: ' + tempList.length);
 
-    var currentId = this.state.currentTabId;
     var nearest = findNearestElement(tempList, id);
     var toDeleteId = this.findIndexByTabId(id)
     if (toDeleteId || toDeleteId === 0) {
       tempList.splice(toDeleteId, 1);
       this.tabRefList.splice(toDeleteId, 1);
     }
-
+    console.log('after: deleteId: ' + toDeleteId + ', tempList: ' + tempList.length);
+    var currentTabId = nearest;
     this.setState({
       tabList: tempList,
-      currentTabId: nearest
+      currentTabId: currentTabId
     })
-
-    console.log('==== _closeWeb switchTab: ' + nearest);
-    this.switchTab(nearest);
+    console.log('==== _closeWeb switchTab: ' + currentTabId);
 
     function findNearestElement(arr: Array<Object>, id: number) {
       var prevList = arr.filter(e => e.id <= id);
@@ -230,7 +323,6 @@ class TabController extends Component {
       }
       return id;
     }
-
   }
 
   renderTab(id: number) {
@@ -238,20 +330,24 @@ class TabController extends Component {
       <View key={id} style={styles.overlay}>
         <TabNavigator
           id={id}
-          ref={(tab) => tab && this.tabRefList.push(tab)}
+          ref={(tab) => tab && this.tabRefList.push({id: id, tab: tab})}
           menuPressFn={(isTabPage: bool) => this.menuPopup.open(isTabPage)}
-          tabPressFn={()=>this.startTabManagerPage()}
-          />
+          tabPressFn={() => this.startTabManagerPage()}
+          tabLongPressFn={() => this.goHome()}
+          parentNavigator={this.props.navigator}/>
       </View>
     )
   }
 
   handleBack = () => {
     if (this.menuPopup.isVisible()) {
-      this.menuPopup.close()
+      this.menuPopup.close();
       return true
     }
-
+    if (this.tabManager.isVisible()) {
+      this.tabManager.hide();
+      return true;
+    }
     const navigator = this.props.navigator
     const routers = navigator.getCurrentRoutes();
     if (routers.length > 1) {
@@ -259,8 +355,12 @@ class TabController extends Component {
       return true;
     }
 
-    let currentTab = this.tabRefList[this.state.currentTabId];
-    return currentTab.back();
+    let currentTabRef = this.tabRefList.find(e => e.id === this.state.currentTabId);
+    let dontExit = currentTabRef && currentTabRef.tab && currentTabRef.tab.back();
+    if (!dontExit) {
+      this.props.resetTab();
+    }
+    return dontExit;
   }
 }
 
@@ -281,14 +381,12 @@ const styles = StyleSheet.create({
 
 function mapStateToProps(state) {
   return {
+    tabs: state.tabinfo.tabIds || [],
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    setFrontTab: (id: number) => {
-      dispatch(setFrontTab(id))
-    },
     createTab: (id: number) => {
       dispatch(createTab(id))
     },

@@ -228,6 +228,8 @@ class WebView extends React.Component {
         onLoadingError={this.onLoadingError}
         onStartDownload={this.onStartDownload}
         onProgressChange={this.onProgressChange}
+        onOverrideUrlLoading={this.onOverrideUrlLoading}
+        onLongPress={this.onLongPress}
         testID={this.props.testID}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
       />;
@@ -280,6 +282,21 @@ class WebView extends React.Component {
     );
   };
 
+  resume = () => {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.WebViewAndroid.Commands.resume,
+      null
+    );
+  }
+
+  pause = () => {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.WebViewAndroid.Commands.pause,
+      null
+    );
+  }
   /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
@@ -322,6 +339,24 @@ class WebView extends React.Component {
     let progress = event.nativeEvent.progress;
     let onProgressChange = this.props.onProgressChange;
     onProgressChange && onProgressChange(progress)
+  }
+
+  onOverrideUrlLoading = (event) => {
+    let url = event.nativeEvent.newUrl;
+    let mimeType = event.nativeEvent.type;
+    let onOverrideUrlLoading = this.props.onOverrideUrlLoading;
+    onOverrideUrlLoading && onOverrideUrlLoading(url, mimeType)
+  }
+
+  onLongPress = (event) => {
+    console.log('WebView: onLongPress: ' + JSON.stringify(event.nativeEvent, null, 2));
+    let onLongPress = this.props.onLongPress;
+    onLongPress && onLongPress({
+      url: event.nativeEvent.newUrl,
+      mime: event.nativeEvent.type,
+      x: event.nativeEvent.x,
+      y: event.nativeEvent.y
+    });
   }
 
   onLoadingFinish = (event) => {

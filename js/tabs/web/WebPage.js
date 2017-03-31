@@ -10,586 +10,629 @@ import {
   StyleSheet,
   PanResponder,
   ToastAndroid,
-  AsyncStorage,
-  TouchableOpacity
+  TouchableOpacity,
+  TouchableWithoutFeedback
 } from 'react-native';
 import {
   isIOS,
-  NAV_BAR_HEIGHT,
-  BOTTOM_BAR_HEIGHT,
+  SEARCH_BAR_HEIGHT,
   STATUS_BAR_HEIGHT,
   SCREEN_WIDTH,
   SCREEN_HEIGHT
 } from '../../utils/Consts'
+
+import {
+  BOTTOM_BAR_HEIGHT_NORMAL,
+  BOTTOM_BAR_HEIGHT_MIN,
+} from './WebBottomBar'
+
+import * as IMG from '../../assets/imageAssets'
+import FS from '../../fs/fsutils'
+import MIME from '../../fs/mime'
 
 import {connect} from 'react-redux'
 import RNFetchBlob from 'react-native-fetch-blob'
 import {Emitter} from '../../events/Emitter'
 import {append as historyAppend} from '../../reducers/browsehistory'
 import {startDownload, finishDownload} from '../../reducers/download'
-import WebBottomBar from './WebBottomBar'
-import WebTitleBar from './WebTitleBar'
+import Transitions from '../../animation/NavigatorAnimation'
 import ProgressBar from '../../components/ProgressBar';
-import * as IMG from '../../assets/imageAssets'
+var RNFS = require('react-native-fs');
+var dateFormat = require('dateformat');
 
 var DefaultWebView = require('../../nativemodules/WebView')
-const dirs = RNFetchBlob.fs.dirs
+const dirs = RNFetchBlob.fs.dirs;
+const IMAGE_SAVE_TOAST_SUCCESS = "图片已保存";
+const IMAGE_SAVE_TOAST_FAIL = "图片保存失败";
+const FILE_SAVE_TOAST_SUCCESS = "下载已完成";
+const FILE_SAVE_TOAST_FAIL = "下载失败";
 
 const styles = StyleSheet.create({
-  titlebar: {
+  pbar: {
     left: 0,
-    top: 0,
-    height: NAV_BAR_HEIGHT,
+    bottom: BOTTOM_BAR_HEIGHT_NORMAL,
     width: SCREEN_WIDTH,
-    flexDirection: 'column',
-    backgroundColor: 'white',
     position: 'absolute'
   },
-  bottombar: {
-    left: 0,
-    bottom: 0,
-    height: BOTTOM_BAR_HEIGHT,
-    width: SCREEN_WIDTH,
-    flexDirection: 'column',
-    position: 'absolute'
-  },
-  shadow: {
-    elevation: 4,
-    shadowColor: 'black',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    shadowOffset: {
-      height: 2,
-    },
-  },
-  floatLeft:{
-    position: 'absolute',
-    top: SCREEN_HEIGHT / 2,
-    left: 0,
-    width: 50,
-    height: 50,
-    backgroundColor: '#808080ee',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  floatRight:{
-    position: 'absolute',
-    top: SCREEN_HEIGHT / 2,
-    right: 0,
-    width: 50,
-    height: 50,
-    backgroundColor: '#808080ee',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  circle: {
-    position: 'absolute',
-    top: SCREEN_HEIGHT * 4 / 5,
-    right: 10,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#00000077',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
 })
 
 type NavState = {
-  url: string,
-  title: string,
-  loading: bool,
-  canGoBack: bool,
-  canGoForward: bool,
+  url ?: string,
+  title ?: string,
+  loading ?: bool,
+  canGoBack ?: bool,
+  canGoForward ?: bool,
 }
 
-const __AUTO_FULLSCREEN__ = false
-const FLOAT_FULLSCREEN_TOP = 'FLOAT_FULLSCREEN_TOP'
-const FLOAT_FULLSCREEN_RIGHT = 'FLOAT_FULLSCREEN_RIGHT'
+const FAV_ICON_PREFIX = 'favicon: '
+const WEB_SCROLLABLE = 'webScrollable: '
+const FETCH_FAV_ICON = 'function icon() { \
+  var ICON = 0; \
+  var APPLE = 1; \
+  var APPLE_PRECOMPOSED = 2; \
+  var selectors = { "link[rel~=\'icon\']": ICON, \
+      "link[rel=\'apple-touch-icon\']": APPLE, \
+      "link[rel=\'apple-touch-icon-precomposed\']": APPLE_PRECOMPOSED \
+    }; \
+  function getIcon() { \
+    var favicons = {}; \
+    for (var selector in selectors) { \
+      var icons = document.head.querySelectorAll(selector); \
+      for (var i = 0; i < icons.length; i++) { \
+        var href = icons[i].href; \
+        favicons[href] = selectors[selector]; \
+        if (href) { \
+          return href; \
+        } \
+      } \
+    } \
+    return null;\
+  } \
+  return getIcon(); \
+} \
+window.postMessage(\'favicon: \' + icon()); \
+var egameBrowserWebScrollable = false; \
+window.addEventListener(\'scroll\', function(e) { \
+  if (!egameBrowserWebScrollable) { \
+    egameBrowserWebScrollable = true; \
+    window.postMessage(\'webScrollable: true\'); \
+  } \
+}); \
+'
 
 class WebPage extends Component {
   static propTypes = {
     navigator: PropTypes.object.isRequired,
-    id: PropTypes.number.isRequired,
     url: PropTypes.string,
-    menuPressFn: PropTypes.func,
-    tabPressFn: PropTypes.func,
-    onSaveLastUrl: PropTypes.func,
+    onPushNewWebPage: PropTypes.func,
   }
-
 
   url = ''
   menuPopup = {};
   tabIndicatorPopup = {};
   navState: NavState = {};
-  titleBar;
-  bottomBar;
   webView;
   progressBar;
   // 前进后退手势
-  floatBackButton;
-  floatForwardButton;
-  floatFullScreenButton;
   scrollDirection = {
     isHorizontal: false,
     isInited: false
   }
   // 全屏显示
   isFullScreen = false
-  fullScreenPrefValue = false
-  topPart;
-  bottomPart;
   bodyPart;
+  pbarPart;
 
-
-  subscriptionIsFullScreen = {};
-  touchX0;
+  lastMoveY;
+  webCanScroll = false;
+  webLoadFinished = false;
+  webDidFixWhenUnScrollable = false;
 
   webviewPanResponder = PanResponder.create({
     onStartShouldSetPanResponder: (evt, gestureState) => true,
     onMoveShouldSetPanResponder: (evt, gestureState) => true,
     onPanResponderGrant: (evt, gestureState) => {
-      // 开始手势操作。给用户一些视觉反馈，让他们知道发生了什么事情！
-
-      console.log('onPanResponderGrant');
-      if (this.fullScreenPrefValue !== this.isFullScreen) {
-        this.toggleFullScreen(this.fullScreenPrefValue)
-      }
-      this.touchX0 = gestureState.x0;
-      // gestureState.{x,y}0 现在会被设置为0
+      this.lastMoveY = gestureState.moveY;
     },
     onPanResponderMove: (evt, gestureState) => {
-      // console.log('onPanResponderMove: ' + 'vy: ' + gestureState.vy);
-      console.log('onPanResponderMove: ' + 'x0: ' + gestureState.x0);
-
       if (!this.scrollDirection.isInited) {
         this.scrollDirection.isInited = true;
-        this.scrollDirection.isHorizontal = Math.abs(gestureState.dy) < 5
+        this.scrollDirection.isHorizontal = Math.abs(gestureState.dx) > Math.abs(gestureState.dy)
       }
-
-      if (!this.scrollDirection.isHorizontal) {
-        return;
-      }
-
-      // 只有从边缘滑动时 才能开启手势功能
-      if (!this.isPanFromEdge()) {
-        return;
-      }
-
-      let dx = gestureState.dx;
-      let dy = gestureState.dy;
-
-      if (dx >= 0) {
-        this.floatForwardButton.setNativeProps({style: {opacity: 0}})
-        let opacity = Math.min(dx / 100, 1)
-        let x = (Math.min(dx / 100, 1) - 1) * 20;
-        this.floatBackButton.setNativeProps({style: {opacity: opacity, left: x}})
-      } else {
-        this.floatBackButton.setNativeProps({style: {opacity: 0}})
-        if (this.navState.canGoForward) {
-          let opacity = Math.min(Math.abs(dx) / 100, 1);
-          let x = (Math.min(Math.abs(dx) / 100, 1) - 1) * 20;
-          this.floatForwardButton.setNativeProps({style: {opacity: opacity, right: x}})
-        }
-      }
-      // 从成为响应者开始时的累计手势移动距离为gestureState.d{x,y}
+      // this.toggleByPanGesture(gestureState);
     },
     onPanResponderTerminationRequest: (evt, gestureState) => true,
     onPanResponderRelease: (evt, gestureState) => {
-      if (this.scrollDirection.isHorizontal && this.isPanFromEdge()) {
-        let dx = gestureState.dx;
-        if (dx > 100) {
-          this.back()
-        } else if (dx < -100){
-          this.forward()
-        }
-      }
-      this.resetFloatButton()
+      this.toggleByPanGesture(gestureState);
+      this.resetPanGesture();
     },
     onPanResponderTerminate: (evt, gestureState) => {
-      this.resetFloatButton()
-      // 另一个组件已经成为了新的响应者，所以当前手势将被取消。
+      this.toggleByPanGesture(gestureState);
+      this.resetPanGesture();
     },
-    onShouldBlockNativeResponder: (evt, gestureState) => {
-      // 返回一个布尔值，决定当前组件是否应该阻止原生组件成为JS响应者
-      // 默认返回true。目前暂时只支持android。
-      return true;
-    },
+    onShouldBlockNativeResponder: (evt, gestureState) => true,
   });
 
-  isPanFromEdge = () => {
-    return (this.touchX0 < 30 || (SCREEN_WIDTH - this.touchX0) < 30)
+  canScroll = () => {
+    if (this.navState
+      && this.navState.url
+      && this.navState.url.includes("163.com")) {
+      return false;
+    }
+
+    if (!this.webLoadFinished) {
+      return true;
+    } else {
+      if (this.webCanScroll) {
+        return true;
+      }
+    }
+
+    // 目前只针对play.cn上的游戏做特殊处理, 淘宝和cnBeta都有问题
+    if (this.navState
+      && this.navState.url
+      && this.navState.url.includes("play.cn")) {
+      return false;
+    }
+    return true;
   }
 
-  floatTop;
-  floatRight;
-  floatInitTop;
-  floatInitRight;
-  floatFullScreenPanResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: (evt, gestureState) => Math.abs(gestureState.dx) > 5,
-    onPanResponderGrant: ()=>{
-      this.floatInitTop = this.floatTop
-      this.floatInitRight = this.floatRight
-    },
-    onPanResponderMove: (evt,gs)=>{
-      this.floatTop = Math.min(Math.max(this.floatInitTop + gs.dy, NAV_BAR_HEIGHT),
-                            SCREEN_HEIGHT - NAV_BAR_HEIGHT - BOTTOM_BAR_HEIGHT);
-      this.floatRight = Math.min(Math.max(this.floatInitRight - gs.dx, 10),
-                            SCREEN_WIDTH - 50);
-      this.floatFullScreenButton.setNativeProps({
-        style: {top: this.floatTop, right: this.floatRight}})
-    },
-    onPanResponderRelease: (evt,gs)=>{
-      let top = String(Math.round(this.floatTop))
-      let right = String(Math.round(this.floatRight))
-      AsyncStorage.multiSet([
-        [FLOAT_FULLSCREEN_TOP, top],
-        [FLOAT_FULLSCREEN_RIGHT, right],
-      ])
+  toggleByPanGesture = (gestureState) => {
+    if (!this.scrollDirection.isHorizontal) {
+      // let deltaY = gestureState.moveY - this.lastMoveY;
+      let deltaY = gestureState.dy;
+      let vy = gestureState.vy;
+      if (deltaY > 5 || vy > 1) {
+        this.toggleFullScreen(false);
+      } else if (deltaY < -5 || vy < -1){
+        this.toggleFullScreen(true);
+      }
+      this.lastMoveY = gestureState.moveY;
+      return;
     }
-  });
-
-  constructor() {
-    super()
-    this.subscriptionIsFullScreen = Emitter.addListener('is_fullscreen',
-                                    (...args) => {
-                                      this.fullScreenPrefValue = args[0]
-                                      this.toggleFullScreen(this.fullScreenPrefValue)
-                                    });
   }
 
   getTitleText = () => {
-    return this.titleBar.getTitleText();
+    return this.navState.title || this.navState.url;
+  }
+
+  updateTitle = () => {
+    console.log('webpage updateTitle, index: ' + this.props.index + ', title: ' + this.navState.title);
+    let title = this.navState.title || this.navState.url;
+    let url = this.navState.url;
+    this.props.onTitleUpdate && this.props.onTitleUpdate(this.props.index, title, url);
+  }
+
+  showBottoBarWhole = (whole: bool) => {
+    this.toggleFullScreen(!whole);
+  }
+
+  componentWillMount() {
+    this.url = this.props.url;
+    this.navState.url = this.props.url;
+    this.isFullScreen = !this.props.isShowBottomBarWhole;
   }
 
   componentWillUnmount() {
     console.log('$$$$$$$$$ Web componentWillUnmount');
-    this.props.onSaveLastUrl && this.props.onSaveLastUrl(this.navState.url)
-    this.subscriptionIsFullScreen.remove();
   }
 
   componentDidMount() {
-    AsyncStorage.getItem('IS_FULLSCREEN', (err, result) => {
-      console.log('isFullScreen ' + result);
-      this.fullScreenPrefValue = result === '1' ? true : false;
-      this.toggleFullScreen(this.fullScreenPrefValue);
-    })
-    AsyncStorage.multiGet(
-      [FLOAT_FULLSCREEN_TOP, FLOAT_FULLSCREEN_RIGHT])
-      .then(arr => {
-        console.log(arr);
-        this.floatTop = +arr[0][1] || SCREEN_HEIGHT * 4 / 5;
-        this.floatRight = +arr[1][1] || 10;
-        console.log('float position top: ' + this.floatTop + ', right: ' + this.floatRight);
-        this.floatFullScreenButton.setNativeProps({
-          style: {top: this.floatTop, right: this.floatRight}})
-      })
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.tabCount !== this.props.tabCount) {
-      this.bottomBar.updateBottom(nextProps.tabCount, this.navState);
-      return false;
-    }
-
     return false;
-  }
-
-  componentWillMount() {
-    this.url = this.props.url
   }
 
   render() {
     return (
-      <View style={{flex: 1}}>
+      <View style={{flex: 1, backgroundColor: 'white'}}>
         {this.renderWebView()}
-        <View
-          ref={view => this.topPart = view}
-          style={[styles.titlebar,]} >
-          {this.renderTitleBar()}
-          {this.renderProgressBar()}
-        </View>
-        <View
-          ref={view => this.bottomPart = view}
-          style={[styles.bottombar,]} >
-          {this.renderBottomBar()}
-        </View>
-        {this.renderFloatBackButton()}
-        {this.renderFloatForwardButton()}
-        {this.renderFloatSettingButton()}
+        {this.renderProgressBar()}
       </View>
     )
   }
 
-  renderTitleBar = () => {
-    return (
-      <WebTitleBar
-        ref={(titleBar) => this.titleBar = titleBar}
-        navigator={this.props.navigator}
-        onReload={() => this.webView.reload()}
-        onStopLoading={() => this.webView.stopLoading()}
-        onUrlChanged={this.onSearchUrlChanged}
-      />
-    )
-  }
-
   renderProgressBar = () => {
+    let bottomOffset = this.props.isShowBottomBarWhole ? BOTTOM_BAR_HEIGHT_NORMAL : BOTTOM_BAR_HEIGHT_MIN;
     return (
-      <ProgressBar
-        ref={(pbar) => this.progressBar = pbar}
-        width={SCREEN_WIDTH}
-        height={2}
-        borderWidth={0}
-        hideAfterFinish={true} />
+      <View
+        ref={(view) => this.pbarPart = view}
+        style={[styles.pbar, {bottom: bottomOffset}]} >
+        <ProgressBar
+          ref={(pbar) => this.progressBar = pbar}
+          width={SCREEN_WIDTH}
+          height={2}
+          borderWidth={0}
+          hideAfterFinish={true} />
+      </View>
     )
   }
 
   renderWebView = () => {
+    let marginBottom = this.props.isShowBottomBarWhole ? BOTTOM_BAR_HEIGHT_NORMAL : BOTTOM_BAR_HEIGHT_MIN;
     return (
       <View style={{
-        flex: 1,
-        marginTop: NAV_BAR_HEIGHT,
-        marginBottom: BOTTOM_BAR_HEIGHT}}
-        ref={view => this.bodyPart = view}>
+          flex: 1,
+          marginBottom: marginBottom,
+        }}
+        ref={view => this.bodyPart = view}
+        {...this.webviewPanResponder.panHandlers}>
         <DefaultWebView
-          {...this.webviewPanResponder.panHandlers}
           ref={web => this.webView = web}
           source={{uri: this.url}}
           javaScriptEnabled={true}
           domStorageEnabled={true}
+          injectedJavaScript={FETCH_FAV_ICON}
           onNavigationStateChange={this.onNavigationStateChange}
           onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
           startInLoadingState={false}
+          onLoadStart={this.onLoadStart}
+          onLoadEnd={this.onLoadEnd}
           onStartDownload={this.onStartDownload}
           onProgressChange={this.onProgressChange}
+          onOverrideUrlLoading={this.onOverrideUrlLoading}
+          onLongPress={this.onLongPress}
+          onMessage={this.onWebMessage}
         />
       </View>
     );
   }
 
-  renderBottomBar = () => {
-    return (
-      <WebBottomBar
-        ref={(bottomBar) => this.bottomBar = bottomBar}
-        menuPressFn={() => this.props.menuPressFn(false)}
-        tabPressFn={this.props.tabPressFn}
-        homePressFn={() => this.props.navigator.pop()}
-        onBack={this.back}
-        onForward={this.forward}/>
-    )
-  }
-
-  renderFloatBackButton = () => {
-    return (
-      <View
-        style={[styles.floatLeft, {opacity: 0}]}
-        ref={view => this.floatBackButton = view}>
-        <Image
-          style={{
-            width: 20,
-            height: 20
-          }}
-          source={IMG.ICON_BACK_LIGHT}/>
-      </View>
-    )
-  }
-
-  renderFloatForwardButton = () => {
-    return (
-      <View
-        style={[styles.floatRight, {opacity: 0}]}
-        ref={view => this.floatForwardButton = view}>
-        <Image
-          style={{
-            width: 20,
-            height: 20
-          }}
-          source={IMG.ICON_FORWARD_LIGHT}/>
-      </View>
-    )
-  }
-
-  renderFloatSettingButton = () => {
-    let opacity = this.isFullScreen ? 1 : 0
-    return (
-      <View
-        style={[styles.circle, {opacity: opacity}]}
-        ref={view => this.floatFullScreenButton = view}
-        {...this.floatFullScreenPanResponder.panHandlers}>
-        <TouchableOpacity
-          onPress={() => {this.toggleFullScreen(false)}}>
-          <View
-            style={{width: 40,
-                height: 40,
-                alignItems: 'center',
-                justifyContent: 'center'}}>
-            <Image
-              style={{
-                width: 20,
-                height: 20
-              }}
-              source={IMG.ICON_FLOAT_FULLSCREEN_NORMAL}/>
-          </View>
-        </TouchableOpacity>
-      </View>
-    )
-  }
-
-  resetFloatButton = () => {
+  resetPanGesture = () => {
     this.scrollDirection = {
       isHorizontal: false,
       isInited: false
     }
-    this.floatForwardButton.setNativeProps({
-      style: {opacity: 0}
-    })
-    this.floatBackButton.setNativeProps({
-      style: {opacity: 0}
-    })
   }
 
-  toggleFullScreen = (isFull: bool) => {
-    console.log('toggleFullScreen: isFullScreen: ' + isFull);
-    let isFullScreen = isFull
+  toggleFullScreen = (isFullScreen: bool) => {
     if (this.isFullScreen === isFullScreen) {
       return;
     }
     this.isFullScreen = isFullScreen || false;
 
-    if (!this.isFullScreen) {
-      this.bodyPart.setNativeProps({
-        style: {
-          marginTop: NAV_BAR_HEIGHT,
-          marginBottom: BOTTOM_BAR_HEIGHT,
+    if (!this.canScroll()) {
+      if (!this.webDidFixWhenUnScrollable) {
+        this.webDidFixWhenUnScrollable = true;
+        if (this.isFullScreen) {
+          this.increaseWebSize();
+          return;
         }
-      })
-      this.floatFullScreenButton.setNativeProps({style: {opacity: 0}})
-      this.titleBar && this.titleBar.show()
-      setTimeout(() => {
-        this.topPart.setNativeProps({style: {top: 0, height: NAV_BAR_HEIGHT}})
-        this.bottomPart.setNativeProps({style: {height: BOTTOM_BAR_HEIGHT}})
-      }, 100)
+      }
+
+      if (this.isFullScreen) {
+        this.pbarPart.setNativeProps({
+          style: {
+            bottom: BOTTOM_BAR_HEIGHT_MIN,
+          }
+        })
+        setTimeout(() => {
+          this.onBottomBarAsWhole(false);
+        }, 50);
+      } else {
+        this.onBottomBarAsWhole(true);
+        setTimeout(() => {
+          this.pbarPart.setNativeProps({
+            style: {
+              bottom: BOTTOM_BAR_HEIGHT_NORMAL,
+            }
+          })
+        }, 50);
+      }
+      return;
     }
-    else {
-      this.bodyPart.setNativeProps({
-        style: {
-          marginTop: 0,
-          marginBottom: 0,
-        }
-      })
-      this.floatFullScreenButton.setNativeProps({style: {opacity: 1}})
-      this.titleBar && this.titleBar.hide()
-      setTimeout(() => {
-        this.topPart.setNativeProps({style: {top: 0, height: 2}})
-        this.bottomPart.setNativeProps({style: {height: 0}})
-      }, 100)
-    }
+
+    this.isFullScreen ? this.increaseWebSize() : this.decreaseWebSize();
   }
 
-  onReload = () => {
-    if (this.props.id === this.props.currentTabId) {
-      this.webView.reload();
-    }
+  increaseWebSize = () => {
+    this.bodyPart.setNativeProps({
+      style: {
+        marginBottom: BOTTOM_BAR_HEIGHT_MIN,
+      }
+    })
+    this.pbarPart.setNativeProps({
+      style: {
+        bottom: BOTTOM_BAR_HEIGHT_MIN,
+      }
+    })
+    setTimeout(() => {
+      this.onBottomBarAsWhole(false);
+    }, 50);
+  }
+
+  decreaseWebSize = () => {
+    this.onBottomBarAsWhole(true);
+    setTimeout(() => {
+      this.pbarPart.setNativeProps({
+        style: {
+          bottom: BOTTOM_BAR_HEIGHT_NORMAL,
+        }
+      })
+      this.bodyPart.setNativeProps({
+        style: {
+          marginBottom: BOTTOM_BAR_HEIGHT_NORMAL,
+        }
+      })
+    }, 50);
   }
 
   back = () => {
-    if (this.navState.canGoBack) {
+    if (isIOS && this.navState.canGoBack) {
       this.webView.goBack();
+      setTimeout(() => {
+        Emitter.emit('enableForward', true);
+      }, 200);
     } else {
-      this.props.navigator.pop();
+      this.props.navigator.jumpBack();
     }
+  }
+
+  canGoForward = () => {
+    return isIOS && !!this.navState.canGoForward;
   }
 
   forward = () => {
-    if (this.navState.canGoForward) {
-      this.webView.goForward();
+    if (isIOS) {
+      if (this.navState.canGoForward) {
+        this.webView.goForward();
+      }
+    } else {
+      this.props.navigator.jumpForward();
     }
   }
 
-  updateTitle = (navState) => {
-    this.titleBar && this.titleBar.updateTitle(this.navState);
+  refresh = () => {
+    this.webView && this.webView.reload();
   }
 
-  updateBottom = (tabCount, navState) => {
-    this.bottomBar && this.bottomBar.updateBottom(tabCount, navState);
+  resume = () => {
+    this.webView && this.webView.resume();
+  }
+
+  pause = () => {
+    this.webView && this.webView.pause();
+  }
+
+  updateBottomNavState = (navState) => {
+    this.props.onWebStateUpdate && this.props.onWebStateUpdate(this.props.index, navState);
   }
 
   onHistoryUrlChanged = (url) => {
     console.log('######### web onHistoryUrlChanged: ' + url);
-    if (url !== this.url) {
-      this.url = url;
-      this.forceUpdate()
-    }
-  }
-
-  onSearchUrlChanged = (url) => {
-    console.log('######### web onSearchUrlChanged: ' + url);
-    // 搜索页退栈
-    this.props.navigator.pop()
-    if (url !== this.url) {
-      this.url = url;
-      this.forceUpdate()
-    }
+    this.props.onPushNewWebPage && this.props.onPushNewWebPage(url);
   }
 
   onNavigationStateChange = (navState: any) => {
+    console.log('onNavigationStateChange: ' + JSON.stringify(navState, null, 2));
     // 只有当获取到标题且loading为false时, 才是loading结束
     // 否则可能会误判
-    let readLoading:bool = true;
+    let realLoading:bool = true;
     if (navState.title && navState.title.length > 0 && !navState.loading) {
-      readLoading = false;
+      realLoading = false;
     }
 
     this.navState = {
       ...navState,
-      loading: readLoading,
+      loading: realLoading,
       title: simplifyTitle(navState.title, navState.url),
     }
 
-    console.log('=== NavState: ');
-    console.log(JSON.stringify(navState, null, 2));
-    this.updateTitle(this.navState)
-    this.updateBottom(this.props.tabCount, this.navState);
-    // 记录浏览历史
-    if (!navState.loading) {
-      this.props.historyAppend(this.navState.url, this.navState.title);
-    }
-  };
+    // console.log('=== NavState: ');
+    // console.log(JSON.stringify(navState, null, 2));
+    this.updateBottomNavState(this.navState);
+    this.updateTitle();
 
-  onStartDownload = (event) => {
-    let title = event.nativeEvent.title;
-    let url = event.nativeEvent.url;
-    console.log('title: ' + event.nativeEvent.title + ', url: ' + event.nativeEvent.url);
-    ToastAndroid.show(title + '下载中... ', ToastAndroid.SHORT)
-    this.props.startDownload(url, title);
-    console.log('path: ' + dirs.DownloadDir + '/' + title);
-    RNFetchBlob.config({
-      addAndroidDownloads : {
-        useDownloadManager : true,
-        title : event.nativeEvent.title,
-        mime : 'application/vnd.android.package-archive',
-        mediaScannable : true,
-        notification : true,
-        path: dirs.DownloadDir + '/' + title,
-      },
-    })
-    .fetch('GET', event.nativeEvent.url)
-    .then((res) => {
-      console.log(res.path());
-      this.props.finishDownload(url, title);
-      // android.actionViewIntent(res.path(), 'application/vnd.android.package-archive')
-    })
-  }
+    // 不要重复添加历史记录, 防止覆盖
+    // if (!this.navState.loading) {
+    //   this.props.historyAppend({
+    //     url: this.navState.url,
+    //     title: this.navState.title,
+    //   });
+    // }
+  };
 
   onProgressChange = (progress: number) => {
     this.progressBar && this.progressBar.updateProgress(progress)
+  }
+
+  onOverrideUrlLoading = (url: string, mimeType: string) => {
+    console.log('url: ' + url + ', mimeType: ' + mimeType);
+    this.pushNewWeb(url);
+  }
+
+  onLongPress = (event: Object) => {
+    if (event.mime === 'image') {
+      this.props.webLongPressFn && this.props.webLongPressFn(event);
+    }
+  }
+
+  onWebMessage = (event: Object) => {
+    let data = event.nativeEvent.data;
+
+    if (data.startsWith(FAV_ICON_PREFIX)) {
+      let iconUrl = null;
+      if (data.length > FAV_ICON_PREFIX.length + 2) {
+        iconUrl = data.substr(FAV_ICON_PREFIX.length);
+        console.log('iconUrl: ' + iconUrl);
+      }
+
+      if (iconUrl && iconUrl.endsWith('ico')) {
+        let realIconUrl = iconUrl;
+        iconUrl = null;
+      }
+      // 获取到favicon时表示页面加载完毕, 添加浏览记录
+      this.props.historyAppend({
+        url: this.navState.url,
+        title: this.navState.title,
+        favIcon: iconUrl,
+      });
+    }
+
+    if (data.startsWith(WEB_SCROLLABLE)) {
+      this.webCanScroll = true;
+      console.log(' WEB_SCROLLABLE: ' + data);
+    }
+  }
+
+  onLoadStart = (e) => {
+    this.webCanScroll = false;
+    this.webLoadFinished = false;
+    this.webDidFixWhenUnScrollable = false;
+  }
+
+  onLoadEnd = (e) => {
+    this.webLoadFinished = true;
+  }
+
+  pushNewWeb = (url: string) => {
+    this.props.onPushNewWebPage && this.props.onPushNewWebPage(url);
   }
 
   onShouldStartLoadWithRequest = (ev: any) => {
     return true;
   };
 
+  onBottomBarAsWhole = (whole: bool) => {
+    this.props.onBottomBarAsWhole && this.props.onBottomBarAsWhole(this.props.index, whole);
+  }
+
+  onStartDownload = (event) => {
+    let title = event.nativeEvent.title;
+    let url = event.nativeEvent.url;
+    console.log('title: ' + event.nativeEvent.title + ', url: ' + event.nativeEvent.url);
+    this.startDownload({title: title, url: url, isImage: false});
+  }
+
+  saveIco = (webUrl: string, title: string, iconUrl: string) => {
+    console.log('saveIco: ' + iconUrl);
+    // .ico解析有问题, TODO
+    if (iconUrl.endsWith('ico')) {
+      return;
+    }
+    let start = iconUrl.indexOf('//');
+    if (~start) {
+      return;
+    }
+    let iconName = iconUrl.substr(start + 2);
+    let end = iconName.indexOf('/');
+    if (~end) {
+      iconName = iconName.substr(0, end);
+    }
+    iconName += '.png';
+    let iconPath = dirs.CacheDir + '/' + iconName;
+
+    console.log('ico Path: ' + iconPath);
+    RNFetchBlob.fs.exists(iconPath)
+    .then((exist) => {
+      if (exist) {
+        this.props.historyAppend({
+          url: webUrl,
+          title: title,
+          favIcon: iconPath,
+        })
+      } else {
+        RNFetchBlob.config({
+          path: iconPath,
+        })
+        .fetch('GET', iconUrl)
+        .then((res) => {
+          console.log('icon finished: ' + iconPath);
+          this.props.historyAppend({
+            url: webUrl,
+            title: title,
+            favIcon: iconPath,
+          })
+        }, (err) => {
+        });
+      }
+    })
+    .catch(() => {});
+  }
+
+  saveImage = (url: string) => {
+    if (!url || url.length === 0) {
+      console.log('url is invalid');
+      return;
+    }
+    let title = generateFileName(url);
+    if (!title) {
+      console.log('image format is invalid');
+      return;
+    }
+    this.startDownload({title: title, url: url, isImage: true});
+
+    function generateFileName(url: string) {
+      var formats = ['.jpg', '.bmp', '.png', '.jpeg'];
+      var format = null;
+      formats.forEach((e) => {
+        if (url.includes(e) || url.toLowerCase().includes(e)) {
+          format = e;
+        }
+      })
+      if (!format) {
+        return null;
+      }
+      return dateFormat(new Date(), 'yyyy-mm-dd-HH-MM-ss-l') + format;
+    }
+  }
+
+  startDownload = (event) => {
+    let {url, title, isImage} = event;
+    let androidConfig = null;
+    let successToast = isImage ? IMAGE_SAVE_TOAST_SUCCESS : FILE_SAVE_TOAST_SUCCESS;
+    let failToast = isImage ? IMAGE_SAVE_TOAST_FAIL : FILE_SAVE_TOAST_FAIL;
+
+    let destPath = dirs.DownloadDir + '/' + title;
+    let mime = FS.getMimeByPath(title);
+    this.props.startDownload(url, title, destPath);
+    console.log('startDownload: ' + destPath);
+
+    if (!isImage) {
+      ToastAndroid.show(title + '下载中... ', ToastAndroid.SHORT)
+      // 不加平台判断也没关系, 这里为了指明用途.
+      if (!isIOS) {
+        androidConfig = {
+          useDownloadManager : true,
+          title : title,
+          mediaScannable : true,
+          notification : true,
+          description: title,
+          mime: mime,
+          path: destPath,
+        };
+      }
+    }
+
+    RNFetchBlob.config({
+      addAndroidDownloads : androidConfig,
+      path: destPath,
+    })
+    .fetch('GET', url)
+    .then((res) => {
+      console.log('finished: ' + destPath);
+      this.props.finishDownload(url, title, destPath);
+      if (!isIOS && FS.getMimeByPath(destPath) === MIME['.apk']) {
+        FS.open(destPath)
+        .then((msg) => {
+            console.log('success!!')
+        },() => {
+            console.log('error!!')
+        });
+      } else {
+        ToastAndroid.show(successToast, ToastAndroid.SHORT);
+      }
+      // 暂不支持断点续传 需要考虑的问题太多
+      // RNFS.moveFile(res.path(), destPath).then((res) => {
+      //   console.log('finished: ' + destPath);
+      //   this.props.finishDownload(url, title, destPath);
+      //   ToastAndroid.show(successToast, ToastAndroid.SHORT);
+      // });
+    }, (err) => {
+      ToastAndroid.show(failToast, ToastAndroid.SHORT);
+    });
+  }
 }
 
 function simplifyTitle(oldTitle: string, url: string) {
@@ -597,40 +640,24 @@ function simplifyTitle(oldTitle: string, url: string) {
   if (!title || title === '') {
     return url;
   }
-  return (title.length > 15
-        && (subWithToken('_')
-        || subWithToken(',')
-        || subWithToken(' ')
-        || subWithToken('|')
-        || subWithToken('-')))
-        || title
-
-  function subWithToken(token: string) {
-    var index = -1;
-    if ((index = title.indexOf(token)) != -1) {
-      return title.substr(0, index);
-    }
-    return null
-  }
+  return title;
 }
 
 function mapStateToProps(state) {
   return {
-    currentTabId: state.tabinfo.currentTabId,
-    tabCount: state.tabinfo.tabIds.length,
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    startDownload: (url, title) => {
-      dispatch(startDownload(url, title))
+    startDownload: (url, title, path) => {
+      dispatch(startDownload(url, title, path))
     },
-    finishDownload: (url, title) => {
-      dispatch(finishDownload(url, title))
+    finishDownload: (url, title, path) => {
+      dispatch(finishDownload(url, title, path))
     },
-    historyAppend: (url, title) => {
-      dispatch(historyAppend(url, simplifyTitle(title, url)))
+    historyAppend: (webInfo) => {
+      dispatch(historyAppend(webInfo))
     }
   }
 }

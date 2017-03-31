@@ -9,12 +9,11 @@ import {
   PanResponder,
   ToastAndroid
 } from 'react-native';
-import {isIOS, NAV_BAR_HEIGHT ,BOTTOM_BAR_HEIGHT, SCREEN_WIDTH} from '../utils/Consts'
 import {Bar} from 'react-native-progress';
 
 const DEFAULT_HEIGHT = 2;
 const DEFAULT_COLOR = 'rgba(0, 122, 255, 1)'
-const TITLEBAR_COLOR = 'white'
+const TITLEBAR_COLOR = 'transparent'
 
 export default class ProgressBar extends Component {
   static propTypes = {
@@ -63,8 +62,11 @@ export default class ProgressBar extends Component {
   componentWillUnmount() {
     this.timer && clearTimeout(this.timer);
   }
-  
+
   render() {
+    if (this.state.color === TITLEBAR_COLOR) {
+      return null;
+    }
     return (
       <Bar
         {...this.props}

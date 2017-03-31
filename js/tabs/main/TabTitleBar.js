@@ -9,24 +9,23 @@ import {
   StyleSheet,
   TextInput,
   Navigator,
-  TouchableOpacity
+  TouchableOpacity,
+  PixelRatio
 } from 'react-native'
 
 import {connect} from 'react-redux'
 import EventEmitter from 'EventEmitter'
 
-import {NAV_BAR_HEIGHT ,BOTTOM_BAR_HEIGHT} from '../../utils/Consts'
 import TouchableButton from '../../components/TouchableButton'
-import Search from '../../search/SearchScene'
 import {Emitter} from '../../events/Emitter'
 import Transitions from '../../animation/NavigatorAnimation'
 import * as IMG from '../../assets/imageAssets'
+import * as Consts from '../../utils/Consts'
 
 class TabTitleBar extends Component {
   static propTypes = {
     url: PropTypes.string,
     title: PropTypes.string,
-    onUrlChanged: PropTypes.func.isRequired,
   }
 
   title = ''
@@ -40,13 +39,14 @@ class TabTitleBar extends Component {
   }
 
   componentWillMount() {
-    this.title = this.props.title || '主页'
+    // this.title = this.props.title || '主页'
+    this.title = '';
   }
 
   render() {
     return (
       <View style={[styles.titlebar]}>
-        {this.renderButton()}
+        {/*this.renderButton()*/}
         {this.renderText()}
       </View>
     )
@@ -55,12 +55,12 @@ class TabTitleBar extends Component {
   renderText = () => {
     let title = this.title
     return <View style={{
-              flex: 1
+              flex: 1,
             }}>
             <TouchableOpacity
               style={{
                 flex: 1,}}
-              onPress={()=>this.search()}>
+              onPress={this.props.onSearch}>
               <View style={{
                 flex: 1,
                 flexDirection: 'row',
@@ -69,7 +69,7 @@ class TabTitleBar extends Component {
                 <Text
                   style={{
                     color: 'black',
-                    fontSize: 16}}
+                    fontSize: Consts.spFont(14)}}
                   numberOfLines={1}>
                     {title}
                 </Text>
@@ -81,32 +81,25 @@ class TabTitleBar extends Component {
   renderButton = () => {
     return  <View>
               <TouchableButton
-                pressFn = {this.search}
+                width={18}
+                height={18}
+                pressFn = {this.props.onSearch}
                 normalBg = {IMG.ICON_SEARCH_NORMAL}/>
             </View>
-  }
-
-  search = () => {
-    if (this.props.navigator) {
-      this.props.navigator.push({
-        component: Search,
-        scene: Transitions.NONE,
-        defaultUrl: this.props.url || '',
-        navigator: this.props.navigator,
-        onUrlChanged: this.props.onUrlChanged,
-      })
-    } else {
-      alert('no navigator')
-    }
   }
 }
 
 const styles = StyleSheet.create({
   titlebar: {
     flexDirection: 'row',
-    height: NAV_BAR_HEIGHT,
+    height: Consts.SEARCH_BAR_HEIGHT,
+    alignItems: 'center',
+    marginLeft: 30,
+    marginRight: 30,
     backgroundColor: 'white',
-    alignItems: 'center'
+    borderRadius: 4,
+    borderWidth: 1 / PixelRatio.get(),
+    borderColor: '#888888'
   },
   shadow: {
     elevation: 4,
